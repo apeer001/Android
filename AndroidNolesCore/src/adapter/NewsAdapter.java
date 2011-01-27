@@ -28,35 +28,41 @@ import com.itnoles.shared.*; //ImageDownloader and News
  */
 
 public class NewsAdapter extends ArrayAdapter<News> {
-	private final List<News> items;
-	private static final int resourceID = R.layout.icon_detail_list_item;
+	private LayoutInflater inflator;
 	
 	// Constructor
-	public NewsAdapter(Context context, List<News> items) {
-		super(context, resourceID, items);
-		this.items = items;
+	public NewsAdapter(Context context, List<News> news) {
+		super(context, R.id.text1, news);
+		inflator = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		News news = super.getItem(position);
+		if (news == null)
+			return convertView;
+			
 		View v = convertView;
 		if (v == null) {
-			LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(resourceID, null);
+			if (news.getImageURL() != null && news.getImageURL().length() > 0)
+				v = inflator.inflate(R.layout.headlines_row_icon, null);
+			else
+				v = inflator.inflate(R.layout.headlines_row, null);
 		}
 		
-		News news = items.get(position);
-		if (news != null) {
-			ImageView thumbnail = (ImageView) v.findViewById(R.id.icon);
-			final ImageDownloader imageDownloader = new ImageDownloader();
+		ImageView thumbnail = (ImageView) v.findViewById(R.id.icon);
+		if (thumbnail != null) {
+			ImageDownloader imageDownloader = new ImageDownloader();
 			imageDownloader.download(news.getImageURL(), thumbnail);
-
-			TextView title = (TextView) v.findViewById(R.id.text1);
+		}
+		
+		TextView title = (TextView) v.findViewById(R.id.text1);
+		if (title != null)
 			title.setText(news.getTitle());
 			
-			TextView subtitle = (TextView) v.findViewById(R.id.text2);
-			subtitle.setText(news.getPubdate());
-		}
+		TextView subTitle = (TextView) v.findViewById(R.id.text2);
+		if (subTitle != null)
+			subTitle.setText(news.getPubdate());
 		return v;
 	}
 }

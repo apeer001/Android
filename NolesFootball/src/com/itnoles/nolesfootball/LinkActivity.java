@@ -28,7 +28,7 @@ public class LinkActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, LINK));
+		setListAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, LINK));
 	}
 	
 	@Override
@@ -46,7 +46,7 @@ public class LinkActivity extends ListActivity {
 			default: url = "http://www.seminoles.com/podcasts/fsu-podcasts.html"; break;
 		}
 		
-		/* Take string from url and parse it to the default browsers */
+		// Take string from url and parse it to the default browsers
 		final Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 		startActivity(viewIntent);
 	}

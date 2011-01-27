@@ -16,56 +16,44 @@ package com.itnoles.knightfootball;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Bundle;
+import android.os.*; // Bundle and StrictMode
 import android.widget.TabHost;
 
-import com.itnoles.shared.Utilities;
-import com.itnoles.shared.activity.*; // HeadlinesActivity and SettingsActivity
+import com.itnoles.shared.*; // Constants and Utilities
+import com.itnoles.shared.activity.*; // HeadlinesActivity, ScheduleActivity, StadiumActivity amd StaffActivity
+
 public class KnightFootball extends TabActivity
 {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
+		if (Constants.ISORLATER_GINGERBREAD && Utilities.isThisTestKey())
+			StrictMode.enableDefaults();
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		
 		Resources res = getResources(); // get Resources Class
-		final TabHost tabHost = getTabHost();  // The activity TabHost
-		TabHost.TabSpec spec;  // Resusable TabSpec for each tab
-		Intent intent;  // Reusable Intent for each tab
-		
+		final TabHost tabHost = getTabHost(); // The activity TabHost
+		Intent intent; // Reusable Intent for each tab
+
 		// Create an Intent to launch an Activity for the tab (to be reused)
 		intent = new Intent().setClass(this, HeadlinesActivity.class);
-		
+
 		// Initialize a TabSpec for each tab and add it to the TabHost
-		spec = tabHost.newTabSpec("headlines").setIndicator("Headlines",
-		                  res.getDrawable(R.drawable.notepad))
-		              .setContent(intent);
-		tabHost.addTab(spec);
-		
+		tabHost.addTab(tabHost.newTabSpec("headlines").setIndicator("Headlines").setContent(intent));
+
 		// Do the same for the other tabs
-		intent = new Intent().setClass(this, KnightScheduleActivity.class);
-		spec = tabHost.newTabSpec("schedule").setIndicator("Schedule",
-		                  res.getDrawable(R.drawable.calendar))
-		              .setContent(intent);
-		tabHost.addTab(spec);
-		
+		intent = new Intent().setClass(this, ScheduleActivity.class);
+		tabHost.addTab(tabHost.newTabSpec("schedule").setIndicator("Schedule", res.getDrawable(R.drawable.calendar)).setContent(intent));
+
 		intent = new Intent().setClass(this, LinkActivity.class);
-		spec = tabHost.newTabSpec("link").setIndicator("Link",
-		                  res.getDrawable(R.drawable.bookmark))
-		              .setContent(intent);
-		tabHost.addTab(spec);
-		
-		intent = new Intent().setClass(this, KnightStaffActivity.class);
-		spec = tabHost.newTabSpec("staff").setIndicator("Staff",
-		                  res.getDrawable(R.drawable.star))
-		              .setContent(intent);
-		tabHost.addTab(spec);
-		
-		intent = new Intent().setClass(this, SettingsActivity.class);
-		spec = tabHost.newTabSpec("setting").setIndicator("Settings",
-		                  res.getDrawable(R.drawable.gear2))
-		              .setContent(intent);
-		tabHost.addTab(spec);
+		tabHost.addTab(tabHost.newTabSpec("link").setIndicator("Link", res.getDrawable(R.drawable.bookmark)).setContent(intent));
+
+		intent = new Intent().setClass(this, StaffActivity.class);
+		tabHost.addTab(tabHost.newTabSpec("staff").setIndicator("Staff", res.getDrawable(R.drawable.star)).setContent(intent));
+
+		intent = new Intent().setClass(this, StadiumActivity.class);
+		tabHost.addTab(tabHost.newTabSpec("stadium").setIndicator("Stadium", res.getDrawable(R.drawable.map)).setContent(intent));
 	}
 }

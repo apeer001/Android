@@ -18,19 +18,13 @@ import com.itnoles.shared.R;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.*; // ListPreference, CheckBoxPreference, EditTextPreference, PreferenceActivity and Preference
-import android.view.Gravity;
-import android.widget.TextView;
-import android.util.Log;
+import android.preference.*;
 
-import com.itnoles.shared.*; //Constants, InstapaperRequest and Utilities
-import com.itnoles.shared.helper.SimpleCrypto;
+import com.itnoles.shared.Constants;
 
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
-	private static final String TAG = "AbstractSettingsActivity";
-	private static final String NEWS = "news";
-	SharedPreferences sharedPref;
+	private SharedPreferences sharedPref;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -41,14 +35,8 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 		addPreferencesFromResource(R.xml.preferences);
 		
 		sharedPref = getSharedPreferences("settings", MODE_PRIVATE);
-		
-		// Display copyright message
-		TextView mCopyright = new TextView(this);
-		mCopyright.setText("Written by Jonathan Steele\nEmail: xfsunoles@gmail.com");
-		mCopyright.setGravity(Gravity.CENTER);
-		getListView().addFooterView(mCopyright);
 	}
-
+	
 	@Override
 	protected void onResume()
 	{
@@ -62,22 +50,22 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 	{
 		super.onPause();
 		// Unregister the listener whenever a key changes
-		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);     
 	}
 	
-	private void commitChange(SharedPreferences.Editor editor) {
+	private void commitChange(SharedPreferences.Editor editor)
+	{
 		if (Constants.ISORLATER_GINGERBREAD)
 			editor.apply();
 		else
 			editor.commit();
 	}
-
+	
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
-	{
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		Preference pref = findPreference(key);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		if (key.equals(NEWS))
+		if (key.equals("news"))
 		{
 			ListPreference newsPref = (ListPreference)pref;
 			int index = newsPref.findIndexOfValue(newsPref.getValue());
@@ -88,40 +76,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 				// Don't forget to commit or apply your edits!!!
 				commitChange(editor);
 			}
-		}
-		
-		if (key.equals(InstapaperRequest.INSTAPAPER_ENABLED))
-		{
-			CheckBoxPreference instapaperEnabledPref = (CheckBoxPreference)pref;
-			editor.putBoolean(key, instapaperEnabledPref.isChecked());
-			commitChange(editor);
-		}
-			
-		if (key.equals(InstapaperRequest.INSTAPAPER_USERNAME))
-		{
-			try {
-				EditTextPreference usernameEditPref = (EditTextPreference)pref;
-				String encryptedString = SimpleCrypto.encrypt(key, usernameEditPref.getText());
-				editor.putString(key, encryptedString);
-				commitChange(editor);
-			} catch(Exception e) {
-				Log.e(TAG, "bad encrypted string for instapaper username", e);
-			}
-		}
-
-		if (key.equals(InstapaperRequest.INSTAPAPER_PASSWORD))
-		{
-			try {
-				EditTextPreference passwordEditPref = (EditTextPreference)pref;
-				String encryptedString = SimpleCrypto.encrypt(key, passwordEditPref.getText());
-				editor.putString(key, encryptedString);
-				commitChange(editor);
-				// start the auth request for instapaper
-				InstapaperRequest request = new InstapaperRequest(this, sharedPref);
-				request.sendData("https://www.instapaper.com/api/authenticate");
-			} catch (Exception e) {
-				Log.e(TAG, "bad encrypted string for instapaper password", e);
-			}
+			setResult(RESULT_OK);
 		}
 	}
 }

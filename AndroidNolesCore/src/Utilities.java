@@ -13,7 +13,6 @@
 // limitations under the License.
 package com.itnoles.shared;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Build;
 import android.widget.Toast;
@@ -37,17 +36,6 @@ public class Utilities {
 	}
 	
 	/**
-	 * show a progress dialog
-	 * @param context Activity's Context
-	 * @param message progress dialog for message
-	 * @return a new progress dialog
-	 */
-	public static ProgressDialog showProgressDialog(Context context, String message)
-	{
-		return ProgressDialog.show(context, "", message, true);
-	}
-	
-	/**
 	 * open a new input stream from URLConnection with User-Agent Header
 	 * @param urlString string for URL address
 	 * @return new inpit stream
@@ -58,5 +46,9 @@ public class Utilities {
 		URLConnection c = new URL(urlString).openConnection();
 		c.setRequestProperty("User-Agent", "Android/" + Build.VERSION.RELEASE);
 		return c.getInputStream();
+	}
+	
+	public static boolean isThisTestKey() {
+		return Build.TAGS.equals("test-keys");
 	}
 }

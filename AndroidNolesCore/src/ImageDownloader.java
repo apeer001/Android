@@ -49,13 +49,14 @@ public class ImageDownloader {
 	 * @param imageView The ImageView to bind the downloaded image to.
 	 */
 	public void download(String url, ImageView imageView) {
+		resetPurgeTimer();
+		
 		// State sanity: url is guaranteed to never be null in cache keys.
 		if (url == null) {
 			imageView.setImageDrawable(null);
 			return;
 		}
-		
-		resetPurgeTimer();
+
 		Bitmap bitmap = getBitmapFromCache(url);
 		if (bitmap == null)
 			forceDownload(url, imageView);

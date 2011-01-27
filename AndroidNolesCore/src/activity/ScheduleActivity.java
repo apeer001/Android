@@ -28,41 +28,29 @@ import com.itnoles.shared.BetterBackgroundTask;
 import com.itnoles.shared.adapter.ColorAdapter;
 import com.itnoles.shared.helper.*; // BetterAsyncTaskCompleteListener and JSONHelper
 
-public abstract class AbstractScheduleActivity extends ListActivity implements BetterAsyncTaskCompleteListener<Void, Void, JSONArray>
+public class ScheduleActivity extends ListActivity implements BetterAsyncTaskCompleteListener<Void, Void, JSONArray>
 {
-	private static final String TAG = "ScheduleActivity";
-	private String url;
-
-	public AbstractScheduleActivity(String url)
-	{
-		this.url = url;
-	}
-
+	private static final String LOG_TAG = "ScheduleActivity";
+	private BetterBackgroundTask<Void, Void, JSONArray> task = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedule_main);
-		new BetterBackgroundTask<Void, Void, JSONArray>(this).execute();
+		task = (BetterBackgroundTask<Void, Void, JSONArray>)getLastNonConfigurationInstance();
+		if (task == null) {
+			task = new BetterBackgroundTask<Void, Void, JSONArray>(this);
+			task.execute();
+		} else
+			task.attach(this);
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
+	public Object onRetainNonConfigurationInstance()
 	{
-		menu.add(Menu.NONE, 0, Menu.NONE, R.string.Stadium).setIcon(R.drawable.map);
-		return super.onCreateOptionsMenu(menu);
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case 0:
-				Intent i = new Intent(this, StadiumActivity.class);
-				startActivity(i);
-				return true;
-			default:
-				return true;
-		}
+		task.detach();
+		return task;
 	}
 	
 	// Display Data to ListView
@@ -72,7 +60,7 @@ public abstract class AbstractScheduleActivity extends ListActivity implements B
 			return;
 		List<HashMap<String, String>> entries = new ArrayList<HashMap<String, String>>();
 		try {
-			for (int i=0; i < json.length(); i++) {
+			for (int i = 0; i < json.length(); i++) {
 				JSONObject rec = json.getJSONObject(i);
 				HashMap<String, String> map = new HashMap<String, String>();
 				map.put("date", rec.getString("date") + "     " + rec.getString("time"));
@@ -80,15 +68,15 @@ public abstract class AbstractScheduleActivity extends ListActivity implements B
 				map.put("tv", rec.getString("tv"));
 				entries.add(map);
 			}
-			setListAdapter(new ColorAdapter(this, entries));
+			setListAdapter(new ColorAdapter(getApplicationContext(), entries));
 		} catch (JSONException e) {
-			Log.e(TAG, "bad json parsing", e);
+			Log.e(LOG_TAG, "bad json parsing", e);
 		}
 	}
 
 	// Do This stuff in Background
 	public JSONArray readData(Void... params)
 	{
-		return JSONHelper.getJSONArray(url);
+		return JSONHelper.getJSONArray(getResources().getString(R.string.schedule_url));
 	}
 }

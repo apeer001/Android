@@ -23,6 +23,8 @@ import com.itnoles.shared.Utilities;
 
 public class WebViewActivity extends Activity
 {
+	private WebView webview;
+
 	@Override
 	// Called when the activity is first created.
 	public void onCreate(Bundle savedInstanceState)
@@ -31,9 +33,9 @@ public class WebViewActivity extends Activity
 		
 		// Let's display the progress in the activity title bar, like the
 		// browser app does.
-		getWindow().requestFeature(Window.FEATURE_PROGRESS);
+		requestWindowFeature(Window.FEATURE_PROGRESS);
 		
-		WebView webview = new WebView(this);
+		webview = new WebView(getApplicationContext());
 		setContentView(webview);
 		webview.getSettings().setJavaScriptEnabled(true);
 		webview.getSettings().setBuiltInZoomControls(true);
@@ -52,7 +54,14 @@ public class WebViewActivity extends Activity
 				Utilities.showToast(activity, "Oh no! " + description, Toast.LENGTH_SHORT);
 			}
 		});
-
- 		webview.loadUrl(getIntent().getExtras().getString("url"));
-    }
+		
+		webview.loadUrl(getIntent().getExtras().getString("url"));
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		
+		webview.destroy();
+	}
 }

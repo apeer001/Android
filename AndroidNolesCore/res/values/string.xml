@@ -1,16 +1,10 @@
 <resources>
-	<string name="Instapaper">Instapaper</string>
-	<string name="Instapaper_result">Instapaper Result</string>
-	<string name="Instapaper_enabled_title">Enable Instapaper</string>
-	<string name="Instapaper_enabled_summary">Disable or Enable Instapaper access</string>
-	<string name="username">Username</string>
-	<string name="Instapaper_username_summary">your Instapaper username</string>
-	<string name="password">Password</string>
-	<string name="Instapaper_password_summary">your Instapaper password</string>
 	<string name="listPref_title">Headlines</string>
 	<string name="listPref_summary">change the news source</string>
 	<string name="listPref_dialogTitle">News Source</string>
-	<string name="Stadium">Stadium Seating</string>
-	<string name="share">Share...</string>
-	<string name="listview_empty">If you\'ve seen this message more than once, there is no data is available.</string>
+	<string name="listview_empty">No Data</string>
+	<string name="app_version">Application Version</string>
+	<string name="author_name">Author Name</string>
+	<string name="author_email">Author Email</string>
+	<string name="author_website">Author Website</string>
 </resources>

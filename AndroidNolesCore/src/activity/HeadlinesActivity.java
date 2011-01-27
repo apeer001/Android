@@ -13,78 +13,113 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import android.app.*; // ListActivity and ProgressDialog
+import android.app.ListActivity;
 import android.content.*; // Intent and SharedPreferences
 import android.os.Bundle;
 import android.view.*; // Menu, MenuItem and View
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.*; // AdapterView and TextView
 
-import com.itnoles.shared.*; //BetterBackgroundTask, News, InstapaperRequest and Utilities
-import com.itnoles.shared.adapter.NewsAdapter;
-import com.itnoles.shared.helper.BetterAsyncTaskCompleteListener;
+import java.util.List;
 
-public class HeadlinesActivity extends ListActivity implements BetterAsyncTaskCompleteListener<String, Void, NewsAdapter> {
-	private SharedPreferences mPrefs;
-	private ProgressDialog pd;
+import com.itnoles.shared.*; //BetterBackgroundTask, News and Utilities
+import com.itnoles.shared.adapter.NewsAdapter;
+import com.itnoles.shared.helper.*; // BetterAsyncTaskCompleteListener and FeedParser
+
+public class HeadlinesActivity extends ListActivity implements BetterAsyncTaskCompleteListener<String, Void, List<News>> {
+	private static final int PREFERENCE = 0;
+	private SharedPreferences mPrefs = null;
+	private BetterBackgroundTask<String, Void, List<News>> task = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.headlines);
-		pd = Utilities.showProgressDialog(this, "Loading...");
-	}
-	
-	@Override
-	protected void onResume()
-	{
-		super.onResume();
+		setContentView(R.layout.maincontent);
+
 		mPrefs = getSharedPreferences("settings", MODE_PRIVATE);
 		
+		getNewContents();
+		
+		// register context menu for listview
+		registerForContextMenu(getListView());
+	}
+	
+	private NewsAdapter getNewsAdapter()
+	{
+		return ((NewsAdapter)getListAdapter());
+	}
+	
+	private void getNewContents()
+	{
 		String defaultTitle = getResources().getStringArray(R.array.listNames)[0];
 		final TextView headerText = (TextView) findViewById(R.id.list_header_title);
 		headerText.setText(mPrefs.getString("newstitle", defaultTitle));
 		
-		String defaultUrl = getResources().getStringArray(R.array.listValues)[0];
-		new BetterBackgroundTask<String, Void, NewsAdapter>(this).execute(mPrefs.getString("newsurl", defaultUrl));
-		registerForContextMenu(getListView());
+		// Check to see count is more than zero then clear the list
+		if (getNewsAdapter() != null && getNewsAdapter().getCount() > 0)
+			getNewsAdapter().clear();
+		
+		// Visible Progress Bar
+		getParent().setProgressBarIndeterminateVisibility(true);
+		
+		task = (BetterBackgroundTask<String, Void, List<News>>)getLastNonConfigurationInstance();
+		if (task == null) {
+			task = new BetterBackgroundTask<String, Void, List<News>>(this);
+			String defaultUrl = getResources().getStringArray(R.array.listValues)[0];
+			task.execute(mPrefs.getString("newsurl", defaultUrl));
+		} else
+			task.attach(this);
 	}
 	
 	@Override
-	protected void onPause()
-	{
-		super.onPause();
+	protected void onDestroy() {
+		super.onDestroy();
 		
-		// clear the list when this activity is nolonger visible.
-		((NewsAdapter)getListAdapter()).clear();
+		getNewsAdapter().clear();
+		
+		// unregister context menu for listview
+		unregisterForContextMenu(getListView());
+	}
+	
+	@Override
+	public Object onRetainNonConfigurationInstance()
+	{
+		task.detach();
+		return task;
 	}
 	
 	// Display Data to ListView
-	public void onTaskComplete(NewsAdapter adapter)
+	public void onTaskComplete(List<News> news)
 	{
-		if (pd != null && pd.isShowing()) {
-			pd.dismiss();
-			pd = null;
-		}
+		// Hide the progress bar
+		getParent().setProgressBarIndeterminateVisibility(false);
+		NewsAdapter adapter = new NewsAdapter(this, news);
 		setListAdapter(adapter);
 	}
 	
 	// Do This stuff in Background
-	public NewsAdapter readData(String ...params)
+	public List<News> readData(String ...params)
 	{
-		java.util.List<News> news = com.itnoles.shared.helper.FeedParser.parse(params[0]);
-		return new NewsAdapter(this, news);
+		// Parse RSS or Atom Feed
+		return FeedParser.parse(params[0]);
+	}
+	
+	private News getItemFromNews(AdapterView.AdapterContextMenuInfo info)
+	{
+		return (News)getListAdapter().getItem(info.position);
 	}
 	
 	// Show the list in the context menu
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
 	{
-		menu.setHeaderTitle(R.string.share);
-		menu.add(Menu.NONE, 0, Menu.NONE, "Send to Instapaper");
-		menu.add(Menu.NONE, 1, Menu.NONE, "View on WebView");
-		menu.add(Menu.NONE, 2, Menu.NONE, "Share by other apps");
+		if (v.getId() != android.R.id.list)
+			return;
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+		menu.setHeaderTitle(getItemFromNews(info).getTitle());
+		menu.add(Menu.NONE, 0, Menu.NONE, "View on WebView");
+		menu.add(Menu.NONE, 1, Menu.NONE, "Share by other apps");
 	}
 
 	// When the users selected the item id in the context menu, it called specific item action.
@@ -92,20 +127,15 @@ public class HeadlinesActivity extends ListActivity implements BetterAsyncTaskCo
 	public boolean onContextItemSelected(MenuItem item)
 	{
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-		News newsList = (News) getListAdapter().getItem(info.position);
+		News newsList = getItemFromNews(info);
 		switch(item.getItemId()) {
 			case 0:
-				// Launch the instapaper request to post data
-				InstapaperRequest request = new InstapaperRequest(this, mPrefs);
-				request.sendData("https://www.instapaper.com/api/add?url=" + newsList.getLink());
-				return true;
-			case 1:
 				// Launch Activity to view page load in webview
 				final Intent displayWebView = new Intent(this, WebViewActivity.class);
 				displayWebView.putExtra("url", newsList.getLink());
 				startActivity(displayWebView);
 				return true;
-			case 2:
+			case 1:
 				final Intent shareIntent = new Intent(Intent.ACTION_SEND);
 				shareIntent.setType("text/plain");
 				shareIntent.putExtra(Intent.EXTRA_TEXT, newsList.getLink());
@@ -113,5 +143,35 @@ public class HeadlinesActivity extends ListActivity implements BetterAsyncTaskCo
 			default:
 				return super.onContextItemSelected(item);
 		}
+	}
+	
+	// When the users clicked the menu button in their device, it called this method first
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(Menu.NONE, 0, Menu.NONE, "Settings").setIcon(R.drawable.ic_menu_info_details);
+		menu.add(Menu.NONE, 1, Menu.NONE, "Refresh Data").setIcon(R.drawable.ic_menu_refresh);
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case 0:
+				final Intent pref = new Intent(this, SettingsActivity.class);
+				startActivityForResult(pref, PREFERENCE);
+			return true;
+			case 1:
+				getNewContents();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	// Called when an activity called by using startActivityForResult finishes.
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		if (requestCode == PREFERENCE && resultCode == RESULT_OK)
+			getNewContents();
 	}
 }

@@ -14,6 +14,7 @@
 package com.itnoles.shared;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.itnoles.shared.helper.BetterAsyncTaskCompleteListener;
 
@@ -24,7 +25,8 @@ import com.itnoles.shared.helper.BetterAsyncTaskCompleteListener;
  */
 
 public class BetterBackgroundTask<T1, T2, T3> extends AsyncTask<T1, T2, T3> {
-	private BetterAsyncTaskCompleteListener<T1, T2, T3> callback;
+	private BetterAsyncTaskCompleteListener<T1, T2, T3> callback = null;
+	private static final String LOG_TAG = "BetterBackgroundTask";
 	
 	// Constructor
 	public BetterBackgroundTask(BetterAsyncTaskCompleteListener<T1, T2, T3> callback) {
@@ -40,6 +42,17 @@ public class BetterBackgroundTask<T1, T2, T3> extends AsyncTask<T1, T2, T3> {
 	// Runs on the UI thread after doInBackground
 	@Override
 	protected void onPostExecute(T3 result) {
-		callback.onTaskComplete(result);
+		if (callback == null)
+			Log.w(LOG_TAG, "onPostExecute() skipped -- no activity");
+		else 
+			callback.onTaskComplete(result);
+	}
+	
+	public void detach() {
+		callback = null;
+	}
+	
+	public void attach(BetterAsyncTaskCompleteListener<T1, T2, T3> callback) {
+		this.callback = callback;
 	}
 }

@@ -17,7 +17,7 @@ import com.itnoles.shared.R;
 
 import android.app.ListActivity;
 import android.os.Bundle;
-import android.widget.SimpleAdapter;
+import android.widget.*; //TextView and SimpleAdapter
 import android.util.Log;
 
 import java.util.*; // List and ArrayList
@@ -26,22 +26,33 @@ import org.json.*; // JSONArray and JSONObject
 import com.itnoles.shared.BetterBackgroundTask;
 import com.itnoles.shared.helper.*; // BetterAsyncTaskCompleteListener and JSONHelper
 
-public abstract class AbstractStaffActivity extends ListActivity implements BetterAsyncTaskCompleteListener<Void, Void, JSONArray>
+public class StaffActivity extends ListActivity implements BetterAsyncTaskCompleteListener<Void, Void, JSONArray>
 {
-	private static final String TAG = "AbstractStaffActivity";
-	private String url;
-	
-	public AbstractStaffActivity(String url)
-	{
-		this.url = url;
-	}
+	private static final String LOG_TAG = "AbstractStaffActivity";
+	private BetterBackgroundTask<Void, Void, JSONArray> task = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.maincontent);
-		new BetterBackgroundTask<Void, Void, JSONArray>(this).execute();
+		
+		final TextView headerText = (TextView) findViewById(R.id.list_header_title);
+		headerText.setText("Current Football Staff");
+		
+		task = (BetterBackgroundTask<Void, Void, JSONArray>)getLastNonConfigurationInstance();
+		if (task == null) {
+			task = new BetterBackgroundTask<Void, Void, JSONArray>(this);
+			task.execute();
+		} else
+			task.attach(this);
+	}
+	
+	@Override
+	public Object onRetainNonConfigurationInstance()
+	{
+		task.detach();
+		return task;
 	}
 	
 	// Display Data to ListView
@@ -58,16 +69,16 @@ public abstract class AbstractStaffActivity extends ListActivity implements Bett
 				map.put("position", rec.getString("positions"));
 				list.add(map);
 			}
-			setListAdapter(new SimpleAdapter(this, list, android.R.layout.simple_list_item_2,
+			setListAdapter(new SimpleAdapter(getApplicationContext(), list, android.R.layout.simple_list_item_2,
 			new String[] {"name", "position"}, new int[] {android.R.id.text1, android.R.id.text2}));
 		} catch (JSONException e) {
-			Log.e(TAG, "bad json parsing", e);
+			Log.e(LOG_TAG, "bad json parsing", e);
 		}
 	}
 	
 	// Do This stuff in Background
 	public JSONArray readData(Void...params)
 	{
-		return JSONHelper.getJSONArray(url);
+		return JSONHelper.getJSONArray(getResources().getString(R.string.staff_url));
 	}
 }

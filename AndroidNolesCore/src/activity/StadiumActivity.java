@@ -27,7 +27,7 @@ public class StadiumActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		
-		View view = new android.view.View(this);
+		View view = new View(getApplicationContext());
 		view.setBackgroundResource(R.drawable.stadiumseating);
 		setContentView(view);
 	}

@@ -1,0 +1,10 @@
+<PreferenceScreen
+	android:title="@string/about_settings"
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- App Version Number -->
+	<Preference android:key="app_version" style="?android:preferenceInformationStyle" android:title="@string/app_version" />
+	<!-- Author Info -->
+	<Preference android:key="author_name" style="?android:preferenceInformationStyle" android:title="@string/author_name" />
+	<Preference android:key="author_email" style="?android:preferenceInformationStyle" android:title="@string/author_email" />
+	<Preference android:key="author_website" style="?android:preferenceInformationStyle" android:title="@string/author_website" />
+</PreferenceScreen>
