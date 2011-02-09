@@ -2,7 +2,8 @@
 	<string name="listPref_title">Headlines</string>
 	<string name="listPref_summary">change the news source</string>
 	<string name="listPref_dialogTitle">News Source</string>
-	<string name="listview_empty">No Data</string>
+	<string name="listview_empty">Loading Content...</string>
+	<!-- About Settings -->
 	<string name="app_version">Application Version</string>
 	<string name="author_name">Author Name</string>
 	<string name="author_email">Author Email</string>

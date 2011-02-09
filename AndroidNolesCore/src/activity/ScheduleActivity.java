@@ -13,70 +13,61 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import com.itnoles.shared.R;
-
 import android.app.ListActivity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.*; // Menu and MenuItem
+import android.os.*; // Bundle and AsyncTask
+import android.widget.SimpleAdapter;
 import android.util.Log;
 
-import java.util.*; //List and ArrayList
+import java.util.*; //ArrayList, HashMap and List
 import org.json.*; //JSONArray and JSONObject
 
-import com.itnoles.shared.BetterBackgroundTask;
-import com.itnoles.shared.adapter.ColorAdapter;
-import com.itnoles.shared.helper.*; // BetterAsyncTaskCompleteListener and JSONHelper
+import com.itnoles.shared.JSONBackgroundTask;
+import com.itnoles.shared.helper.JSONAsyncTaskCompleteListener;
 
-public class ScheduleActivity extends ListActivity implements BetterAsyncTaskCompleteListener<Void, Void, JSONArray>
+public class ScheduleActivity extends ListActivity implements JSONAsyncTaskCompleteListener
 {
 	private static final String LOG_TAG = "ScheduleActivity";
-	private BetterBackgroundTask<Void, Void, JSONArray> task = null;
+	private JSONBackgroundTask task;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.schedule_main);
-		task = (BetterBackgroundTask<Void, Void, JSONArray>)getLastNonConfigurationInstance();
-		if (task == null) {
-			task = new BetterBackgroundTask<Void, Void, JSONArray>(this);
-			task.execute();
-		} else
-			task.attach(this);
-	}
-	
-	@Override
-	public Object onRetainNonConfigurationInstance()
-	{
-		task.detach();
-		return task;
+		setContentView(R.layout.maincontent);
+		
+		task = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(getResources().getString(R.string.schedule_url));
 	}
 	
 	// Display Data to ListView
 	public void onTaskComplete(JSONArray json)
 	{
+		// If json is null, return early
 		if (json == null)
 			return;
+		
+		// If AsyncTask is cancelled, return early
+		if (task.isCancelled())
+			return;
+		
+		if (task != null && task.getStatus() != AsyncTask.Status.FINISHED) {
+			task.cancel(true);
+			task = null;
+		}
+		
 		List<HashMap<String, String>> entries = new ArrayList<HashMap<String, String>>();
 		try {
 			for (int i = 0; i < json.length(); i++) {
 				JSONObject rec = json.getJSONObject(i);
 				HashMap<String, String> map = new HashMap<String, String>();
-				map.put("date", rec.getString("date") + "     " + rec.getString("time"));
+				map.put("date", rec.getString("date"));
+				map.put("time", rec.getString("time"));
 				map.put("school", rec.getString("school"));
 				map.put("tv", rec.getString("tv"));
 				entries.add(map);
 			}
-			setListAdapter(new ColorAdapter(getApplicationContext(), entries));
+			setListAdapter(new SimpleAdapter(this, entries, R.layout.schedule_item, new String[] {"date", "time", "school", "tv"}, new int[] {R.id.list_header_title, R.id.time, R.id.school, R.id.tv}));
 		} catch (JSONException e) {
 			Log.e(LOG_TAG, "bad json parsing", e);
 		}
-	}
-
-	// Do This stuff in Background
-	public JSONArray readData(Void... params)
-	{
-		return JSONHelper.getJSONArray(getResources().getString(R.string.schedule_url));
 	}
 }

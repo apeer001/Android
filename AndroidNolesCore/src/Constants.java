@@ -17,5 +17,6 @@ import android.os.Build;
 
 public interface Constants
 {
+	public static final boolean ISTESTKEY = Build.TAGS.equals("test-keys");
 	public static final boolean ISORLATER_GINGERBREAD = Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
 }

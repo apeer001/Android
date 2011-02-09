@@ -13,42 +13,33 @@
 // limitations under the License.
 package com.itnoles.shared;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.Build;
-import android.widget.Toast;
+import android.view.*; //LayoutInflater and View
+import android.widget.TextView;
 
-import java.io.*; //InputStream and IOException
-import java.net.*; //URL and URLConnection
+import java.io.*; // IOException and InputStream
+import java.net.*; // URL and URLConnection
 
 /**
- * Helper class
+ * Utilities
+ * a class that handle a specific request
  * @author Jonathan Steele
  */
+
 public class Utilities {
-	/**
-	 * show a toast dialog
-	 * @param context Activity's Context
-	 * @param text message for the dialog to show
-	 * @param duration Long or Short
-	 */
-	public static void showToast(Context context, String text, int duration) {
-		Toast.makeText(context, text, duration).show();
-	}
-	
-	/**
-	 * open a new input stream from URLConnection with User-Agent Header
-	 * @param urlString string for URL address
-	 * @return new inpit stream
-	 * @throws IOException failed or interrupted I/O operations
-	 */
-	public static InputStream openStream(String urlString) throws IOException
+	public static InputStream getInputStream(String urlString) throws IOException
 	{
 		URLConnection c = new URL(urlString).openConnection();
 		c.setRequestProperty("User-Agent", "Android/" + Build.VERSION.RELEASE);
 		return c.getInputStream();
 	}
 	
-	public static boolean isThisTestKey() {
-		return Build.TAGS.equals("test-keys");
+	public static View setHeaderonListView(String title, Activity activity)
+	{
+		View header = LayoutInflater.from(activity).inflate(R.layout.list_header, null);
+		final TextView headerText = (TextView) header.findViewById(R.id.list_header_title);
+		headerText.setText(title);
+		return header;
 	}
 }

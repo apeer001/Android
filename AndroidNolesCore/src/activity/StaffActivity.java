@@ -13,23 +13,22 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import com.itnoles.shared.R;
-
 import android.app.ListActivity;
-import android.os.Bundle;
-import android.widget.*; //TextView and SimpleAdapter
+import android.os.*; // AsyncTask and Bundle
+import android.view.View;
+import android.widget.SimpleAdapter;
 import android.util.Log;
 
 import java.util.*; // List and ArrayList
 import org.json.*; // JSONArray and JSONObject
 
-import com.itnoles.shared.BetterBackgroundTask;
-import com.itnoles.shared.helper.*; // BetterAsyncTaskCompleteListener and JSONHelper
+import com.itnoles.shared.*; //JSONBackgroundTask and Utilities
+import com.itnoles.shared.helper.JSONAsyncTaskCompleteListener;
 
-public class StaffActivity extends ListActivity implements BetterAsyncTaskCompleteListener<Void, Void, JSONArray>
+public class StaffActivity extends ListActivity implements JSONAsyncTaskCompleteListener
 {
-	private static final String LOG_TAG = "AbstractStaffActivity";
-	private BetterBackgroundTask<Void, Void, JSONArray> task = null;
+	private static final String LOG_TAG = "StaffActivity";
+	private JSONBackgroundTask task;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -37,29 +36,28 @@ public class StaffActivity extends ListActivity implements BetterAsyncTaskComple
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.maincontent);
 		
-		final TextView headerText = (TextView) findViewById(R.id.list_header_title);
-		headerText.setText("Current Football Staff");
+		View header = Utilities.setHeaderonListView("Current Football Staff", this);
+		getListView().addHeaderView(header);
 		
-		task = (BetterBackgroundTask<Void, Void, JSONArray>)getLastNonConfigurationInstance();
-		if (task == null) {
-			task = new BetterBackgroundTask<Void, Void, JSONArray>(this);
-			task.execute();
-		} else
-			task.attach(this);
-	}
-	
-	@Override
-	public Object onRetainNonConfigurationInstance()
-	{
-		task.detach();
-		return task;
+		task = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(getResources().getString(R.string.staff_url));
 	}
 	
 	// Display Data to ListView
 	public void onTaskComplete(JSONArray json)
 	{
+		// If json is null, return early
 		if (json == null)
 			return;
+		
+		// If AsyncTask is cancelled, return early
+		if (task.isCancelled())
+			return;
+		
+		if (task != null && task.getStatus() != AsyncTask.Status.FINISHED) {
+			task.cancel(true);
+			task = null;
+		}
+		
 		List<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
 		try {
 			for (int i = 0; i < json.length(); i++) {
@@ -69,16 +67,10 @@ public class StaffActivity extends ListActivity implements BetterAsyncTaskComple
 				map.put("position", rec.getString("positions"));
 				list.add(map);
 			}
-			setListAdapter(new SimpleAdapter(getApplicationContext(), list, android.R.layout.simple_list_item_2,
+			setListAdapter(new SimpleAdapter(this, list, android.R.layout.simple_list_item_2,
 			new String[] {"name", "position"}, new int[] {android.R.id.text1, android.R.id.text2}));
 		} catch (JSONException e) {
 			Log.e(LOG_TAG, "bad json parsing", e);
 		}
-	}
-	
-	// Do This stuff in Background
-	public JSONArray readData(Void...params)
-	{
-		return JSONHelper.getJSONArray(getResources().getString(R.string.staff_url));
 	}
 }
