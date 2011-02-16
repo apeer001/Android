@@ -18,14 +18,14 @@ package com.itnoles.shared;
 import org.apache.http.*; // HttpEntity, HttpResponse, HttpStatus
 import org.apache.http.client.methods.HttpGet;
 
-import android.graphics.*; //Bitmap, BitmapFactory and Color
-import android.graphics.drawable.*; //ColorDrawable and ColorDrawable
+import android.graphics.*; // Bitmap, BitmapFactory and Color
+import android.graphics.drawable.*; // ColorDrawable and ColorDrawable
 import android.net.http.AndroidHttpClient;
 import android.os.*; // AsyncTask and Handler
 import android.util.Log;
 import android.widget.ImageView;
 
-import java.io.*; //BufferedOutputStream, ByteArrayOutputStream, IOException, InputStream and OutputStream
+import java.io.*; // BufferedOutputStream, ByteArrayOutputStream, IOException, InputStream and OutputStream
 import java.lang.ref.*; // SoftReference and WeakReference
 import java.util.*; // HashMap and LinkedHashMap
 import java.util.concurrent.ConcurrentHashMap;

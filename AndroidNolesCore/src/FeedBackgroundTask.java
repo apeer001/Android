@@ -15,49 +15,38 @@ package com.itnoles.shared;
 
 import org.apache.http.*; // HttpEntity, HttpResponse, HttpStatus
 import org.apache.http.client.methods.HttpGet;
-import org.json.JSONArray;
 
 import android.os.AsyncTask;
 import android.net.http.AndroidHttpClient;
-import android.util.Log;
+import android.util.*; // Log and Xml
 
-import java.io.*; // BufferedInputStream, InputStream and IOException
+import java.io.*; // BufferedInputStream and InputStream
 
-/**
- * JSONBackgroundTask
- * it is the class has a delegate for AsyncTask class which is for json parsing
- * @author Jonathan Steele
- */
-
-public class JSONBackgroundTask extends AsyncTask<String, Void, JSONArray> {
-	private static final String LOG_TAG = "JSONHelper";
-	private JSONAsyncTaskCompleteListener callback;
+public class FeedBackgroundTask extends AsyncTask<String, News, Void> {
+	private FeedAsyncTaskCompleteListener callback;
+	private static final String LOG_TAG = "FeedBackgroundTask";
 	
 	// Constructor
-	public JSONBackgroundTask(JSONAsyncTaskCompleteListener callback) {
+	public FeedBackgroundTask(FeedAsyncTaskCompleteListener callback) {
 		this.callback = callback;
 	}
 	
-	// perform a computation on a background thread
 	@Override
-	protected JSONArray doInBackground(String... params)
-	{
-		JSONArray json = null;
+	protected Void doInBackground(String... params) {
+		// Parse RSS or Atom Feed
 		InputStream inputStream = null;
-		byte[] buffer = new byte[1024];
+		FeedHandler handler = new FeedHandler();
 		final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
 		final HttpGet getRequest = new HttpGet(params[0]);
 		try {
 			HttpResponse response = client.execute(getRequest);
 			final HttpEntity entity = response.getEntity();
 			inputStream = new BufferedInputStream(entity.getContent());
-			int bytesRead = 0;
-			while ((bytesRead = inputStream.read(buffer)) != -1) {
-				json = new JSONArray(new String(buffer, 0, bytesRead));
-			}
+			// Parse the xml-data from InputStream.
+			Xml.parse(inputStream, Xml.Encoding.UTF_8, handler);
 		} catch (Exception e) {
 			getRequest.abort();
-			Log.w(LOG_TAG, "bad json array", e);
+			Log.e(LOG_TAG, "bad feed parsing", e);
 		} finally {
 			try {
 				inputStream.close();
@@ -68,13 +57,20 @@ public class JSONBackgroundTask extends AsyncTask<String, Void, JSONArray> {
 			if (client != null)
 				client.close();
 		}
-		return json;
+		// Parsing has finished.
+		// Our handler now provides the parsed data to us.
+		for (News news : handler.getMessages())
+			publishProgress(news);
+		return null;
 	}
 	
-	// Runs on the UI thread after doInBackground
 	@Override
-	protected void onPostExecute(JSONArray result)
-	{
+	public void onProgressUpdate(News... values) {
+		callback.onProgressUpdate(values);
+	}
+	
+	@Override
+	protected void onPostExecute(Void result) {
 		callback.onTaskComplete(result);
 	}
 }

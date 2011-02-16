@@ -31,9 +31,9 @@ public class WebViewActivity extends Activity
 		
 		// Let's display the progress in the activity title bar, like the
 		// browser app does.
-		requestWindowFeature(Window.FEATURE_PROGRESS);
+		getWindow().requestFeature(Window.FEATURE_PROGRESS);
 		
-		webview = new WebView(getApplicationContext());
+		webview = new WebView(this);
 		setContentView(webview);
 		webview.getSettings().setJavaScriptEnabled(true);
 		webview.getSettings().setBuiltInZoomControls(true);

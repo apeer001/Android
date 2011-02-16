@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	
+	<TextView
+		android:id="@+id/lschool"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textSize="20sp"
+		android:text="School: " />
+	
+	<TextView
+		android:id="@+id/school"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/lschool"
+		android:textSize="20sp" />
+		
+	<TextView
+		android:id="@+id/ldate"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/lschool"
+		android:textSize="20sp"
+		android:text="Date: " />
+		
+	<TextView
+		android:id="@+id/date"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/ldate"
+		android:layout_below="@id/lschool"
+		android:textSize="20sp" />
+		
+	<TextView
+		android:id="@+id/ltime"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/ldate"
+		android:textSize="20sp"
+		android:text="Time: " />
+		
+	<TextView
+		android:id="@+id/time"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/ltime"
+		android:layout_below="@id/ldate"
+		android:textSize="20sp" />
+		
+	<TextView
+		android:id="@+id/ltv"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/ltime"
+		android:textSize="20sp"
+		android:text="TV: " />
+
+	<TextView
+		android:id="@+id/tv"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/ltime"
+		android:layout_toRightOf="@id/ltv"
+		android:textSize="20sp" />
+</RelativeLayout>

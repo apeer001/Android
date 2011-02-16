@@ -18,19 +18,14 @@ import android.content.*; // Intent and SharedPreferences
 import android.os.*; // AsyncTask and Bundle
 import android.view.*; // LayoutInflater, Menu, MenuItem and View
 import android.view.ContextMenu.ContextMenuInfo;
-import android.util.*; // Log and Xml
 import android.widget.*; // AdapterView, ArrayAdapter and TextView
 
-import com.itnoles.shared.*; // News and Utilities
-import com.itnoles.shared.helper.FeedHandler;
+import com.itnoles.shared.*; // FeedAsyncTaskCompleteListener, FeedBackgroundTask, FeedHandler and News
 
-public class HeadlinesActivity extends ListActivity {
+public class HeadlinesActivity extends ListActivity implements FeedAsyncTaskCompleteListener {
 	private static final int PREFERENCE = 0;
-	private static final String LOG_TAG = "HeadlinesActivity";
-	
 	private SharedPreferences mPrefs;
-	private FeedTask mFeedTask;
-	private NewsAdapter mAdapter;
+	private FeedBackgroundTask mFeedTask;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -51,9 +46,9 @@ public class HeadlinesActivity extends ListActivity {
 		getListView().addHeaderView(header, null, false);
 		
 		String defaultUrl = getResources().getStringArray(R.array.listValues)[0];
-		mFeedTask = (FeedTask) new FeedTask().execute(mPrefs.getString("newsurl", defaultUrl));
+		mFeedTask = (FeedBackgroundTask) new FeedBackgroundTask(this).execute(mPrefs.getString("newsurl", defaultUrl));
 		
-		mAdapter = new NewsAdapter(this);
+		NewsAdapter mAdapter = new NewsAdapter(this);
 		setListAdapter(mAdapter);
 		// register context menu for listview
 		registerForContextMenu(getListView());
@@ -70,7 +65,7 @@ public class HeadlinesActivity extends ListActivity {
 	
 	private News getItemFromNews(AdapterView.AdapterContextMenuInfo info)
 	{
-		return (News)mAdapter.getItem(info.position);
+		return (News)getListAdapter().getItem(info.position);
 	}
 	
 	// Show the list in the context menu
@@ -111,8 +106,8 @@ public class HeadlinesActivity extends ListActivity {
 	// When the users clicked the menu button in their device, it called this method first
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.headlines_menu, menu);
+		menu.add(Menu.NONE, 0, Menu.NONE, "Settings").setIcon(R.drawable.ic_menu_preferences);
+		menu.add(Menu.NONE, 1, Menu.NONE, "Refresh Data").setIcon(R.drawable.ic_menu_refresh);
 		return true;
 	}
 	
@@ -138,36 +133,19 @@ public class HeadlinesActivity extends ListActivity {
 			getNewContents();
 	}
 	
-	private class FeedTask extends AsyncTask<String, News, Void> {
-		@Override
-		protected Void doInBackground(String... params) {
-			// Parse RSS or Atom Feed
-			FeedHandler handler = new FeedHandler();
-			try {
-				// Parse the xml-data from InputStream.
-				Xml.parse(Utilities.getInputStream(params[0]), Xml.Encoding.UTF_8, handler);
-			} catch (Exception e) {
-				Log.e(LOG_TAG, "bad feed parsing", e);
-			}
-			// Parsing has finished.
-			// Our handler now provides the parsed data to us.
-			for (News news : handler.getMessages())
-				publishProgress(news);
-			return null;
-		}
-		
-		@Override
-		public void onProgressUpdate(News... values) {
-			mAdapter.add(values[0]);
-		}
-		
-		@Override
-		protected void onPostExecute(Void result) {
-			if (isCancelled()) return;
-			if (mFeedTask != null && mFeedTask.getStatus() != AsyncTask.Status.FINISHED) {
-				mFeedTask.cancel(true);
-				mFeedTask = null;
-			}
+	@Override
+	public void onProgressUpdate(News... values)
+	{
+		((NewsAdapter)getListAdapter()).add(values[0]);
+	}
+	
+	@Override
+	public void onTaskComplete(Void result)
+	{
+		if (mFeedTask.isCancelled()) return;
+		if (mFeedTask != null && mFeedTask.getStatus() != AsyncTask.Status.FINISHED) {
+			mFeedTask.cancel(true);
+			mFeedTask = null;
 		}
 	}
 	

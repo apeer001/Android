@@ -13,22 +13,8 @@
 // limitations under the License.
 package com.itnoles.shared;
 
-import android.app.Activity;
-import android.view.*; // LayoutInflater and View
-import android.widget.TextView;
-
-/**
- * Utilities
- * a class that handle a specific request
- * @author Jonathan Steele
- */
-
-public class Utilities {
-	public static View setHeaderonListView(String title, Activity activity)
-	{
-		View header = LayoutInflater.from(activity).inflate(R.layout.list_header, null);
-		final TextView headerText = (TextView) header.findViewById(R.id.list_header_title);
-		headerText.setText(title);
-		return header;
-	}
+public interface FeedAsyncTaskCompleteListener
+{
+	void onProgressUpdate(News... values);
+	void onTaskComplete(Void result);
 }

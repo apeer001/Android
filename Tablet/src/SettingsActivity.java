@@ -13,90 +13,83 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import android.app.Activity;
-import android.content.*; // Intent and SharedPreferences
+import android.content.Intent;
 import android.content.pm.*; //PackageInfo and PackageManager
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.*;
+import android.preference.*; // PreferenceActivity and PreferenceFragment
 import android.util.Log;
+//import android.widget.Button;
 
-public class SettingsActivity extends Activity
+import java.util.List;
+
+public class SettingsActivity extends PreferenceActivity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		
-		// Display the fragment as the main content.
-		getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragment()).commit();
+		// Add a button to the header list.
+		/*if (hasHeaders()) {
+			Button button = new Button(this);
+			button.setText("Some action");
+			setListFooter(button);
+        }*/
 	}
 	
-	public static class PrefsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
-		private SharedPreferences sharedPref;
-		private static final String NONFOUND = "N/A";
-		
+	protected String getVersion()
+	{
+		String version = "N/A";
+		try {
+			PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
+			version = pInfo.versionName;
+		} catch (NameNotFoundException e1) {
+			Log.e(this.getClass().getSimpleName(), "Name not found", e1);
+		}
+		return version;
+	}
+	
+	/**
+	 * Populate the activity with the top-level headers.
+	 */
+	@Override
+	public void onBuildHeaders(List<Header> target) {
+		loadHeadersFromResource(R.xml.preference_headers, target);
+	}
+	
+	/**
+	 * This fragment shows the preferences for the first header.
+	 */
+	public static class GeneralFragment extends PreferenceFragment {
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			
-			// Load the XML preferences file
-			addPreferencesFromResource(R.xml.preferences);
-
-			sharedPref = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
-		}
-		
-		@Override
-		public void onResume()
-		{
-			super.onResume();
-			// Set up a listener whenever a key changes
-			getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-		}
-		
-		@Override
-		public void onPause()
-		{
-			super.onPause();
-			// Unregister the listener whenever a key changes
-			getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-		}
-		
-		@Override
-		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-			Preference pref = findPreference(key);
-			String summary = pref.getSummary().toString();
-			SharedPreferences.Editor editor = sharedPref.edit();
-			if (key.equals("news")) {
-				ListPreference newsPref = (ListPreference)pref;
-				int index = newsPref.findIndexOfValue(newsPref.getValue());
-				if (index != -1) {
-					editor.putString("newstitle", newsPref.getEntries()[index].toString());
-					editor.putString("newsurl", newsPref.getEntryValues()[index].toString());
-					// Don't forget to commit or apply your edits!!!
-					editor.apply();
-				}
-				getActivity().setResult(RESULT_OK);
-			}
+			// Load the preferences from an XML resource
+			addPreferencesFromResource(R.xml.general);
 		}
 	}
 	
+	/**
+	 * This fragment shows the preferences for the second header.
+	 */
 	public static class AboutFragment extends PreferenceFragment {
 		private static final String NONFOUND = "N/A";
+		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			
-			// Load the XML preferences file
+			// Load the preferences from an XML resource
 			addPreferencesFromResource(R.xml.about_settings);
-				
-			setStringSummary("app_version", ((AboutSettings)getActivity()).getVersion());
+			
+			setStringSummary("app_version", ((SettingsActivity)getActivity()).getVersion());
 			setStringSummary("author_name", "Jonathan Steele");
 			setStringSummary("author_email", "xfsunoles@gmail.com");
 			setStringSummary("author_website", NONFOUND);
-			
+
 			findPreference("author_email").setEnabled(true);
 			findPreference("author_website").setEnabled(true);
 		}
@@ -109,7 +102,7 @@ public class SettingsActivity extends Activity
 				findPreference(preference).setSummary(NONFOUND);
 			}
 		}
-		
+
 		@Override
 		public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 			String key = preference.getKey();
@@ -128,30 +121,6 @@ public class SettingsActivity extends Activity
 				}
 			}
 			return super.onPreferenceTreeClick(preferenceScreen, preference);
-		}
-	}
-	
-	public static class AboutSettings extends Activity
-	{
-		@Override
-		protected void onCreate(Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-
-			// Display the fragment as the main content.
-			getFragmentManager().beginTransaction().replace(android.R.id.content, new AboutFragment()).commit();
-		}
-		
-		protected String getVersion()
-		{
-			String version = "N/A";
-			try {
-				PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
-				version = pInfo.versionName;
-			} catch (NameNotFoundException e1) {
-				Log.e(this.getClass().getSimpleName(), "Name not found", e1);
-			}
-			return version;
 		}
 	}
 }

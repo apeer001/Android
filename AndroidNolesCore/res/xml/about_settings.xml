@@ -1,6 +1,6 @@
 <PreferenceScreen
-	android:title="@string/about_settings"
-	xmlns:android="http://schemas.android.com/apk/res/android">
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:title="@string/about_settings">
 	<!-- App Version Number -->
 	<Preference android:key="app_version" style="?android:preferenceInformationStyle" android:title="@string/app_version" />
 	<!-- Author Info -->

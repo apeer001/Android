@@ -3,9 +3,10 @@
 	package="com.itnoles.nolesfootballxl"
 	android:versionCode="1"
 	android:versionName="1.0">
+	<uses-sdk android:minSdkVersion="Honeycomb" />
+	<uses-permission android:name="android.permission.INTERNET" />
 	<application android:label="@string/app_name" android:icon="@drawable/icon">
-		<activity android:name="NolesFootballXL"
-			android:label="@string/app_name">
+		<activity android:name="NolesFootball" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -14,15 +15,12 @@
 		<activity android:name="com.itnoles.shared.activity.HeadlinesActivity" />
 		<activity android:name="com.itnoles.shared.activity.HeadlinesActivity$DetailsActivity" />
 		<activity android:name="com.itnoles.shared.activity.ScheduleActivity" />
-		<activity android:name="com.itnoles.shared.activity.ScheduleActivity$InfoActivity" />
+		<activity android:name="com.itnoles.shared.activity.ScheduleActivity$DetailsActivity" />
 		<activity android:name="LinkActivity" />
 		<activity android:name="com.itnoles.shared.activity.StaffActivity" />
 		<!--<activity android:name="com.itnoles.shared.activity.StadiumActivity" />-->
 		<activity android:name="com.itnoles.shared.activity.SettingsActivity" />
-		<activity android:name="com.itnoles.shared.activity.SettingsActivity$AboutSettings" />
 	</application>
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-sdk android:minSdkVersion="Honeycomb" />
 	<supports-screens
 		android:smallScreens="false"
 		android:normalScreens="false"
