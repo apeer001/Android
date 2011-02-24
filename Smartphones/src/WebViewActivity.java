@@ -15,7 +15,9 @@ package com.itnoles.shared.activity;
  
 import android.app.Activity;
 import android.os.Bundle;
-import android.webkit.*;
+import android.webkit.WebView;
+import android.webkit.WebChromeClient;
+import android.webkit.WebViewClient;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -59,7 +61,6 @@ public class WebViewActivity extends Activity
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		
 		webview.destroy();
 		webview = null;
 	}

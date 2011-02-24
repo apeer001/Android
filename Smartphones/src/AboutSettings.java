@@ -14,11 +14,14 @@
 package com.itnoles.shared.activity;
 
 import android.content.Intent;
-import android.content.pm.*; //PackageInfo and PackageManager
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.net.Uri;
-import android.preference.*; // Preference, PreferenceActivity and PreferenceScreen
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
 import android.util.Log;
 
 public class AboutSettings extends PreferenceActivity

@@ -11,29 +11,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package com.itnoles.nolesfootballxl;
+package com.itnoles.nolesfootball;
+
+import com.itnoles.shared.activity.HeadlinesActivity;
+import com.itnoles.shared.activity.ScheduleActivity;
+import com.itnoles.shared.activity.StadiumActivity;
+import com.itnoles.shared.activity.StaffActivity;
 
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.*; // Bundle and StrictMode
-import android.view.Window;
+import android.os.Bundle;
 import android.widget.TabHost;
 
-import com.itnoles.shared.Constants;
-import com.itnoles.shared.activity.*; // HeadlinesActivity, ScheduleActivity, StadiumActivity amd StaffActivity
-
-public class NolesFootball extends TabActivity
+public class MainActivity extends TabActivity
 {
-	/** Called when the activity is first created. */
+	// Called when the activity is first created.
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		if (Constants.ISTESTKEY)
-			StrictMode.enableDefaults();
 		super.onCreate(savedInstanceState);
-		
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		
 		Resources res = getResources(); // get Resources Class
 		final TabHost tabHost = getTabHost(); // The activity TabHost
@@ -54,11 +51,8 @@ public class NolesFootball extends TabActivity
 
 		intent = new Intent().setClass(this, StaffActivity.class);
 		tabHost.addTab(tabHost.newTabSpec("staff").setIndicator("Staff", res.getDrawable(R.drawable.star)).setContent(intent));
-		
-		intent = new Intent().setClass(this, SettingsActivity.class);
-		tabHost.addTab(tabHost.newTabSpec("settings").setIndicator("Settings", res.getDrawable(R.drawable.ic_menu_preferences)).setContent(intent));
-		
-		//intent = new Intent().setClass(this, StadiumActivity.class);
-		//tabHost.addTab(tabHost.newTabSpec("stadium").setIndicator("Stadium", res.getDrawable(R.drawable.map)).setContent(intent));
+
+		intent = new Intent().setClass(this, StadiumActivity.class);
+		tabHost.addTab(tabHost.newTabSpec("stadium").setIndicator("Stadium", res.getDrawable(R.drawable.map)).setContent(intent));
 	}
 }

@@ -14,7 +14,8 @@
 package com.itnoles.shared;
 
 import android.app.Activity;
-import android.view.*; // LayoutInflater and View
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
 
 /**

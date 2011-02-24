@@ -13,14 +13,28 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import android.app.ListActivity;
-import android.content.*; // Intent and SharedPreferences
-import android.os.*; // AsyncTask and Bundle
-import android.view.*; // LayoutInflater, Menu, MenuItem and View
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.*; // AdapterView, ArrayAdapter and TextView
+import com.itnoles.shared.FeedAsyncTaskCompleteListener;
+import com.itnoles.shared.FeedBackgroundTask;
+import com.itnoles.shared.ImageDownloader;
+import com.itnoles.shared.News;
+import com.itnoles.shared.Utilities;
 
-import com.itnoles.shared.*; // FeedAsyncTaskCompleteListener, FeedBackgroundTask, FeedHandler and News
+import android.app.ListActivity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+import android.widget.ImageView;
 
 public class HeadlinesActivity extends ListActivity implements FeedAsyncTaskCompleteListener {
 	private static final int PREFERENCE = 0;
@@ -36,22 +50,21 @@ public class HeadlinesActivity extends ListActivity implements FeedAsyncTaskComp
 		mPrefs = getSharedPreferences("settings", MODE_PRIVATE);
 		
 		getNewContents();
-	}
-	
-	private void getNewContents()
-	{
-		String defaultTitle = getResources().getStringArray(R.array.listNames)[0];
-		
-		View header = Utilities.setHeaderonListView(mPrefs.getString("newstitle", defaultTitle), this);
-		getListView().addHeaderView(header, null, false);
-		
-		String defaultUrl = getResources().getStringArray(R.array.listValues)[0];
-		mFeedTask = (FeedBackgroundTask) new FeedBackgroundTask(this).execute(mPrefs.getString("newsurl", defaultUrl));
 		
 		NewsAdapter mAdapter = new NewsAdapter(this);
 		setListAdapter(mAdapter);
 		// register context menu for listview
 		registerForContextMenu(getListView());
+	}
+	
+	private void getNewContents()
+	{
+		String defaultTitle = getResources().getStringArray(R.array.listNames)[0];
+		View header = Utilities.setHeaderonListView(mPrefs.getString("newstitle", defaultTitle), this);
+		getListView().addHeaderView(header, null, false);
+		
+		String defaultUrl = getResources().getStringArray(R.array.listValues)[0];
+		mFeedTask = (FeedBackgroundTask) new FeedBackgroundTask(this).execute(mPrefs.getString("newsurl", defaultUrl));
 	}
 	
 	@Override
@@ -179,7 +192,7 @@ public class HeadlinesActivity extends ListActivity implements FeedAsyncTaskComp
 
 			TextView subTitle = (TextView) convertView.findViewById(R.id.text2);
 			if (subTitle != null)
-				subTitle.setText(news.getPubdate());
+				subTitle.setText(news.getPubDate());
 			
 			return convertView;
 		}

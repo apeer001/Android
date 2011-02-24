@@ -1,0 +1,14 @@
+<resources>
+	<style name="CustomTheme" parent="android:Theme.Holo">
+		<item name="android:actionBarStyle">@style/CustomActionBarBackground</item>
+	</style>
+	
+	<style name="CustomActionBarBackground" parent="android:Widget.ActionBar">
+		<item name="android:background">@color/actionbar_background</item>
+		<item name="android:titleTextStyle">@style/CustomActionBarTitleText</item>
+	</style>
+	
+	<style name="CustomActionBarTitleText" parent="android:TextAppearance.Holo.Medium">
+		<item name="android:textColor">@color/actionbar_textcolor</item>
+    </style>
+</resources>

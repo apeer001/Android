@@ -13,16 +13,24 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
+import com.itnoles.shared.JSONBackgroundTask;
+import com.itnoles.shared.JSONAsyncTaskCompleteListener;
+import com.itnoles.shared.Utilities;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ListActivity;
-import android.os.*; // AsyncTask and Bundle
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.SimpleAdapter;
 import android.util.Log;
 
-import java.util.*; // List and ArrayList
-import org.json.*; // JSONArray and JSONObject
-
-import com.itnoles.shared.*; // JSONBackgroundTask, JSONAsyncTaskCompleteListener and Utilities
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class StaffActivity extends ListActivity implements JSONAsyncTaskCompleteListener
 {

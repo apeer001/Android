@@ -15,26 +15,37 @@
  */
 package com.itnoles.shared;
 
-import org.apache.http.*; // HttpEntity, HttpResponse, HttpStatus
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 
-import android.graphics.*; // Bitmap, BitmapFactory and Color
-import android.graphics.drawable.*; // ColorDrawable and ColorDrawable
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.http.AndroidHttpClient;
-import android.os.*; // AsyncTask and Handler
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 
-import java.io.*; // BufferedOutputStream, ByteArrayOutputStream, IOException, InputStream and OutputStream
-import java.lang.ref.*; // SoftReference and WeakReference
-import java.util.*; // HashMap and LinkedHashMap
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This helper class download images from the Internet and binds those with the provided ImageView.
  *
- * <p>It requires the INTERNET permission, which should be added to your application's manifest
- * file.</p>
+ * It requires the INTERNET permission, which should be added to your application's manifest
+ * file.
  *
  * A local cache of downloaded images is maintained internally to improve performance.
  */
@@ -48,7 +59,7 @@ public class ImageDownloader {
 	private final HashMap<String, Bitmap> sHardBitmapCache =
 	new LinkedHashMap<String, Bitmap>(HARD_CACHE_CAPACITY / 2, 0.75f, true) {
 		@Override
-		protected boolean removeEldestEntry(LinkedHashMap.Entry<String, Bitmap> eldest) {
+		protected boolean removeEldestEntry(Map.Entry<String, Bitmap> eldest) {
 			if (size() > HARD_CACHE_CAPACITY) {
 				// Entries push-out of hard reference cache are transferred to soft reference cache
 				sSoftBitmapCache.put(eldest.getKey(), new SoftReference<Bitmap>(eldest.getValue()));
@@ -104,6 +115,9 @@ public class ImageDownloader {
 	/**
 	 * Same as download but the image is always downloaded and the cache is not used.
 	 * Kept private at the moment as its interest is not clear.
+     * @param url text for url
+     * @param imageView reference for imageview
+     * @param cookie text for cookie if it exists
 	 */
 	private void forceDownload(String url, ImageView imageView, String cookie) {
 		// State sanity: url is guaranteed to never be null in DownloadedDrawable and cache keys.
@@ -139,6 +153,9 @@ public class ImageDownloader {
      * progress on this image view.
      * Returns false if the download in progress deals with the same url. The download is not
      * stopped in that case.
+     * @param url text for url
+     * @param imageView reference
+     * @return true or false
      */
 	private static boolean cancelPotentialDownload(String url, ImageView imageView) {
 		BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
@@ -204,7 +221,6 @@ public class ImageDownloader {
 	 * The actual AsyncTask that will asynchronously download the image.
 	 */
 	class BitmapDownloaderTask extends AsyncTask<String, Void, Bitmap> {
-		private static final int IO_BUFFER_SIZE = 4 * 1024;
 		private String url;
 		private final WeakReference<ImageView> imageViewReference;
 
@@ -228,35 +244,19 @@ public class ImageDownloader {
 				HttpResponse response = client.execute(getRequest);
 				final int statusCode = response.getStatusLine().getStatusCode();
 				if (statusCode != HttpStatus.SC_OK) {
-					Log.w("ImageDownloader", "Error " + statusCode +
-                            " while retrieving bitmap from " + url);
+					Log.w(LOG_TAG, "Error " + statusCode + " while retrieving bitmap from " + url);
 					return null;
 				}
 
 				final HttpEntity entity = response.getEntity();
 				if (entity != null) {
 					InputStream inputStream = null;
-					OutputStream outputStream = null;
 					try {
-						inputStream = entity.getContent();
-						final ByteArrayOutputStream dataStream = new ByteArrayOutputStream();
-						outputStream = new BufferedOutputStream(dataStream, IO_BUFFER_SIZE);
-						copy(inputStream, outputStream);
-						outputStream.flush();
-
-						final byte[] data = dataStream.toByteArray();
-						final Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-
-						// FIXME : Should use BitmapFactory.decodeStream(inputStream) instead.
-						//final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-
-						return bitmap;
+						inputStream = new BufferedInputStream(entity.getContent());
+						return BitmapFactory.decodeStream(inputStream);
 					} finally {
 						if (inputStream != null)
 							inputStream.close();
-
-						if (outputStream != null)
-							outputStream.close();
 
 						entity.consumeContent();
 					}
@@ -299,14 +299,6 @@ public class ImageDownloader {
 				if (this == bitmapDownloaderTask) {
 					imageView.setImageBitmap(bitmap);
 				}
-			}
-		}
-
-		public void copy(InputStream in, OutputStream out) throws IOException {
-			byte[] b = new byte[IO_BUFFER_SIZE];
-			int read;
-			while ((read = in.read(b)) != -1) {
-				out.write(b, 0, read);
 			}
 		}
 	}

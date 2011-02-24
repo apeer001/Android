@@ -14,11 +14,18 @@
 package com.itnoles.shared.activity;
 
 import android.content.Intent;
-import android.content.pm.*; //PackageInfo and PackageManager
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.*; // PreferenceActivity and PreferenceFragment
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.util.Log;
 //import android.widget.Button;
 
@@ -62,13 +69,52 @@ public class SettingsActivity extends PreferenceActivity
 	/**
 	 * This fragment shows the preferences for the first header.
 	 */
-	public static class GeneralFragment extends PreferenceFragment {
+	public static class GeneralFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+		private SharedPreferences sharedPref;
+		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			
 			// Load the preferences from an XML resource
 			addPreferencesFromResource(R.xml.general);
+			
+			sharedPref = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
+		}
+		
+		@Override
+		public void onResume()
+		{
+			super.onResume();
+			// Set up a listener whenever a key changes
+			getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+		}
+
+		@Override
+		public void onPause()
+		{
+			super.onPause();
+			// Unregister the listener whenever a key changes
+			getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+		}
+		
+		@Override
+		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+			Preference pref = findPreference(key);
+			SharedPreferences.Editor editor = sharedPref.edit();
+			if (key.equals("news"))
+			{
+				ListPreference newsPref = (ListPreference)pref;
+				int index = newsPref.findIndexOfValue(newsPref.getValue());
+				if (index != -1)
+				{
+					editor.putString("newstitle", newsPref.getEntries()[index].toString());
+					editor.putString("newsurl", newsPref.getEntryValues()[index].toString());
+					// Don't forget to apply your edits!!!
+					editor.apply();
+				}
+				getActivity().setResult(RESULT_OK);
+			}
 		}
 	}
 	
@@ -76,7 +122,7 @@ public class SettingsActivity extends PreferenceActivity
 	 * This fragment shows the preferences for the second header.
 	 */
 	public static class AboutFragment extends PreferenceFragment {
-		private static final String NONFOUND = "N/A";
+		private static final String NON_FOUND = "N/A";
 		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -88,7 +134,7 @@ public class SettingsActivity extends PreferenceActivity
 			setStringSummary("app_version", ((SettingsActivity)getActivity()).getVersion());
 			setStringSummary("author_name", "Jonathan Steele");
 			setStringSummary("author_email", "xfsunoles@gmail.com");
-			setStringSummary("author_website", NONFOUND);
+			setStringSummary("author_website", NON_FOUND);
 
 			findPreference("author_email").setEnabled(true);
 			findPreference("author_website").setEnabled(true);
@@ -99,7 +145,7 @@ public class SettingsActivity extends PreferenceActivity
 			try {
 				findPreference(preference).setSummary(value);
 			} catch (RuntimeException e) {
-				findPreference(preference).setSummary(NONFOUND);
+				findPreference(preference).setSummary(NON_FOUND);
 			}
 		}
 
@@ -114,7 +160,7 @@ public class SettingsActivity extends PreferenceActivity
 				i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback for " + getResources().getString(R.string.app_name));
 				startActivity(Intent.createChooser(i, "Select email application."));
 			} else if (key.equals("author_website")) {
-				if (NONFOUND.equals(summary) == false) {
+				if (!NON_FOUND.equals(summary)) {
 					// Take string from url and parse it to the default browsers
 					final Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(summary));
 					startActivity(viewIntent);

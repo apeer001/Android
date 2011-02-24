@@ -15,63 +15,66 @@ package com.itnoles.shared.activity;
 
 import com.itnoles.shared.JSONAsyncTaskCompleteListener;
 import com.itnoles.shared.JSONBackgroundTask;
+import com.itnoles.shared.Utilities;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.ListActivity;
+import android.app.ListFragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.SimpleAdapter;
 import android.util.Log;
+import android.view.View;
+import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ScheduleActivity extends ListActivity implements JSONAsyncTaskCompleteListener
-{
-	private static final String LOG_TAG = "ScheduleActivity";
+public class StaffFragment extends ListFragment implements JSONAsyncTaskCompleteListener {
+	private static final String LOG_TAG = "StaffFragment";
 	private JSONBackgroundTask task;
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.maincontent);
 		
-		task = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(getResources().getString(R.string.schedule_url));
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+			
+		getActivity().findViewById(R.id.details).setVisibility(View.GONE);
+			
+		View header = Utilities.setHeaderonListView("Current Football Staff", getActivity());
+		getListView().addHeaderView(header);
+			
+		task = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(getResources().getString(R.string.staff_url));
 	}
-	
+		
 	// Display Data to ListView
 	public void onTaskComplete(JSONArray json)
 	{
 		// If json is null, return early
 		if (json == null)
 			return;
-		
+
 		// If AsyncTask is cancelled, return early
 		if (task.isCancelled())
 			return;
-		
+
 		if (task != null && task.getStatus() != AsyncTask.Status.FINISHED) {
 			task.cancel(true);
 			task = null;
 		}
-		
-		List<HashMap<String, String>> entries = new ArrayList<HashMap<String, String>>();
+
+		List<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
 		try {
 			for (int i = 0; i < json.length(); i++) {
 				JSONObject rec = json.getJSONObject(i);
 				HashMap<String, String> map = new HashMap<String, String>();
-				map.put("date", rec.getString("date"));
-				map.put("time", rec.getString("time"));
-				map.put("school", rec.getString("school"));
-				map.put("tv", rec.getString("tv"));
-				entries.add(map);
+				map.put("name", rec.getString("name"));
+				map.put("position", rec.getString("positions"));
+				list.add(map);
 			}
-			setListAdapter(new SimpleAdapter(this, entries, R.layout.schedule_item, new String[] {"date", "time", "school", "tv"}, new int[] {R.id.list_header_title, R.id.time, R.id.school, R.id.tv}));
+			setListAdapter(new SimpleAdapter(getActivity(), list, android.R.layout.simple_list_item_2,
+			new String[] {"name", "position"}, new int[] {android.R.id.text1, android.R.id.text2}));
 		} catch (JSONException e) {
 			Log.e(LOG_TAG, "bad json parsing", e);
 		}

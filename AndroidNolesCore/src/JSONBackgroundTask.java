@@ -13,7 +13,8 @@
 // limitations under the License.
 package com.itnoles.shared;
 
-import org.apache.http.*; // HttpEntity, HttpResponse, HttpStatus
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.json.JSONArray;
 
@@ -21,7 +22,9 @@ import android.os.AsyncTask;
 import android.net.http.AndroidHttpClient;
 import android.util.Log;
 
-import java.io.*; // BufferedInputStream, InputStream and IOException
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * JSONBackgroundTask
@@ -42,29 +45,18 @@ public class JSONBackgroundTask extends AsyncTask<String, Void, JSONArray> {
 	@Override
 	protected JSONArray doInBackground(String... params)
 	{
-		JSONArray json = null;
-		InputStream inputStream = null;
-		byte[] buffer = new byte[1024];
+        JSONArray json = null;
 		final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
 		final HttpGet getRequest = new HttpGet(params[0]);
 		try {
 			HttpResponse response = client.execute(getRequest);
 			final HttpEntity entity = response.getEntity();
-			inputStream = new BufferedInputStream(entity.getContent());
-			int bytesRead = 0;
-			while ((bytesRead = inputStream.read(buffer)) != -1) {
-				json = new JSONArray(new String(buffer, 0, bytesRead));
-			}
+			json = new JSONArray(convertStreamToString(entity));
+			entity.consumeContent();
 		} catch (Exception e) {
 			getRequest.abort();
 			Log.w(LOG_TAG, "bad json array", e);
 		} finally {
-			try {
-				inputStream.close();
-			} catch (IOException e) {
-				Log.w(LOG_TAG, "can't close input stream", e);
-			}
-			
 			if (client != null)
 				client.close();
 		}
@@ -76,5 +68,17 @@ public class JSONBackgroundTask extends AsyncTask<String, Void, JSONArray> {
 	protected void onPostExecute(JSONArray result)
 	{
 		callback.onTaskComplete(result);
-	}
+    }
+
+    private static String convertStreamToString(HttpEntity entity) throws IOException {
+        String line;
+        StringBuilder builder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent()));
+        while((line = reader.readLine()) != null)
+        {
+            builder.append(line);
+        }
+        reader.close();
+        return builder.toString();
+    }
 }

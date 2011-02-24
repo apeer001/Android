@@ -16,7 +16,7 @@ package com.itnoles.shared;
 public class News {
 	private String mTitle;
 	private String mLink;
-	private String mPubdate;
+	private String mPubDate;
 	private String mImageURL;
 	
 	// getters and setters omitted for brevity
@@ -36,12 +36,12 @@ public class News {
 		mLink = link;
 	}
 
-	public void setPubdate(String pubdate) {
-		mPubdate = pubdate;
+	public void setPubDate(String pubDate) {
+		mPubDate = pubDate;
 	}
 	
-	public String getPubdate() {
-		return mPubdate;
+	public String getPubDate() {
+		return mPubDate;
 	}
 	
 	public void setImageURL(String imageURL) {

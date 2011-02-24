@@ -15,10 +15,11 @@ package com.itnoles.shared.activity;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.Build;
 import android.os.Bundle;
-import android.preference.*;
-
-import com.itnoles.shared.Constants;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
 
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
@@ -53,7 +54,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 	
 	private void commitChange(SharedPreferences.Editor editor)
 	{
-		if (Constants.ISORLATER_GINGERBREAD)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
 			editor.apply();
 		else
 			editor.commit();

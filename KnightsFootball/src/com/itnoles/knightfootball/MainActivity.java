@@ -13,25 +13,24 @@
 // limitations under the License.
 package com.itnoles.knightfootball;
 
+import com.itnoles.shared.activity.HeadlinesActivity;
+import com.itnoles.shared.activity.ScheduleActivity;
+import com.itnoles.shared.activity.StadiumActivity;
+import com.itnoles.shared.activity.StaffActivity;
+
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.*; // Bundle and StrictMode
+import android.os.Bundle;
 import android.widget.TabHost;
 
-import com.itnoles.shared.*; // Constants and Utilities
-import com.itnoles.shared.activity.*; // HeadlinesActivity, ScheduleActivity, StadiumActivity amd StaffActivity
-
-public class KnightFootball extends TabActivity
+public class MainFootball extends TabActivity
 {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		if (Constants.ISORLATER_GINGERBREAD && Utilities.isThisTestKey())
-			StrictMode.enableDefaults();
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		
 		Resources res = getResources(); // get Resources Class
 		final TabHost tabHost = getTabHost(); // The activity TabHost
