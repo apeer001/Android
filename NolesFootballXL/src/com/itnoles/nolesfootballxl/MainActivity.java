@@ -26,7 +26,9 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -38,6 +40,8 @@ public class MainActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_layer);
+		
+		Log.i("MainActivity", new Boolean(getWindow().hasFeature(Window.FEATURE_ACTION_BAR)).toString());
 		
 		final ActionBar bar = getActionBar();
 		bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);

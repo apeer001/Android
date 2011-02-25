@@ -60,10 +60,6 @@ public class ScheduleFragment extends ListFragment implements JSONAsyncTaskCompl
 			mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
 			mShownCheckPosition = savedInstanceState.getInt("shownChoice", -1);
 		}
-			
-		if (mDualPane)
-			// In dual-pane mode, the list view highlights the selected item.
-			getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 	}
 		
 	@Override
@@ -117,10 +113,6 @@ public class ScheduleFragment extends ListFragment implements JSONAsyncTaskCompl
 		String tv = fullObjects.get("tv").toString();
 			
 		if (mDualPane) {
-			// We can display everything in-place with fragments, so update
-			// the list to highlight the selected item and show the data.
-			getListView().setItemChecked(position, true);
-				
 			if (mShownCheckPosition != mCurCheckPosition) {
 				// If we are not currently showing a fragment for the new
 				// position, we need to create and install a new one.

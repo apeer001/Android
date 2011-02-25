@@ -68,7 +68,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     }
     public static final class style {
         public static final int CustomTheme=0x7f050001;
+        public static final int CustomWindowTitle=0x7f050003;
         public static final int CustomWindowTitleBackground=0x7f050002;
+        public static final int CustomWindowTitleText=0x7f050004;
         public static final int Theme_NoBackground=0x7f050000;
     }
     public static final class xml {
