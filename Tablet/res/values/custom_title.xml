@@ -10,5 +10,5 @@
 	
 	<style name="CustomActionBarTitleText" parent="android:TextAppearance.Holo.Medium">
 		<item name="android:textColor">@color/actionbar_textcolor</item>
-    </style>
+	</style>
 </resources>

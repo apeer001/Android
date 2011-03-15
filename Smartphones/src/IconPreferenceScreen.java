@@ -21,7 +21,6 @@ import android.graphics.drawable.Drawable;
 import android.preference.Preference;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 public class IconPreferenceScreen extends Preference {
@@ -34,9 +33,9 @@ public class IconPreferenceScreen extends Preference {
 	public IconPreferenceScreen(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		setLayoutResource(R.layout.preference_icon);
-		TypedArray a = context.obtainStyledAttributes(attrs,
-			R.styleable.IconPreferenceScreen, defStyle, 0);
-			mIcon = a.getDrawable(R.styleable.IconPreferenceScreen_icon);
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IconPreferenceScreen, defStyle, 0);
+		mIcon = a.getDrawable(R.styleable.IconPreferenceScreen_icon);
+		a.recycle();
 	}
 	
 	@Override

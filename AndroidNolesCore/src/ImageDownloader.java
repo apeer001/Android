@@ -15,11 +15,6 @@
  */
 package com.itnoles.shared;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -30,10 +25,13 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -50,103 +48,112 @@ import java.util.concurrent.ConcurrentHashMap;
  * A local cache of downloaded images is maintained internally to improve performance.
  */
 public class ImageDownloader {
-	private static final String LOG_TAG = "ImageDownloader";
-	
-	private static final int HARD_CACHE_CAPACITY = 40;
-	private static final int DELAY_BEFORE_PURGE = 30 * 1000; // in milliseconds
-	
-	// Hard cache, with a fixed maximum capacity and a life duration
-	private final HashMap<String, Bitmap> sHardBitmapCache =
-	new LinkedHashMap<String, Bitmap>(HARD_CACHE_CAPACITY / 2, 0.75f, true) {
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<String, Bitmap> eldest) {
-			if (size() > HARD_CACHE_CAPACITY) {
-				// Entries push-out of hard reference cache are transferred to soft reference cache
-				sSoftBitmapCache.put(eldest.getKey(), new SoftReference<Bitmap>(eldest.getValue()));
-				return true;
-			} else
-				return false;
-		}
-	};
+    private static final String LOG_TAG = "ImageDownloader";
 
-	// Soft cache for bitmap kicked out of hard cache
-	private final static ConcurrentHashMap<String, SoftReference<Bitmap>> sSoftBitmapCache =
-	new ConcurrentHashMap<String, SoftReference<Bitmap>>(HARD_CACHE_CAPACITY / 2);
+    private static final int HARD_CACHE_CAPACITY = 40;
+    private static final int DELAY_BEFORE_PURGE = 30 * 1000; // in milliseconds
 
-	private final Handler purgeHandler = new Handler();
+    // Hard cache, with a fixed maximum capacity and a life duration
+    private final HashMap<String, Bitmap> sHardBitmapCache =
+        new LinkedHashMap<String, Bitmap>(HARD_CACHE_CAPACITY / 2, 0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, Bitmap> eldest) {
+            if (size() > HARD_CACHE_CAPACITY) {
+                // Entries push-out of hard reference cache are transferred to soft reference cache
+                sSoftBitmapCache.put(eldest.getKey(), new SoftReference<Bitmap>(eldest.getValue()));
+                return true;
+            } else
+                return false;
+        }
+    };
 
-	private final Runnable purger = new Runnable() {
-		public void run() {
-			clearCache();
-		}
-	};
+    // Soft cache for bitmap kicked out of hard cache
+    private final static ConcurrentHashMap<String, SoftReference<Bitmap>> sSoftBitmapCache =
+        new ConcurrentHashMap<String, SoftReference<Bitmap>>(HARD_CACHE_CAPACITY / 2);
 
-	/**
-	 * Download the specified image from the Internet and binds it to the provided ImageView. The
-	 * binding is immediate if the image is found in the cache and will be done asynchronously
-	 * otherwise. A null bitmap will be associated to the ImageView if an error occurs.
-	 *
-	 * @param url The URL of the image to download.
-	 * @param imageView The ImageView to bind the downloaded image to.
-	 */
-	public void download(String url, ImageView imageView) {
-		download(url, imageView, null);
-	}
+    private final Handler purgeHandler = new Handler();
 
-	/**
-	 * Same as {@link #download(String, ImageView)}, with the possibility to provide an additional
-	 * cookie that will be used when the image will be retrieved.
-	 *
-	 * @param url The URL of the image to download.
-	 * @param imageView The ImageView to bind the downloaded image to.
-	 * @param cookie A cookie String that will be used by the http connection.
-	 */
-	public void download(String url, ImageView imageView, String cookie) {
-		resetPurgeTimer();
-		Bitmap bitmap = getBitmapFromCache(url);
-		if (bitmap == null)
-			forceDownload(url, imageView, cookie);
-		else {
-			cancelPotentialDownload(url, imageView);
-			imageView.setImageBitmap(bitmap);
-		}
-	}
+    private final Runnable purger = new Runnable() {
+        public void run() {
+            clearCache();
+        }
+    };
 
-	/**
-	 * Same as download but the image is always downloaded and the cache is not used.
-	 * Kept private at the moment as its interest is not clear.
+    /**
+     * Download the specified image from the Internet and binds it to the provided ImageView. The
+     * binding is immediate if the image is found in the cache and will be done asynchronously
+     * otherwise. A null bitmap will be associated to the ImageView if an error occurs.
+     *
+     * @param url The URL of the image to download.
+     * @param imageView The ImageView to bind the downloaded image to.
+     */
+    public void download(String url, ImageView imageView) {
+        download(url, imageView, null);
+    }
+
+    /**
+     * Same as {@link #download(String, ImageView)}, with the possibility to provide an additional
+     * cookie that will be used when the image will be retrieved.
+     *
+     * @param url The URL of the image to download.
+     * @param imageView The ImageView to bind the downloaded image to.
+     * @param cookie A cookie String that will be used by the http connection.
+     */
+    public void download(String url, ImageView imageView, String cookie) {
+        resetPurgeTimer();
+        Bitmap bitmap = getBitmapFromCache(url);
+
+        if (bitmap == null) {
+            forceDownload(url, imageView, cookie);
+        } else {
+            cancelPotentialDownload(url, imageView);
+            imageView.setImageBitmap(bitmap);
+        }
+    }
+
+    /*
+     * Same as download but the image is always downloaded and the cache is not used.
+     * Kept private at the moment as its interest is not clear.
+       private void forceDownload(String url, ImageView view) {
+          forceDownload(url, view, null);
+       }
+     */
+
+    /**
+     * Same as download but the image is always downloaded and the cache is not used.
+     * Kept private at the moment as its interest is not clear.
      * @param url text for url
-     * @param imageView reference for imageview
-     * @param cookie text for cookie if it exists
-	 */
-	private void forceDownload(String url, ImageView imageView, String cookie) {
-		// State sanity: url is guaranteed to never be null in DownloadedDrawable and cache keys.
-		if (url == null) {
-			imageView.setImageDrawable(null);
-			return;
-		}
+     * @param imageView reference for ImageView
+     * @param cookie text for http cookie
+     */
+    private void forceDownload(String url, ImageView imageView, String cookie) {
+        // State sanity: url is guaranteed to never be null in DownloadedDrawable and cache keys.
+        if (url == null) {
+            imageView.setImageDrawable(null);
+            return;
+        }
 
-		if (cancelPotentialDownload(url, imageView)) {
-			BitmapDownloaderTask task = new BitmapDownloaderTask(imageView);
-			DownloadedDrawable downloadedDrawable = new DownloadedDrawable(task);
-			imageView.setImageDrawable(downloadedDrawable);
-			task.execute(url, cookie);
-		}
-	}
+        if (cancelPotentialDownload(url, imageView)) {
+            BitmapDownloaderTask task = new BitmapDownloaderTask(imageView);
+            DownloadedDrawable downloadedDrawable = new DownloadedDrawable(task);
+            imageView.setImageDrawable(downloadedDrawable);
+            task.execute(url, cookie);
+        }
+    }
 
     /**
      * Clears the image cache used internally to improve performance. Note that for memory
      * efficiency reasons, the cache will automatically be cleared after a certain inactivity delay.
      */
-	public void clearCache() {
-		sHardBitmapCache.clear();
-		sSoftBitmapCache.clear();
-	}
+    public void clearCache() {
+        sHardBitmapCache.clear();
+        sSoftBitmapCache.clear();
+    }
 
-	private void resetPurgeTimer() {
-		purgeHandler.removeCallbacks(purger);
-		purgeHandler.postDelayed(purger, DELAY_BEFORE_PURGE);
-	}
+    private void resetPurgeTimer() {
+        purgeHandler.removeCallbacks(purger);
+        purgeHandler.postDelayed(purger, DELAY_BEFORE_PURGE);
+    }
 
     /**
      * Returns true if the current download has been canceled or if there was no download in
@@ -154,172 +161,181 @@ public class ImageDownloader {
      * Returns false if the download in progress deals with the same url. The download is not
      * stopped in that case.
      * @param url text for url
-     * @param imageView reference
-     * @return true or false
+     * @param imageView reference for ImageView
+     * @return it check to see which url is being downloaded or not.
      */
-	private static boolean cancelPotentialDownload(String url, ImageView imageView) {
-		BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
-		if (bitmapDownloaderTask != null) {
-			String bitmapUrl = bitmapDownloaderTask.url;
-			if ((bitmapUrl == null) || (!bitmapUrl.equals(url)))
-				bitmapDownloaderTask.cancel(true);
-			else
-				// The same URL is already being downloaded.
-				return false;
-		}
-		return true;
-	}
+    private static boolean cancelPotentialDownload(String url, ImageView imageView) {
+        BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
+
+        if (bitmapDownloaderTask != null) {
+            String bitmapUrl = bitmapDownloaderTask.url;
+            if ((bitmapUrl == null) || (!bitmapUrl.equals(url))) {
+                bitmapDownloaderTask.cancel(true);
+            } else {
+                // The same URL is already being downloaded.
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * @param imageView Any imageView
      * @return Retrieve the currently active download task (if any) associated with this imageView.
      * null if there is no such task.
      */
-	private static BitmapDownloaderTask getBitmapDownloaderTask(ImageView imageView) {
-		if (imageView != null) {
-			Drawable drawable = imageView.getDrawable();
-			if (drawable instanceof DownloadedDrawable) {
-				DownloadedDrawable downloadedDrawable = (DownloadedDrawable)drawable;
-				return downloadedDrawable.getBitmapDownloaderTask();
-			}
-		}
-		return null;
-	}
+    private static BitmapDownloaderTask getBitmapDownloaderTask(ImageView imageView) {
+        if (imageView != null) {
+            Drawable drawable = imageView.getDrawable();
+            if (drawable instanceof DownloadedDrawable) {
+                DownloadedDrawable downloadedDrawable = (DownloadedDrawable)drawable;
+                return downloadedDrawable.getBitmapDownloaderTask();
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * @param url The URL of the image that will be retrieved from the cache.
-	 * @return The cached bitmap or null if it was not found.
-	 */
-	private Bitmap getBitmapFromCache(String url) {
-		// First try the hard reference cache
-		synchronized (sHardBitmapCache) {
-			final Bitmap bitmap = sHardBitmapCache.get(url);
-			if (bitmap != null) {
-				// Bitmap found in hard cache
-				// Move element to first position, so that it is removed last
-				sHardBitmapCache.remove(url);
-				sHardBitmapCache.put(url, bitmap);
-				return bitmap;
-			}
-		}
+    /**
+     * @param url The URL of the image that will be retrieved from the cache.
+     * @return The cached bitmap or null if it was not found.
+     */
+    private Bitmap getBitmapFromCache(String url) {
+        // First try the hard reference cache
+        synchronized (sHardBitmapCache) {
+            final Bitmap bitmap = sHardBitmapCache.get(url);
+            if (bitmap != null) {
+                // Bitmap found in hard cache
+                // Move element to first position, so that it is removed last
+                sHardBitmapCache.remove(url);
+                sHardBitmapCache.put(url, bitmap);
+                return bitmap;
+            }
+        }
 
-		// Then try the soft reference cache
-		SoftReference<Bitmap> bitmapReference = sSoftBitmapCache.get(url);
-		if (bitmapReference != null) {
-			final Bitmap bitmap = bitmapReference.get();
-			if (bitmap != null)
-				// Bitmap found in soft cache
-				return bitmap;
-			else
-				// Soft reference has been Garbage Collected
-				sSoftBitmapCache.remove(url);
-		}
-		return null;
-	}
+        // Then try the soft reference cache
+        SoftReference<Bitmap> bitmapReference = sSoftBitmapCache.get(url);
+        if (bitmapReference != null) {
+            final Bitmap bitmap = bitmapReference.get();
+            if (bitmap != null) {
+                // Bitmap found in soft cache
+                return bitmap;
+            } else {
+                // Soft reference has been Garbage Collected
+                sSoftBitmapCache.remove(url);
+            }
+        }
 
-	/**
-	 * The actual AsyncTask that will asynchronously download the image.
-	 */
-	class BitmapDownloaderTask extends AsyncTask<String, Void, Bitmap> {
-		private String url;
-		private final WeakReference<ImageView> imageViewReference;
+        return null;
+    }
 
-		public BitmapDownloaderTask(ImageView imageView) {
-			imageViewReference = new WeakReference<ImageView>(imageView);
-		}
+    /**
+     * The actual AsyncTask that will asynchronously download the image.
+     */
+    class BitmapDownloaderTask extends AsyncTask<String, Void, Bitmap> {
+        private String url;
+        private final WeakReference<ImageView> imageViewReference;
 
-		/**
-		 * Actual download method.
-		 */
-		@Override
-		protected Bitmap doInBackground(String... params) {
-			final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-			url = params[0];
-			final HttpGet getRequest = new HttpGet(url);
-			String cookie = params[1];
-			if (cookie != null)
-				getRequest.setHeader("cookie", cookie);
+        public BitmapDownloaderTask(ImageView imageView) {
+            imageViewReference = new WeakReference<ImageView>(imageView);
+        }
 
-			try {
-				HttpResponse response = client.execute(getRequest);
-				final int statusCode = response.getStatusLine().getStatusCode();
-				if (statusCode != HttpStatus.SC_OK) {
-					Log.w(LOG_TAG, "Error " + statusCode + " while retrieving bitmap from " + url);
-					return null;
-				}
+        /**
+         * Actual download method.
+         */
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+            url = params[0];
+            final HttpGet getRequest = new HttpGet(url);
+            String cookie = params[1];
+            if (cookie != null) {
+                getRequest.setHeader("cookie", cookie);
+            }
 
-				final HttpEntity entity = response.getEntity();
-				if (entity != null) {
-					InputStream inputStream = null;
-					try {
-						inputStream = new BufferedInputStream(entity.getContent());
-						return BitmapFactory.decodeStream(inputStream);
-					} finally {
-						if (inputStream != null)
-							inputStream.close();
+            try {
+                HttpResponse response = client.execute(getRequest);
+                final int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode != HttpStatus.SC_OK) {
+                    Log.w("ImageDownloader", "Error " + statusCode +
+                            " while retrieving bitmap from " + url);
+                    return null;
+                }
 
-						entity.consumeContent();
-					}
-				}
-			} catch (IOException e) {
-				getRequest.abort();
-				Log.w(LOG_TAG, "I/O error while retrieving bitmap from " + url, e);
-			} catch (IllegalStateException e) {
-				getRequest.abort();
-				Log.w(LOG_TAG, "Incorrect URL: " + url);
-			} catch (Exception e) {
-				getRequest.abort();
-				Log.w(LOG_TAG, "Error while retrieving bitmap from " + url, e);
-			} finally {
-				if (client != null)
-					client.close();
-			}
-			return null;
-		}
+                final HttpEntity entity = response.getEntity();
+                if (entity != null) {
+                    InputStream inputStream = null;
+                    try {
+                        inputStream = entity.getContent();
+                        return BitmapFactory.decodeStream(inputStream);
+                    } finally {
+                        if (inputStream != null) {
+                            inputStream.close();
+                        }
+                        entity.consumeContent();
+                    }
+                }
+            } catch (IOException e) {
+                getRequest.abort();
+                Log.w(LOG_TAG, "I/O error while retrieving bitmap from " + url, e);
+            } catch (IllegalStateException e) {
+                getRequest.abort();
+                Log.w(LOG_TAG, "Incorrect URL: " + url);
+            } catch (Exception e) {
+                getRequest.abort();
+                Log.w(LOG_TAG, "Error while retrieving bitmap from " + url, e);
+            } finally {
+                if (client != null) {
+                    client.close();
+                }
+            }
+            return null;
+        }
 
-		/**
-		 * Once the image is downloaded, associates it to the imageView
-		 */
-		@Override
-		protected void onPostExecute(Bitmap bitmap) {
-			if (isCancelled())
-				bitmap = null;
+        /**
+         * Once the image is downloaded, associates it to the imageView
+         */
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (isCancelled()) {
+                bitmap = null;
+            }
 
-			// Add bitmap to cache
-			if (bitmap != null) {
-				synchronized (sHardBitmapCache) {
-					sHardBitmapCache.put(url, bitmap);
-				}
-			}
+            // Add bitmap to cache
+            if (bitmap != null) {
+                synchronized (sHardBitmapCache) {
+                    sHardBitmapCache.put(url, bitmap);
+                }
+            }
 
-			if (imageViewReference != null) {
-				ImageView imageView = imageViewReference.get();
-				BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
-				// Change bitmap only if this process is still associated with it
-				if (this == bitmapDownloaderTask) {
-					imageView.setImageBitmap(bitmap);
-				}
-			}
-		}
-	}
+            if (imageViewReference != null) {
+                ImageView imageView = imageViewReference.get();
+                BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageView);
+                // Change bitmap only if this process is still associated with it
+                if (this == bitmapDownloaderTask) {
+                    imageView.setImageBitmap(bitmap);
+                }
+            }
+        }
+    }
 
-	/**
-	 * A fake Drawable that will be attached to the imageView while the download is in progress.
-	 *
-	 * Contains a reference to the actual download task, so that a download task can be stopped
-	 * if a new binding is required, and makes sure that only the last started download process can
-	 * bind its result, independently of the download finish order.
-	 */
-	static class DownloadedDrawable extends ColorDrawable {
- 		private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskReference;
+    /**
+     * A fake Drawable that will be attached to the imageView while the download is in progress.
+     *
+     * <p>Contains a reference to the actual download task, so that a download task can be stopped
+     * if a new binding is required, and makes sure that only the last started download process can
+     * bind its result, independently of the download finish order.</p>
+     */
+    static class DownloadedDrawable extends ColorDrawable {
+        private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskReference;
 
-		public DownloadedDrawable(BitmapDownloaderTask bitmapDownloaderTask) {
-			super(Color.BLACK);
-			bitmapDownloaderTaskReference = new WeakReference<BitmapDownloaderTask>(bitmapDownloaderTask);
-		}
+        public DownloadedDrawable(BitmapDownloaderTask bitmapDownloaderTask) {
+            super(Color.BLACK);
+            bitmapDownloaderTaskReference =
+                new WeakReference<BitmapDownloaderTask>(bitmapDownloaderTask);
+        }
 
-		public BitmapDownloaderTask getBitmapDownloaderTask() {
-			return bitmapDownloaderTaskReference.get();
-		}
-	}
+        public BitmapDownloaderTask getBitmapDownloaderTask() {
+            return bitmapDownloaderTaskReference.get();
+        }
+    }
 }

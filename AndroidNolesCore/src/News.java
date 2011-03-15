@@ -1,4 +1,4 @@
-//  Copyright 2010 Jonathan Steele
+//  Copyright 2011 Jonathan Steele
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ public class News {
 	private String mLink;
 	private String mPubDate;
 	private String mImageURL;
+	private String mDesc;
 	
 	// getters and setters omitted for brevity
 	public String getTitle() {
@@ -50,5 +51,13 @@ public class News {
 	
 	public String getImageURL() {
 		return mImageURL;
+	}
+	
+	public void setDesc(String desc) {
+		mDesc = desc;
+	}
+	
+	public String getDesc() {
+		return mDesc;
 	}
 }

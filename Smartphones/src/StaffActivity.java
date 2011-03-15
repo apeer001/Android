@@ -1,4 +1,4 @@
-//  Copyright 2010 Jonathan Steele
+//  Copyright 2011 Jonathan Steele
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,71 +13,41 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import com.itnoles.shared.JSONBackgroundTask;
-import com.itnoles.shared.JSONAsyncTaskCompleteListener;
-import com.itnoles.shared.Utilities;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.ListActivity;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.Loader;
 import android.widget.SimpleAdapter;
-import android.util.Log;
+import com.itnoles.shared.Utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class StaffActivity extends ListActivity implements JSONAsyncTaskCompleteListener
-{
-	private static final String LOG_TAG = "StaffActivity";
-	private JSONBackgroundTask task;
-	
+public class StaffActivity extends FragmentActivity {
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.maincontent);
+		setContentView(R.layout.fragment_layer);
 		
-		View header = Utilities.setHeaderonListView("Current Football Staff", this);
-		getListView().addHeaderView(header);
-		
-		task = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(getResources().getString(R.string.staff_url));
+		// Create the list fragment and add it as our sole content.
+		if (getSupportFragmentManager().findFragmentById(R.id.titles) == null) {
+			StaffFragment staff = new StaffFragment();
+			getSupportFragmentManager().beginTransaction().add(R.id.titles, staff).commit();
+		}
 	}
-	
-	// Display Data to ListView
-	public void onTaskComplete(JSONArray json)
-	{
-		// If json is null, return early
-		if (json == null)
-			return;
 		
-		// If AsyncTask is cancelled, return early
-		if (task.isCancelled())
-			return;
-		
-		if (task != null && task.getStatus() != AsyncTask.Status.FINISHED) {
-			task.cancel(true);
-			task = null;
+	public static class StaffFragment extends JSONLoadFragment {
+		@Override
+		public void onActivityCreated(Bundle savedInstanceState) {
+			super.onActivityCreated(savedInstanceState);
+			// Prepare the loader.  Either re-connect with an existing one,
+			// or start a new one.
+			Bundle args = Utils.setBundleURL(getResources().getString(R.string.staff_url));
+			getActivity().getSupportLoaderManager().initLoader(2, args, this).forceLoad();
 		}
 		
-		List<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
-		try {
-			for (int i = 0; i < json.length(); i++) {
-				JSONObject rec = json.getJSONObject(i);
-				HashMap<String, String> map = new HashMap<String, String>();
-				map.put("name", rec.getString("name"));
-				map.put("position", rec.getString("positions"));
-				list.add(map);
-			}
-			setListAdapter(new SimpleAdapter(this, list, android.R.layout.simple_list_item_2,
-			new String[] {"name", "position"}, new int[] {android.R.id.text1, android.R.id.text2}));
-		} catch (JSONException e) {
-			Log.e(LOG_TAG, "bad json parsing", e);
+		public void onLoadFinished(Loader<List<Map<String, String>>> loader, List<Map<String, String>> data) {
+			setListAdapter(new SimpleAdapter(getActivity(), data, android.R.layout.simple_list_item_2,
+			new String[] {"name", "positions"}, new int[] {android.R.id.text1, android.R.id.text2}));
 		}
 	}
 }

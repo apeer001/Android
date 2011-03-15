@@ -1,4 +1,4 @@
-//  Copyright 2010 Jonathan Steele
+//  Copyright 2011 Jonathan Steele
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,11 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import com.itnoles.shared.PrefsUtils;
 
 public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
 {
-	private SharedPreferences sharedPref;
+	private PrefsUtils mPrefs;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -33,7 +34,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 		// Load the XML preferences file
 		addPreferencesFromResource(R.xml.preferences);
 		
-		sharedPref = getSharedPreferences("settings", MODE_PRIVATE);
+		mPrefs = new PrefsUtils(this);
 	}
 	
 	@Override
@@ -48,7 +49,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 	protected void onPause()
 	{
 		super.onPause();
-		// Unregister the listener whenever a key changes
+		// Un-register the listener whenever a key changes
 		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 	}
 	
@@ -59,18 +60,16 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 		else
 			editor.commit();
 	}
-	
-	@Override
+
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		Preference pref = findPreference(key);
-		SharedPreferences.Editor editor = sharedPref.edit();
+		SharedPreferences.Editor editor = mPrefs.getEditor();
 		if (key.equals("news"))
 		{
 			ListPreference newsPref = (ListPreference)pref;
 			int index = newsPref.findIndexOfValue(newsPref.getValue());
 			if (index != -1)
 			{
-				editor.putString("newstitle", newsPref.getEntries()[index].toString());
 				editor.putString("newsurl", newsPref.getEntryValues()[index].toString());
 				// Don't forget to commit or apply your edits!!!
 				commitChange(editor);

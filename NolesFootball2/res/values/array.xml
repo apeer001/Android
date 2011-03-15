@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<array name="listNames">
+		<item>Noles Athletics</item>
+		<item>Warchant</item>
+		<item>Noles Digest</item>
+		<item>Tomahawk Nation</item>
+		<item>Spirit Blog</item>
+	</array>
+	<array name="listValues">
+		<item>http://www.seminoles.com/sports/m-footbl/headline-rss.xml</item>
+		<item>http://floridastate.rivals.com/rss2feed.asp?SID=1061</item>
+		<item>http://rss.scout.com/rss.aspx?sid=16</item>
+		<item>http://feeds.feedburner.com/sportsblogs/tomahawknation.xml</item>
+		<item>http://www.seminoles.com/blog/atom.xml</item>
+	</array>
+	<array name="linkNames">
+		<item>Tickets</item>
+		<item>Upcoming Events and Promo</item>
+		<item>Seminoles Booster</item>
+		<item>Radio Affiliate</item>
+		<item>Traditions</item>
+		<item>Team Ranking</item>
+		<item>Seminoles Podcast</item>
+	</array>
+	<array name="linkValues">
+			<item>http://www.seminoles.com/tickets/fsu-tickets.html</item>
+			<item>http://www.seminoles.com/genrel/nole-zone.html</item>
+			<item>http://seminole-boosters.fsu.edu/Community/Page.aspx?pid=520&amp;srcid=223</item>
+			<item>http://www.seminoles.com/multimedia/broadcast.html</item>
+			<item>http://www.seminoles.com/trads/fsu-trads.html</item>
+			<item>http://www.seminoles.com/genrel/rankings.html</item>
+			<item>http://www.seminoles.com/podcasts/fsu-podcasts.html</item>
+	</array>
+</resources>
