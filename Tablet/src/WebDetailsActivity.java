@@ -13,9 +13,14 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
+import com.itnoles.shared.IntentUtils;
+
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebViewFragment;
@@ -49,14 +54,16 @@ public class WebDetailsActivity extends Activity {
 	 * This is the secondary fragment, displaying the details of a particular
 	 * item.
 	 */
-	public static class WebDetailsFragment extends WebViewFragment {
+	public static class WebDetailsFragment extends WebViewFragment
+	{
 		/**
 		 * Create a new instance of WebDetailsFragment, initialized to
 		 * show the text at 'url'.
 		 * @param urlString text for url
 		 * @return new WebDetailFragment
 		 */
-		public static WebDetailsFragment newInstance(String urlString) {
+		public static WebDetailsFragment newInstance(String urlString)
+		{
 			WebDetailsFragment f = new WebDetailsFragment();
 			
 			// Supply index input as an argument.
@@ -67,8 +74,12 @@ public class WebDetailsActivity extends Activity {
 		}
 		
 		@Override
-		public void onActivityCreated(Bundle savedInstanceState) {
+		public void onActivityCreated(Bundle savedInstanceState)
+		{
 			super.onActivityCreated(savedInstanceState);
+			
+			// We have a menu item to show in action bar.
+			setHasOptionsMenu(true);
 	
 			WebView webView = getWebView();
 			webView.getSettings().setJavaScriptEnabled(true);
@@ -79,6 +90,21 @@ public class WebDetailsActivity extends Activity {
 				}
 			});
 			webView.loadUrl(getArguments().getString("url"));
+		}
+		
+		@Override
+		public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+		{
+			MenuItem share = menu.add("Share").setIcon(R.drawable.ic_menu_share);
+			share.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		}
+		
+		@Override
+		public boolean onOptionsItemSelected(MenuItem item)
+		{
+			if (item.getTitle().equals("Share"))
+				new IntentUtils(getActivity()).selectAction(getArguments().getString("url"));
+			return super.onOptionsItemSelected(item);
 		}
 	}
 }

@@ -6,6 +6,6 @@
 		android:title="@string/general" />
 		
 	<header android:fragment="com.itnoles.shared.activity.SettingsActivity$AboutFragment"
-		android:icon="@drawable/ic_settings_about"
+		android:icon="@drawable/ic_menu_info_details"
 		android:title="@string/about_settings" />
 </preference-headers>

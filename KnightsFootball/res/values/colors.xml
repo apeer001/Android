@@ -1,5 +1,3 @@
 <resources>
 	<color name="title_background">#000000</color>
-	<color name="title_text">#CFB53B</color>
-	<color name="title_separator">#ffffffff</color>
 </resources>

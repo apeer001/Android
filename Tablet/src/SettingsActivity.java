@@ -13,9 +13,9 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
+import com.itnoles.shared.IntentUtils;
 import com.itnoles.shared.PrefsUtils;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
@@ -24,7 +24,6 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-//import android.widget.Button;
 
 import java.util.List;
 
@@ -34,13 +33,6 @@ public class SettingsActivity extends PreferenceActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
-		// Add a button to the header list.
-		/*if (hasHeaders()) {
-			Button button = new Button(this);
-			button.setText("Donate");
-			setListFooter(button);
-        }*/
 	}
 	
 	/**
@@ -118,13 +110,9 @@ public class SettingsActivity extends PreferenceActivity
 		@Override
 		public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 			String key = preference.getKey();
-			if (key.equals("author_email")) {
-				final Intent i = new Intent(Intent.ACTION_SEND);
-				i.setType("message/rfc822");
-				i.putExtra(Intent.EXTRA_EMAIL, new String[] {preference.getSummary().toString()});
-				i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback for " + getResources().getString(R.string.app_name));
-				startActivity(Intent.createChooser(i, "Select email application."));
-			}
+			if (key.equals("author_email"))
+				new IntentUtils(getActivity()).sendEmail(new String[] {preference.getSummary().toString()},
+				"App Feedback for " + getResources().getString(R.string.app_name));
 			return super.onPreferenceTreeClick(preferenceScreen, preference);
 		}
 	}

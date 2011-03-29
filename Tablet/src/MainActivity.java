@@ -14,10 +14,15 @@
 
 package com.itnoles.shared.activity;
 
+import com.itnoles.shared.AsyncTaskCompleteListener;
+import com.itnoles.shared.FeedBackgroundTask;
+import com.itnoles.shared.IntentUtils;
+import com.itnoles.shared.JSONBackgroundTask;
 import com.itnoles.shared.News;
 import com.itnoles.shared.NewsAdapter;
 import com.itnoles.shared.PrefsUtils;
-import com.itnoles.shared.Utils;
+import com.markupartist.android.widget.PullToRefreshListView;
+import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -25,19 +30,19 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
+import android.app.UiModeManager;
+import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Bundle;
-import android.net.Uri;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ImageView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import java.util.Map;
 import java.util.List;
@@ -91,13 +96,16 @@ public class MainActivity extends Activity
 		}
 	}
 	
-	public static class HeadlinesFragment extends FeedLoadFragment
+	public static class HeadlinesFragment extends ListFragment implements AsyncTaskCompleteListener<List<News>>
 	{
 		private static final int PREFERENCE = 0;
 		private PrefsUtils mPrefs;
-		boolean mDualPane;
-		int mCurCheckPosition = 0;
-		int mShownCheckPosition = -1;
+		private FeedBackgroundTask task;
+		private boolean mDualPane;
+		private int mCurCheckPosition = 0;
+		private int mShownCheckPosition = -1;
+		private boolean isPullDownClick;
+		private PullToRefreshListView mPullDownToRefresh;
 		
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState)
@@ -109,13 +117,15 @@ public class MainActivity extends Activity
 			
 			mPrefs = new PrefsUtils(getActivity());
 			
+			mPullDownToRefresh = ((PullToRefreshListView) getListView());
+			
 			// Get a new Data
-			getNewContents(false);
+			getNewContents();
 			
 			// Create an empty adapter we will use to display the loaded data.
 			NewsAdapter mAdapter = new NewsAdapter(getActivity());
 			setListAdapter(mAdapter);
-
+			
 			// Check to see if we have a frame in which to embed the details
 			// fragment directly in the containing UI.
 			View detailsFrame = getActivity().findViewById(R.id.details);
@@ -124,10 +134,27 @@ public class MainActivity extends Activity
 				detailsFrame.setVisibility(View.VISIBLE);
 			mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
 			
-			 // Prepare the loader.  Either re-connect with an existing one,
-			// or start a new one.
-			Bundle args = Utils.setBundleURL(mPrefs.getNewsURLFromPrefs());
-			getLoaderManager().initLoader(0, args, this).forceLoad();
+			if (savedInstanceState != null) {
+				// Restore last state for checked position.
+				mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
+				mShownCheckPosition = savedInstanceState.getInt("shownChoice", -1);
+			}
+			
+			// Set a listener to be invoked when the list should be refreshed.
+			mPullDownToRefresh.setOnRefreshListener(new OnRefreshListener() {
+				@Override
+				public void onRefresh() {
+					// Do work to refresh the list here.
+					isPullDownClick = true;
+					getNewContents();
+				}
+			});
+		}
+		
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+		{
+			return inflater.inflate(R.layout.pulltorefresh, container, false);
 		}
 		
 		@Override
@@ -135,17 +162,15 @@ public class MainActivity extends Activity
 		{
 			super.onPause();
 			
-			getLoaderManager().destroyLoader(0);
-			
-			if (mDualPane)
+			if (mDualPane && !getActivity().isChangingConfigurations())
 				// replace details fragment with empty one
 				getFragmentManager().beginTransaction().replace(R.id.details, new Fragment()).commit();
 		}
-
+		
 		@Override
 		public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 		{
-			// Place an action bar item for reload or settings.
+			// Place an action bar item for settings.
 			inflater.inflate(R.menu.newsmenu, menu);
 		}
 		
@@ -157,28 +182,64 @@ public class MainActivity extends Activity
 					final Intent pref = new Intent(getActivity(), SettingsActivity.class);
 					startActivityForResult(pref, PREFERENCE);
 				return true;
-				case R.id.refresh:
-					getNewContents(true);
+				
+				case R.id.daynight:
+					UiModeManager manager = (UiModeManager)getActivity().getSystemService(Context.UI_MODE_SERVICE);
+					if (manager.getNightMode() == UiModeManager.MODE_NIGHT_NO)
+						manager.setNightMode(UiModeManager.MODE_NIGHT_YES);
+					else
+						manager.setNightMode(UiModeManager.MODE_NIGHT_NO);
 				return true;
 			}
 			return super.onOptionsItemSelected(item);
 		}
 		
-		private void getNewContents(boolean refresh)
+		private void getNewContents()
 		{
 			getActivity().getActionBar().setSubtitle(mPrefs.getNewsTitleFromPrefs());
 			
-			if (refresh) {
-				Bundle args = Utils.setBundleURL(mPrefs.getNewsURLFromPrefs());
-				getLoaderManager().restartLoader(0, args, this);
+			task = (FeedBackgroundTask) new FeedBackgroundTask(this).execute(mPrefs.getNewsURLFromPrefs());
+		}
+		
+		public void onTaskComplete(List<News> data)
+		{
+			// If AsyncTask is cancelled, return early
+			if (task.isCancelled())
+				return;
+
+			if (task != null && task.getStatus() != FeedBackgroundTask.Status.FINISHED) {
+				task.cancel(true);
+				task = null;
 			}
+			
+			// If data is not null, add it to NewsAdapter
+			if (data != null) {
+				for (News news : data)
+					((NewsAdapter)getListAdapter()).add(news);
+			}
+			
+			// Call onRefreshComplete when the list has been refreshed.
+			if (isPullDownClick)
+				mPullDownToRefresh.onRefreshComplete();
+		}
+		
+		@Override
+		public void onSaveInstanceState(Bundle outState) {
+			super.onSaveInstanceState(outState);
+			outState.putInt("curChoice", mCurCheckPosition);
+			outState.putInt("shownChoice", mShownCheckPosition);
 		}
 		
 		@Override
 		public void onListItemClick(ListView l, View v, int position, long id) {
-			mCurCheckPosition = position;
+			showDetails(position);
+		}
+		
+		void showDetails(int index)
+		{
+			mCurCheckPosition = index;
 			
-			String link = ((News)getListAdapter().getItem(position)).getLink();
+			String link = ((News)mPullDownToRefresh.getItemAtPosition(index)).getLink();
 			
 			if (mDualPane) {
 				if (mShownCheckPosition != mCurCheckPosition) {
@@ -191,14 +252,13 @@ public class MainActivity extends Activity
 					FragmentTransaction ft = getFragmentManager().beginTransaction();
 					ft.replace(R.id.details, df);
 					ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-					ft.commit(); 
-					mShownCheckPosition = position;
+					ft.commit();
+					mShownCheckPosition = index;
 				}
 			} else {
 				// Otherwise we need to launch a new activity to display
 				// the dialog fragment with selected text.
-				Intent intent = new Intent();
-				intent.setClass(getActivity(), WebDetailsActivity.class);
+				Intent intent = new Intent(getActivity(), WebDetailsActivity.class);
 				intent.putExtra("url", link);
 				startActivity(intent);
 			}
@@ -212,15 +272,16 @@ public class MainActivity extends Activity
 		public void onActivityResult(int requestCode, int resultCode, Intent data)
 		{
 			if (requestCode == PREFERENCE && resultCode == RESULT_OK)
-				getNewContents(true);
+				getNewContents();
 		}
 	}
 	
-	public static class ScheduleFragment extends JSONLoadFragment
+	public static class ScheduleFragment extends ListFragment implements AsyncTaskCompleteListener<List<Map<String, String>>>
 	{
-		boolean mDualPane;
-		int mCurCheckPosition = 0;
-		int mShownCheckPosition = -1;
+		private JSONBackgroundTask task;
+		private boolean mDualPane;
+		private int mCurCheckPosition = 0;
+		private int mShownCheckPosition = -1;
 		
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState)
@@ -235,10 +296,7 @@ public class MainActivity extends Activity
 				detailsFrame.setVisibility(View.VISIBLE);
 			mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
 			
-			// Prepare the loader.  Either re-connect with an existing one,
-			// or start a new one.
-			Bundle args = Utils.setBundleURL(getResources().getString(R.string.schedule_url));
-			getLoaderManager().initLoader(1, null, this).forceLoad();
+			task = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(getResources().getString(R.string.schedule_url));
 		}
 		
 		@Override
@@ -246,15 +304,24 @@ public class MainActivity extends Activity
 		{
 			super.onPause();
 			
-			getLoaderManager().destroyLoader(1);
-			
-			if (mDualPane)
+			if (mDualPane && !getActivity().isChangingConfigurations())
 				// replace details fragment with empty one
 				getFragmentManager().beginTransaction().replace(R.id.details, new Fragment()).commit();
 		}
 		
-		public void onLoadFinished(Loader<List<Map<String, String>>> loader, List<Map<String, String>> data) {
-			setListAdapter(new SimpleAdapter(getActivity(), data, android.R.layout.simple_list_item_1, new String[] {"school"}, new int[] {android.R.id.text1}));
+		// Display Data to ListView
+		public void onTaskComplete(List<Map<String, String>> json)
+		{
+			// If AsyncTask is cancelled, return early
+			if (task.isCancelled())
+				return;
+
+			if (task != null && task.getStatus() != JSONBackgroundTask.Status.FINISHED) {
+				task.cancel(true);
+				task = null;
+			}
+			
+			setListAdapter(new SimpleAdapter(getActivity(), json, android.R.layout.simple_list_item_1, new String[] {"school"}, new int[] {android.R.id.text1}));
 		}
 		
 		@Override
@@ -269,6 +336,10 @@ public class MainActivity extends Activity
 			String tv = fullObjects.get("tv").toString();
 			
 			if (mDualPane) {
+				// We can display everything in-place with fragments, so update
+				// the list to highlight the selected item and show the data.
+				getListView().setItemChecked(position, true);
+				
 				if (mShownCheckPosition != mCurCheckPosition) {
 					// If we are not currently showing a fragment for the new
 					// position, we need to create and install a new one.
@@ -285,8 +356,7 @@ public class MainActivity extends Activity
 			} else {
 				// Otherwise we need to launch a new activity to display
 				// the dialog fragment with selected text.
-				Intent intent = new Intent();
-				intent.setClass(getActivity(), ScheduleDetailsActivity.class);
+				Intent intent = new Intent(getActivity(), ScheduleDetailsActivity.class);
 				intent.putExtra("school", school);
 				intent.putExtra("date", date);
 				intent.putExtra("time", time);
@@ -306,7 +376,8 @@ public class MainActivity extends Activity
 			View detailFrame = getActivity().findViewById(R.id.details);
 			if (detailFrame != null)
 				detailFrame.setVisibility(View.GONE);
-			setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.linkNames)));
+			
+			setListAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.linkNames, android.R.layout.simple_list_item_1));
 		}
 		
 		@Override
@@ -314,13 +385,14 @@ public class MainActivity extends Activity
 		{
 			String url = getResources().getStringArray(R.array.linkValues)[position];
 			// Take string from url and parse it to the default browsers
-			final Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-			startActivity(viewIntent);
+			new IntentUtils(getActivity()).openBrowser(url);
 		}
 	}
 	
-	public static class StaffFragment extends JSONLoadFragment
+	public static class StaffFragment extends ListFragment implements AsyncTaskCompleteListener<List<Map<String, String>>>
 	{
+		private JSONBackgroundTask task;
+		
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState)
 		{
@@ -329,24 +401,23 @@ public class MainActivity extends Activity
 			View detailFrame = getActivity().findViewById(R.id.details);
 			if (detailFrame != null)
 				detailFrame.setVisibility(View.GONE);
-			
-			// Prepare the loader.  Either re-connect with an existing one,
-			// or start a new one.
-			Bundle args = Utils.setBundleURL(getResources().getString(R.string.staff_url));
-			getLoaderManager().initLoader(2, args, this).forceLoad();
+				
+			task = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(getResources().getString(R.string.staff_url));
 		}
 		
-		@Override
-		public void onPause()
+		// Display Data to ListView
+		public void onTaskComplete(List<Map<String, String>> json)
 		{
-			super.onPause();
-			
-			getLoaderManager().destroyLoader(2);
-		}
+			// If AsyncTask is cancelled, return early
+			if (task.isCancelled())
+				return;
 
-		public void onLoadFinished(Loader<List<Map<String, String>>> loader, List<Map<String, String>> data)
-		{
-			setListAdapter(new SimpleAdapter(getActivity(), data, android.R.layout.simple_list_item_2,
+			if (task != null && task.getStatus() != JSONBackgroundTask.Status.FINISHED) {
+				task.cancel(true);
+				task = null;
+			}
+			
+			setListAdapter(new SimpleAdapter(getActivity(), json, android.R.layout.simple_list_item_2,
 			new String[] {"name", "positions"}, new int[] {android.R.id.text1, android.R.id.text2}));
 		}
 	}

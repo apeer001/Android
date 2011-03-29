@@ -1,0 +1,54 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	
+	<LinearLayout
+		android:id="@+id/headlinesLayout"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+		
+		<include layout="@layout/list_header" />
+		
+		<fragment class="com.itnoles.shared.activity.MainActivity$HeadlinesFragment"
+			android:id="@+id/headlines"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent" />
+	</LinearLayout>
+	
+	<LinearLayout
+		android:id="@+id/scheduleLayout"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+		
+		<fragment class="com.itnoles.shared.activity.MainActivity$ScheduleFragment"
+			android:id="@+id/schedules"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent" />
+	</LinearLayout>
+	
+	<LinearLayout
+		android:id="@+id/linkLayout"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+		
+		<fragment class="com.itnoles.shared.activity.MainActivity$LinkFragment"
+			android:id="@+id/link"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent" />
+	</LinearLayout>
+	
+	<LinearLayout
+		android:id="@+id/staffLayout"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+		
+		<fragment class="com.itnoles.shared.activity.MainActivity$StaffFragment"
+			android:id="@+id/staff"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent" />
+	</LinearLayout>
+</FrameLayout>

@@ -7,11 +7,11 @@
 		android:dialogTitle="@string/listPref_dialogTitle"
 		android:entries="@array/listNames"
 		android:entryValues="@array/listValues" />
-	<com.itnoles.shared.helper.IconPreferenceScreen
+	<com.itnoles.shared.activity.IconPreferenceScreen
 		settings:icon="@drawable/ic_settings_about"
 		android:title="@string/about_settings">
 		<intent android:action="android.intent.action.MAIN"
 			android:targetPackage="com.itnoles.knightfootball" 
 			android:targetClass="com.itnoles.shared.activity.AboutSettings" />
-	</com.itnoles.shared.helper.IconPreferenceScreen>
+	</com.itnoles.shared.activity.IconPreferenceScreen>
 </PreferenceScreen>

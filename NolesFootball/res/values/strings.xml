@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Noles Football</string>
-	<string name="version">1.8.2</string>
+	<string name="version">2.0.1</string>
 	<string name="schedule_url">http://jonathan.theoks.net/appstuff/noles_schedule.json</string>
 	<string name="staff_url">http://jonathan.theoks.net/appstuff/noles_staff.json</string>
 </resources>

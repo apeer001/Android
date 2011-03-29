@@ -72,7 +72,7 @@ public class ScheduleDetailsActivity extends Activity {
 			f.setArguments(args);
 			return f;
 		}
-
+		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			if (container == null) {
@@ -85,7 +85,7 @@ public class ScheduleDetailsActivity extends Activity {
 				// the view hierarchy; it would just never be used.
 				return null;
 			}
-
+			
 			View convertView = inflater.inflate(R.layout.schedule_item, container, false);
 			TextView school = (TextView) convertView.findViewById(R.id.school);
 			school.setText(getArguments().getString("school"));

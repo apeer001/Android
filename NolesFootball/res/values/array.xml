@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<array name="listNames">
 		<item>Noles Athletics</item>
@@ -23,12 +24,12 @@
 		<item>Seminoles Podcast</item>
 	</array>
 	<array name="linkValues">
-		<item>http://www.seminoles.com/tickets/fsu-tickets.html</item>
-		<item>http://www.seminoles.com/genrel/nole-zone.html</item>
-		<item>http://seminole-boosters.fsu.edu/Community/Page.aspx?pid=520&amp;srcid=223</item>
-		<item>http://www.seminoles.com/multimedia/broadcast.html</item>
-		<item>http://www.seminoles.com/trads/fsu-trads.html</item>
-		<item>http://www.seminoles.com/genrel/rankings.html</item>
-		<item>http://www.seminoles.com/podcasts/fsu-podcasts.html</item>
+			<item>http://www.seminoles.com/tickets/fsu-tickets.html</item>
+			<item>http://www.seminoles.com/genrel/nole-zone.html</item>
+			<item>http://seminole-boosters.fsu.edu/Community/Page.aspx?pid=520&amp;srcid=223</item>
+			<item>http://www.seminoles.com/multimedia/broadcast.html</item>
+			<item>http://www.seminoles.com/trads/fsu-trads.html</item>
+			<item>http://www.seminoles.com/genrel/rankings.html</item>
+			<item>http://www.seminoles.com/podcasts/fsu-podcasts.html</item>
 	</array>
 </resources>
