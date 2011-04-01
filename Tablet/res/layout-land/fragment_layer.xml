@@ -8,7 +8,8 @@
 		android:layout_width="0px"
 		android:layout_height="match_parent"/>
 	
-	<FrameLayout android:id="@+id/details"
+	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/details"
 		android:layout_weight="1"
 		android:layout_width="0px"
 		android:layout_height="match_parent"

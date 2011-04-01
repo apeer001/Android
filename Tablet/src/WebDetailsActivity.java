@@ -95,15 +95,18 @@ public class WebDetailsActivity extends Activity {
 		@Override
 		public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 		{
-			MenuItem share = menu.add("Share").setIcon(R.drawable.ic_menu_share);
+			MenuItem share = menu.add(Menu.NONE, R.string.share, Menu.NONE, R.string.share).setIcon(R.drawable.ic_menu_share);
 			share.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		}
 		
 		@Override
 		public boolean onOptionsItemSelected(MenuItem item)
 		{
-			if (item.getTitle().equals("Share"))
-				new IntentUtils(getActivity()).selectAction(getArguments().getString("url"));
+			switch (item.getItemId()) {
+				case R.string.share:
+					new IntentUtils(getActivity()).selectAction(getArguments().getString("url"));
+				return true;
+			}
 			return super.onOptionsItemSelected(item);
 		}
 	}

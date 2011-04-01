@@ -62,7 +62,7 @@ public class ScheduleDetailsActivity extends Activity {
 		 */
 		public static ScheduleDetailsFragment newInstance(String school, String date, String time, String tv) {
 			ScheduleDetailsFragment f = new ScheduleDetailsFragment();
-
+			
 			// Supply index input as an argument.
 			Bundle args = new Bundle();
 			args.putString("school", school);
@@ -89,13 +89,13 @@ public class ScheduleDetailsActivity extends Activity {
 			View convertView = inflater.inflate(R.layout.schedule_item, container, false);
 			TextView school = (TextView) convertView.findViewById(R.id.school);
 			school.setText(getArguments().getString("school"));
-
+			
 			TextView date = (TextView) convertView.findViewById(R.id.date);
 			date.setText(getArguments().getString("date"));
-
+			
 			TextView time = (TextView) convertView.findViewById(R.id.time);
 			time.setText(getArguments().getString("time"));
-
+			
 			TextView tv = (TextView) convertView.findViewById(R.id.tv);
 			tv.setText(getArguments().getString("tv"));
 			return convertView;

@@ -61,7 +61,7 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
 		else
 			editor.commit();
 	}
-
+	
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		Preference pref = findPreference(key);
 		SharedPreferences.Editor editor = mPrefs.getEditor();

@@ -13,6 +13,7 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -31,18 +32,50 @@ public class ScheduleDetailsActivity extends FragmentActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		// During initial setup, plug in the schedule details fragment.
-		DetailsFragment details = new DetailsFragment();
-		details.setArguments(getIntent().getExtras());
-		getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
+		
+		/*if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			// If the screen is now in landscape mode, we can show the
+			// dialog in-line with the list so we don't need this activity.
+			finish();
+			return;
+		}*/
+		
+		if (savedInstanceState == null) {
+			// During initial setup, plug in the schedule details fragment.
+			ScheduleDetailsFragment details = new ScheduleDetailsFragment();
+			details.setArguments(getIntent().getExtras());
+			getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
+		}
 	}
 	
 	/**
 	 * This is the secondary fragment, displaying the details of a particular
 	 * item.
 	 */
-	public static class DetailsFragment extends Fragment
+	public static class ScheduleDetailsFragment extends Fragment
 	{
+		/**
+		 * Create a new instance of ScheduleDetailsFragment, initialized to
+		 * show the text at a few of variable.
+		 * @param school text for school
+		 * @param date text for date
+		 * @param time text for time
+		 * @param tv text for date
+		 * @return new ScheduleDetailsFragment
+		 */
+		public static ScheduleDetailsFragment newInstance(String school, String date, String time, String tv) {
+			ScheduleDetailsFragment f = new ScheduleDetailsFragment();
+			
+			// Supply index input as an argument.
+			Bundle args = new Bundle();
+			args.putString("school", school);
+			args.putString("date", date);
+			args.putString("time", time);
+			args.putString("tv", tv);
+			f.setArguments(args);
+			return f;
+		}
+		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 		{
@@ -63,7 +96,7 @@ public class ScheduleDetailsActivity extends FragmentActivity
 			
 			TextView date = (TextView) convertView.findViewById(R.id.date);
 			date.setText(getArguments().getString("date"));
-
+			
 			TextView time = (TextView) convertView.findViewById(R.id.time);
 			time.setText(getArguments().getString("time"));
 			

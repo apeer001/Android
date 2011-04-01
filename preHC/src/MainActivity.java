@@ -20,8 +20,6 @@ import com.itnoles.shared.JSONBackgroundTask;
 import com.itnoles.shared.News;
 import com.itnoles.shared.NewsAdapter;
 import com.itnoles.shared.PrefsUtils;
-import com.markupartist.android.widget.PullToRefreshListView;
-import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 import android.app.UiModeManager;
 import android.content.Context;
@@ -29,6 +27,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -62,10 +61,13 @@ public class MainActivity extends FragmentActivity
 		Resources res = getResources();
 		tabHost.addTab(tabHost.newTabSpec("Headlines").setIndicator("Headlines",
 		res.getDrawable(R.drawable.suitcase)).setContent(R.id.headlinesLayout));
+		
 		tabHost.addTab(tabHost.newTabSpec("Schedule").setIndicator("Schedule",
 		res.getDrawable(R.drawable.calendar)).setContent(R.id.scheduleLayout));
+		
 		tabHost.addTab(tabHost.newTabSpec("Link").setIndicator("Link",
 		res.getDrawable(R.drawable.bookmark)).setContent(R.id.linkLayout));
+		
 		tabHost.addTab(tabHost.newTabSpec("Staff").setIndicator("Staff",
 		res.getDrawable(R.drawable.star)).setContent(R.id.staffLayout));
 	}
@@ -75,8 +77,6 @@ public class MainActivity extends FragmentActivity
 		private static final int PREFERENCE = 0;
 		private PrefsUtils mPrefs;
 		private FeedBackgroundTask task;
-		private boolean isPullDownClick;
-		private PullToRefreshListView mPullDownToRefresh;
 		
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState)
@@ -85,13 +85,8 @@ public class MainActivity extends FragmentActivity
 			
 			mPrefs = new PrefsUtils(getActivity());
 			
-			mPullDownToRefresh = ((PullToRefreshListView) getListView());
-			
 			// We have a menu item to show in the menu bar.
 			setHasOptionsMenu(true);
-			
-			// Show the loading progress indicatior
-			setListShown(false);
 			
 			// Get a new Data
 			getNewContents();
@@ -99,35 +94,22 @@ public class MainActivity extends FragmentActivity
 			// Create an empty adapter we will use to display the loaded data.
 			NewsAdapter mAdapter = new NewsAdapter(getActivity());
 			setListAdapter(mAdapter);
-			
-			// Set a listener to be invoked when the list should be refreshed.
-			mPullDownToRefresh.setOnRefreshListener(new OnRefreshListener() {
-				@Override
-				public void onRefresh() {
-					// Do work to refresh the list here.
-					isPullDownClick = true;
-					getNewContents();
-				}
-			});
-		}
-		
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-		{
-			return inflater.inflate(R.layout.pulltorefresh, container, false);
 		}
 		
 		@Override
 		public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 		{
-			menu.add(Menu.NONE, R.string.settings, Menu.NONE, R.string.settings).setIcon(R.drawable.ic_menu_preferences);
-			menu.add(Menu.NONE, R.string.daynight, Menu.NONE, R.string.daynight);
+			inflater.inflate(R.menu.newsmenu, menu);
 		}
 		
 		@Override
 		public boolean onOptionsItemSelected(MenuItem item)
 		{
 			switch (item.getItemId()) {
+				case R.string.refresh:
+					getNewContents();
+				return true;
+				
 				case R.string.settings:
 					// Launch settings
 					startActivityForResult(new Intent(getActivity(), SettingsActivity.class), PREFERENCE);
@@ -140,7 +122,7 @@ public class MainActivity extends FragmentActivity
 					else
 						manager.setNightMode(UiModeManager.MODE_NIGHT_NO);
 				return true;
-			}			
+			}
 			return super.onOptionsItemSelected(item);
 		}
 		
@@ -167,20 +149,22 @@ public class MainActivity extends FragmentActivity
 				for (News news : data)
 					((NewsAdapter)getListAdapter()).add(news);
 			}
-			
-			// Call onRefreshComplete when the list has been refreshed.
-			if (isPullDownClick)
-				mPullDownToRefresh.onRefreshComplete();
 		}
 		
 		@Override
 		public void onListItemClick(ListView l, View v, int position, long id)
 		{
-			String link = ((News)mPullDownToRefresh.getItemAtPosition(position)).getLink();
-			// Launch Activity to view page load in webview
-			final Intent displayWebView = new Intent(getActivity(), WebViewActivity.class);
-			displayWebView.putExtra("url", link);
-			startActivity(displayWebView);
+			showDetails(position);
+		}
+		
+		void showDetails(int index)
+		{
+			String link = ((News)getListAdapter().getItem(index)).getLink();
+			// Otherwise we need to launch a new activity to display
+			// the dialog fragment with selected text.
+			Intent intent = new Intent(getActivity(), WebDetailsActivity.class);
+			intent.putExtra("url", link);
+			startActivity(intent);
 		}
 		
 		/**
@@ -197,6 +181,7 @@ public class MainActivity extends FragmentActivity
 	
 	public static class ScheduleFragment extends ListFragment implements AsyncTaskCompleteListener<List<Map<String, String>>> {
 		private JSONBackgroundTask task;
+
 		
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
@@ -222,14 +207,19 @@ public class MainActivity extends FragmentActivity
 		
 		@Override
 		public void onListItemClick(ListView l, View v, int position, long id) {
-			// We need to launch a new activity to display
-			// the dialog fragment with selected text.
 			Map fullObjects = (Map)getListAdapter().getItem(position);
-			final Intent intent = new Intent(getActivity(), ScheduleDetailsActivity.class);
-			intent.putExtra("school", fullObjects.get("school").toString());
-			intent.putExtra("date", fullObjects.get("date").toString());
-			intent.putExtra("time", fullObjects.get("time").toString());
-			intent.putExtra("tv", fullObjects.get("tv").toString());
+			String school = fullObjects.get("school").toString();
+			String date = fullObjects.get("date").toString();
+			String time = fullObjects.get("time").toString();
+			String tv = fullObjects.get("tv").toString();
+			
+			// Otherwise we need to launch a new activity to display
+			// the dialog fragment with selected text.
+			Intent intent = new Intent(getActivity(), ScheduleDetailsActivity.class);
+			intent.putExtra("school", school);
+			intent.putExtra("date", date);
+			intent.putExtra("time", time);
+			intent.putExtra("tv", tv);
 			startActivity(intent);
 		}
 	}

@@ -21,8 +21,6 @@ import com.itnoles.shared.JSONBackgroundTask;
 import com.itnoles.shared.News;
 import com.itnoles.shared.NewsAdapter;
 import com.itnoles.shared.PrefsUtils;
-import com.markupartist.android.widget.PullToRefreshListView;
-import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -104,8 +102,6 @@ public class MainActivity extends Activity
 		private boolean mDualPane;
 		private int mCurCheckPosition = 0;
 		private int mShownCheckPosition = -1;
-		private boolean isPullDownClick;
-		private PullToRefreshListView mPullDownToRefresh;
 		
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState)
@@ -116,8 +112,6 @@ public class MainActivity extends Activity
 			setHasOptionsMenu(true);
 			
 			mPrefs = new PrefsUtils(getActivity());
-			
-			mPullDownToRefresh = ((PullToRefreshListView) getListView());
 			
 			// Get a new Data
 			getNewContents();
@@ -139,22 +133,6 @@ public class MainActivity extends Activity
 				mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
 				mShownCheckPosition = savedInstanceState.getInt("shownChoice", -1);
 			}
-			
-			// Set a listener to be invoked when the list should be refreshed.
-			mPullDownToRefresh.setOnRefreshListener(new OnRefreshListener() {
-				@Override
-				public void onRefresh() {
-					// Do work to refresh the list here.
-					isPullDownClick = true;
-					getNewContents();
-				}
-			});
-		}
-		
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-		{
-			return inflater.inflate(R.layout.pulltorefresh, container, false);
 		}
 		
 		@Override
@@ -178,6 +156,10 @@ public class MainActivity extends Activity
 		public boolean onOptionsItemSelected(MenuItem item)
 		{
 			switch (item.getItemId()) {
+				case R.id.refresh:
+					getNewContents();
+				return true;
+				
 				case R.id.settings:
 					final Intent pref = new Intent(getActivity(), SettingsActivity.class);
 					startActivityForResult(pref, PREFERENCE);
@@ -217,10 +199,6 @@ public class MainActivity extends Activity
 				for (News news : data)
 					((NewsAdapter)getListAdapter()).add(news);
 			}
-			
-			// Call onRefreshComplete when the list has been refreshed.
-			if (isPullDownClick)
-				mPullDownToRefresh.onRefreshComplete();
 		}
 		
 		@Override
@@ -239,7 +217,7 @@ public class MainActivity extends Activity
 		{
 			mCurCheckPosition = index;
 			
-			String link = ((News)mPullDownToRefresh.getItemAtPosition(index)).getLink();
+			String link = ((News)getListAdapter().getItem(index)).getLink();
 			
 			if (mDualPane) {
 				if (mShownCheckPosition != mCurCheckPosition) {

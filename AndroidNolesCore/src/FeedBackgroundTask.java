@@ -129,7 +129,7 @@ public class FeedBackgroundTask extends AsyncTask<String, Void, List<News>> {
 						else if (name.equalsIgnoreCase(TITLE))
 							currentNews.setTitle(parser.nextText());
 						else if (name.equalsIgnoreCase(DESCRIPTION) || name.equalsIgnoreCase(CONTENT))
-							currentNews.setDesc(parser.nextText().replaceAll("<(.|\n)*[^>]?>",""));
+							currentNews.setDesc(parser.nextText().replaceAll("\\<.*?\\>",""));
 						else if (name.equalsIgnoreCase(ENCOL)) {
 							if (parser.getAttributeCount() > 0)
 								currentNews.setImageURL(parser.getAttributeValue(null, "url"));

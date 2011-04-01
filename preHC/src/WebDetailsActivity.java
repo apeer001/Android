@@ -15,9 +15,11 @@ package com.itnoles.shared.activity;
 
 import com.itnoles.shared.IntentUtils;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,26 +30,53 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-public class WebViewActivity extends FragmentActivity
+public class WebDetailsActivity extends FragmentActivity
 {
 	@Override
 	// Called when the activity is first created.
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		// During initial setup, plug in the details fragment.
-		DetailsFragment details = new DetailsFragment();
-		details.setArguments(getIntent().getExtras());
-		getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
-	}
 		
+		/*if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			// If the screen is now in landscape mode, we can show the
+			// dialog in-line with the list so we don't need this activity.
+			finish();
+			return;
+		}*/
+		
+		if (savedInstanceState == null) {
+			// During initial setup, plug in the details fragment.
+			WebDetailsFragment details = new WebDetailsFragment();
+			details.setArguments(getIntent().getExtras());
+			getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
+		}
+	}
+	
 	/**
 	 * This is the secondary fragment, displaying the details of a particular
 	 * item.
 	 */
-	public static class DetailsFragment extends Fragment
+	public static class WebDetailsFragment extends Fragment
 	{
 		private WebView webView;
+		
+		/**
+		 * Create a new instance of WebDetailsFragment, initialized to
+		 * show the text at 'url'.
+		 * @param urlString text for url
+		 * @return new WebDetailFragment
+		 */
+		public static WebDetailsFragment newInstance(String urlString)
+		{
+			WebDetailsFragment f = new WebDetailsFragment();
+			
+			// Supply index input as an argument.
+			Bundle args = new Bundle();
+			args.putString("url", urlString);
+			f.setArguments(args);
+			return f;
+		}
 		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,7 +90,7 @@ public class WebViewActivity extends FragmentActivity
 				// the view hierarchy; it would just never be used.
 				return null;
 			}
-
+			
 			webView = new WebView(getActivity());
 			webView.getSettings().setJavaScriptEnabled(true);
 			webView.getSettings().setBuiltInZoomControls(true);
@@ -86,14 +115,17 @@ public class WebViewActivity extends FragmentActivity
 		@Override
 		public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 		{
-			menu.add("Share").setIcon(R.drawable.ic_menu_share);
+			menu.add(Menu.NONE, R.string.share, Menu.NONE, R.string.share).setIcon(R.drawable.ic_menu_share);
 		}
 		
 		@Override
 		public boolean onOptionsItemSelected(MenuItem item)
 		{
-			if (item.getTitle().equals("Share"))
-				new IntentUtils(getActivity()).selectAction(getArguments().getString("url"));
+			switch (item.getItemId()) {
+				case R.string.share:
+					new IntentUtils(getActivity()).selectAction(getArguments().getString("url"));
+				return true;
+			}
 			return super.onOptionsItemSelected(item);
 		}
 		

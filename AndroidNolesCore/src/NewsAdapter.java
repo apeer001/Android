@@ -44,7 +44,7 @@ public class NewsAdapter extends ArrayAdapter<News> {
 			if (imageurl != null && imageurl.length() > 0)
 				imageDownloader.download(imageurl, thumbnail);
 			else
-				thumbnail.setVisibility(View.GONE);
+				thumbnail.setImageDrawable(null);
 		}
 			
 		TextView title = (TextView) convertView.findViewById(R.id.title);

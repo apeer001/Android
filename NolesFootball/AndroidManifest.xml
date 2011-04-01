@@ -14,7 +14,7 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="com.itnoles.shared.activity.HeadlinesActivity" />
-		<activity android:name="com.itnoles.shared.activity.WebViewActivity" android:theme="@android:style/Theme.Translucent" />
+		<activity android:name="com.itnoles.shared.activity.WebDetailsActivity" android:theme="@android:style/Theme.Translucent" />
 		<activity android:name="com.itnoles.shared.activity.ScheduleActivity" />
 		<activity android:name="com.itnoles.shared.activity.ScheduleDetailsActivity" />
 		<activity android:name="com.itnoles.shared.activity.LinkActivity" />
