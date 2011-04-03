@@ -17,7 +17,6 @@ public class News {
 	private String mTitle;
 	private String mLink;
 	private String mPubDate;
-	private String mImageURL;
 	private String mDesc;
 	
 	// getters and setters omitted for brevity
@@ -43,14 +42,6 @@ public class News {
 	
 	public String getPubDate() {
 		return mPubDate;
-	}
-	
-	public void setImageURL(String imageURL) {
-		mImageURL = imageURL;
-	}
-	
-	public String getImageURL() {
-		return mImageURL;
 	}
 	
 	public void setDesc(String desc) {

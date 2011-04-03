@@ -21,7 +21,6 @@ import com.itnoles.shared.News;
 import com.itnoles.shared.NewsAdapter;
 import com.itnoles.shared.PrefsUtils;
 
-import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -79,6 +78,12 @@ public class MainActivity extends FragmentActivity
 		private FeedBackgroundTask task;
 		
 		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+		{
+			return inflater.inflate(R.layout.headlines_view, container);
+		}
+		
+		@Override
 		public void onActivityCreated(Bundle savedInstanceState)
 		{
 			super.onActivityCreated(savedInstanceState);
@@ -106,29 +111,23 @@ public class MainActivity extends FragmentActivity
 		public boolean onOptionsItemSelected(MenuItem item)
 		{
 			switch (item.getItemId()) {
-				case R.string.refresh:
+				case R.id.refresh:
 					getNewContents();
 				return true;
 				
-				case R.string.settings:
+				case R.id.settings:
 					// Launch settings
 					startActivityForResult(new Intent(getActivity(), SettingsActivity.class), PREFERENCE);
 				return true;
 				
-				case R.string.daynight:
-					UiModeManager manager = (UiModeManager)getActivity().getSystemService(Context.UI_MODE_SERVICE);
-					if (manager.getNightMode() == UiModeManager.MODE_NIGHT_NO)
-						manager.setNightMode(UiModeManager.MODE_NIGHT_YES);
-					else
-						manager.setNightMode(UiModeManager.MODE_NIGHT_NO);
-				return true;
+				default:
+					return super.onOptionsItemSelected(item);
 			}
-			return super.onOptionsItemSelected(item);
 		}
 		
 		private void getNewContents()
 		{
-			((TextView) getActivity().findViewById(R.id.list_header_title)).setText(mPrefs.getNewsTitleFromPrefs());
+			((TextView) getView().findViewById(R.id.list_header_title)).setText(mPrefs.getNewsTitleFromPrefs());
 			
 			task = (FeedBackgroundTask) new FeedBackgroundTask(this).execute(mPrefs.getNewsURLFromPrefs());
 		}
@@ -160,11 +159,16 @@ public class MainActivity extends FragmentActivity
 		void showDetails(int index)
 		{
 			String link = ((News)getListAdapter().getItem(index)).getLink();
-			// Otherwise we need to launch a new activity to display
-			// the dialog fragment with selected text.
-			Intent intent = new Intent(getActivity(), WebDetailsActivity.class);
-			intent.putExtra("url", link);
-			startActivity(intent);
+			
+			// Check what fragment is shown, replace if needed.
+			WebDetailsFragment viewer =
+			(WebDetailsFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.headlinesDetails);
+			if (viewer == null || !viewer.isInLayout()) {
+				Intent intent = new Intent(getActivity(), WebDetailsActivity.class);
+				intent.putExtra("url", link);
+				startActivity(intent);
+			} else
+				viewer.updateUrl(link);
 		}
 		
 		/**
@@ -181,7 +185,6 @@ public class MainActivity extends FragmentActivity
 	
 	public static class ScheduleFragment extends ListFragment implements AsyncTaskCompleteListener<List<Map<String, String>>> {
 		private JSONBackgroundTask task;
-
 		
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
@@ -206,21 +209,26 @@ public class MainActivity extends FragmentActivity
 		}
 		
 		@Override
-		public void onListItemClick(ListView l, View v, int position, long id) {
+		public void onListItemClick(ListView l, View v, int position, long id)
+		{
 			Map fullObjects = (Map)getListAdapter().getItem(position);
 			String school = fullObjects.get("school").toString();
 			String date = fullObjects.get("date").toString();
 			String time = fullObjects.get("time").toString();
 			String tv = fullObjects.get("tv").toString();
 			
-			// Otherwise we need to launch a new activity to display
-			// the dialog fragment with selected text.
-			Intent intent = new Intent(getActivity(), ScheduleDetailsActivity.class);
-			intent.putExtra("school", school);
-			intent.putExtra("date", date);
-			intent.putExtra("time", time);
-			intent.putExtra("tv", tv);
-			startActivity(intent);
+			ScheduleDetailsFragment viewer = (ScheduleDetailsFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.scheduleDetails);
+			if (viewer == null || !viewer.isInLayout()) {
+				// Otherwise we need to launch a new activity to display
+				// the dialog fragment with selected text.
+				Intent intent = new Intent(getActivity(), ScheduleDetailsActivity.class);
+				intent.putExtra("school", school);
+				intent.putExtra("date", date);
+				intent.putExtra("time", time);
+				intent.putExtra("tv", tv);
+				startActivity(intent);
+			} else
+				viewer.updateText(school, date, time, tv);
 		}
 	}
 	

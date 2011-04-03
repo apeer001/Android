@@ -1,0 +1,6 @@
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+	class="com.itnoles.shared.activity.ScheduleDetailsFragment"
+	android:id="@+id/scheduleDetails"
+	android:layout_weight="1"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent" />

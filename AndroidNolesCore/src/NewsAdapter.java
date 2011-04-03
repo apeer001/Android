@@ -18,18 +18,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class NewsAdapter extends ArrayAdapter<News> {
 	private final LayoutInflater mLayoutInflater;
-	private final ImageDownloader imageDownloader;
 		
 	// Constructor
 	public NewsAdapter(Activity activity) {
 		super(activity, 0);
 		mLayoutInflater = LayoutInflater.from(activity);
-		imageDownloader = new ImageDownloader();
 	}
 		
 	@Override
@@ -38,15 +35,6 @@ public class NewsAdapter extends ArrayAdapter<News> {
 			convertView = mLayoutInflater.inflate(R.layout.headlines_item, parent, false);
 			
 		final News news = getItem(position);
-		ImageView thumbnail = (ImageView) convertView.findViewById(R.id.image);
-		if (thumbnail != null) {
-			final String imageurl = news.getImageURL();
-			if (imageurl != null && imageurl.length() > 0)
-				imageDownloader.download(imageurl, thumbnail);
-			else
-				thumbnail.setImageDrawable(null);
-		}
-			
 		TextView title = (TextView) convertView.findViewById(R.id.title);
 		if (title != null)
 			title.setText(news.getTitle());

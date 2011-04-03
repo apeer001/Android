@@ -41,7 +41,6 @@ public class FeedBackgroundTask extends AsyncTask<String, Void, List<News>> {
 	
 	// names of the XML tags
 	private static final String PUB_DATE = "pubDate";
-	private static final String ENCOL = "enclosure";
 	private static final String LINK = "link";
 	private static final String DESCRIPTION = "description";
 	private static final String TITLE = "title";
@@ -130,10 +129,6 @@ public class FeedBackgroundTask extends AsyncTask<String, Void, List<News>> {
 							currentNews.setTitle(parser.nextText());
 						else if (name.equalsIgnoreCase(DESCRIPTION) || name.equalsIgnoreCase(CONTENT))
 							currentNews.setDesc(parser.nextText().replaceAll("\\<.*?\\>",""));
-						else if (name.equalsIgnoreCase(ENCOL)) {
-							if (parser.getAttributeCount() > 0)
-								currentNews.setImageURL(parser.getAttributeValue(null, "url"));
-						}
 					}
 					break;
 				case XmlPullParser.END_TAG:
