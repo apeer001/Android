@@ -20,32 +20,52 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class NewsAdapter extends ArrayAdapter<News> {
+/**
+ * It is the ArrayAdapter that handling the News object to ListView.
+ * @author Jonathan Steele
+ */
+public class NewsAdapter extends ArrayAdapter<News>
+{
+	/**
+	 * the member variale to hold LayoutInflater reference.
+	 */
 	private final LayoutInflater mLayoutInflater;
-		
-	// Constructor
-	public NewsAdapter(Activity activity) {
-		super(activity, 0);
-		mLayoutInflater = LayoutInflater.from(activity);
+
+	/**
+	 * Constructor.
+	 * @param context reference of Activity
+	 */
+	public NewsAdapter(Activity context)
+	{
+		super(context, 0);
+		mLayoutInflater = LayoutInflater.from(context);
 	}
-		
+
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		if (convertView == null)
-			convertView = mLayoutInflater.inflate(R.layout.headlines_item, parent, false);
-			
+	public View getView(int position, View convertView, ViewGroup parent)
+	{
+		if (convertView == null) {
+			convertView = mLayoutInflater.inflate(R.layout.headlines_item,
+				parent, false);
+		}
+
 		final News news = getItem(position);
-		TextView title = (TextView) convertView.findViewById(R.id.title);
-		if (title != null)
+		final TextView title = (TextView) convertView.findViewById(R.id.title);
+		if (title != null) {
 			title.setText(news.getTitle());
-			
-		TextView subTitle = (TextView) convertView.findViewById(R.id.date);
-		if (subTitle != null)
+		}
+
+		final TextView subTitle = (TextView) convertView.findViewById(
+			R.id.date);
+		if (subTitle != null) {
 			subTitle.setText("Published on " + news.getPubDate());
-			
-		TextView desc = (TextView) convertView.findViewById(R.id.description);
-		if (desc != null)
+		}
+
+		final TextView desc = (TextView) convertView.findViewById(
+			R.id.description);
+		if (desc != null) {
 			desc.setText(news.getDesc());
+		}
 		return convertView;
 	}
 }

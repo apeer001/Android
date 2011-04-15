@@ -17,33 +17,63 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
-public class IntentUtils {
-	private Activity activity;
-	
-	public IntentUtils(Activity activity) {
-		this.activity = activity;
+/**
+ * handling Intent with a specific method of action.
+ * @author Jonathan Steele
+ */
+public class IntentUtils
+{
+	/**
+	 * The member variable to hold Activity reference.
+	 */
+	private Activity mActivity;
+
+	/**
+	 * Constructor.
+	 * @param context reference of Activity
+	 */
+	public IntentUtils(Activity context)
+	{
+		this.mActivity = context;
 	}
-	
+
+	/**
+	 * Select an action with url.
+	 * @param link url string
+	 */
 	public void selectAction(String link)
 	{
 		final Intent shareIntent = new Intent(Intent.ACTION_SEND);
 		shareIntent.setType("text/plain");
 		shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-		activity.startActivity(Intent.createChooser(shareIntent, "Select an action"));
+		mActivity.startActivity(Intent.createChooser(shareIntent,
+			"Select an action"));
 	}
-	
+
+	/**
+	 * Open Android Browser with url.
+	 * @param url url string
+	 */
 	public void openBrowser(String url)
 	{
-		final Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-		activity.startActivity(viewIntent);
+		final Intent viewIntent = new Intent(Intent.ACTION_VIEW,
+			Uri.parse(url));
+		mActivity.startActivity(viewIntent);
 	}
-	
+
+	/**
+	 * Select an action with email address.
+	 * @param email email address
+	 * @param subject string for subject
+	 */
 	public void sendEmail(String[] email, String subject)
 	{
 		final Intent i = new Intent(Intent.ACTION_SEND);
 		i.setType("message/rfc822");
 		i.putExtra(Intent.EXTRA_EMAIL, email);
 		i.putExtra(Intent.EXTRA_SUBJECT, subject);
-		activity.startActivity(Intent.createChooser(i, "Select email application."));
+		mActivity.startActivity(Intent.createChooser(i,
+			"Select email application."));
 	}
 }
+

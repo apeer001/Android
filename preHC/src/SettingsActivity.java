@@ -23,55 +23,78 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
-public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener
+/**
+ * Activity that {@link android.preference.PreferenceActivity}
+ * load specific preferences.
+ * @author Jonathan Steele
+ */
+public class SettingsActivity extends PreferenceActivity
+       implements OnSharedPreferenceChangeListener
 {
+	/**
+	 * The member variable to hold PrefsUtils reference.
+	 */
 	private PrefsUtils mPrefs;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		// Load the XML preferences file
 		addPreferencesFromResource(R.xml.preferences);
-		
+
 		mPrefs = new PrefsUtils(this);
 	}
-	
+
 	@Override
 	protected void onResume()
 	{
 		super.onResume();
 		// Set up a listener whenever a key changes
-		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+		getPreferenceScreen().getSharedPreferences().
+		registerOnSharedPreferenceChangeListener(this);
 	}
-	
+
 	@Override
 	protected void onPause()
 	{
 		super.onPause();
 		// Un-register the listener whenever a key changes
-		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+		getPreferenceScreen().getSharedPreferences().
+		unregisterOnSharedPreferenceChangeListener(this);
 	}
-	
+
+	/**
+	 * It check version for use specific sharedpreference.editor method.
+	 * @param editor reference for sharedpreference.editor
+	 */
 	private void commitChange(SharedPreferences.Editor editor)
 	{
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			editor.apply();
-		else
+		}
+		else {
 			editor.commit();
+		}
 	}
-	
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		Preference pref = findPreference(key);
-		SharedPreferences.Editor editor = mPrefs.getEditor();
-		if (key.equals("news"))
-		{
-			ListPreference newsPref = (ListPreference)pref;
-			int index = newsPref.findIndexOfValue(newsPref.getValue());
-			if (index != -1)
-			{
-				editor.putString("newsurl", newsPref.getEntryValues()[index].toString());
+
+	/**
+	 * Called when a shared preference is changed, added, or removed.
+	 * @param sharedPreferences reference for SharedPreferences
+	 * @param key string for each preference's key.
+	 */
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+		String key)
+	{
+		final Preference pref = findPreference(key);
+		final SharedPreferences.Editor editor = mPrefs.getEditor();
+		if ("news".equals(key)) {
+			final ListPreference newsPref = (ListPreference) pref;
+			final int index = newsPref.findIndexOfValue(newsPref.getValue());
+			if (index != -1) {
+				editor.putString("newsurl", newsPref.getEntryValues()[index].
+					toString());
 				// Don't forget to commit or apply your edits!!!
 				commitChange(editor);
 			}

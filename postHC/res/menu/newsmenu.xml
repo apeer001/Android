@@ -7,7 +7,4 @@
 		android:title="@string/settings"
 		android:icon="@drawable/ic_menu_preferences"
 		android:showAsAction="ifRoom" />
-	<item android:id="@+id/daynight"
-		android:title="@string/daynight"
-		android:showAsAction="ifRoom" />
 </menu>

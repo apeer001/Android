@@ -29,63 +29,83 @@ import android.widget.Toast;
 
 /**
  * This is the secondary fragment, displaying the details of a particular
- * item
+ * webview item.
+ * @author Jonathan Steele
  */
 public class WebDetailsFragment extends Fragment
 {
-	private WebView webView;
-	private String newUrl;
-	
+	/**
+	 * The member variable to hold WebView reference.
+	 */
+	private WebView mWebView;
+
+	/**
+	 * The member variable to hold newurl string.
+	 */
+	private String mNewUrl;
+
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		webView = new WebView(getActivity());
-		webView.getSettings().setJavaScriptEnabled(true);
-		webView.getSettings().setBuiltInZoomControls(true);
-		webView.setWebViewClient(new WebViewClient() {
-			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-				Toast.makeText(getActivity(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+		Bundle savedInstanceState)
+	{
+		mWebView = new WebView(getActivity());
+		mWebView.getSettings().setJavaScriptEnabled(true);
+		mWebView.getSettings().setBuiltInZoomControls(true);
+		mWebView.setWebViewClient(new WebViewClient() {
+			public void onReceivedError(WebView view, int errorCode,
+				String description, String failingUrl)
+			{
+				Toast.makeText(getActivity(), "Oh no! " + description,
+					Toast.LENGTH_SHORT).show();
 			}
 		});
-		return webView;
+		return mWebView;
 	}
-		
-	public void updateUrl(String newUrl) {
-		if (webView != null) {
-			webView.loadUrl(newUrl);
-			this.newUrl = newUrl;
+
+	/**
+	 * Tell WebView to load a new url.
+	 * @param newUrl string for url address
+	 */
+	public void updateUrl(String newUrl)
+	{
+		if (mWebView != null) {
+			mWebView.loadUrl(newUrl);
+			this.mNewUrl = newUrl;
 		}
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-			
+
 		// We have a menu item to show in the menu bar.
 		setHasOptionsMenu(true);
 	}
-		
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		menu.add(Menu.NONE, R.string.share, Menu.NONE, R.string.share).setIcon(R.drawable.ic_menu_share);
+		menu.add(Menu.NONE, R.string.share, Menu.NONE, R.string.share).setIcon(
+			R.drawable.ic_menu_share);
 	}
-		
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		switch (item.getItemId()) {
-			case R.string.share:
-				new IntentUtils(getActivity()).selectAction(newUrl);
+		case R.string.share:
+			new IntentUtils(getActivity()).selectAction(mNewUrl);
 			return true;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
 	}
-		
+
 	@Override
 	public void onDestroyView()
 	{
 		super.onDestroyView();
-		webView.destroy();
+		mWebView.destroy();
 	}
 }

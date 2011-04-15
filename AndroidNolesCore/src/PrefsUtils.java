@@ -17,29 +17,58 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+/**
+ * it is the class that is handing SharedPreferences.
+ * @author Jonathan Steele
+ */
 public class PrefsUtils
 {
+	/**
+	 * The member variable to hold SharedPreferences reference.
+	 */
 	private SharedPreferences mPrefs;
-	private Activity activity;
-	
-	public PrefsUtils(Activity activity)
+
+	/**
+	 * The member variable to hold Activity reference.
+	 */
+	private Activity mActivity;
+
+	/**
+	 * Constructor.
+	 * @param context the reference for Activity
+	 */
+	public PrefsUtils(Activity context)
 	{
-		this.activity = activity;
-		mPrefs = activity.getSharedPreferences("settings", Context.MODE_PRIVATE);
+		this.mActivity = context;
+		mPrefs = context.getSharedPreferences("settings",
+			Context.MODE_PRIVATE);
 	}
-	
+
+	/**
+	 * get News URL from Prefs.
+	 * @return string */
 	public String getNewsURLFromPrefs()
 	{
-		String defaultUrl = activity.getResources().getStringArray(R.array.listValues)[0];
+		final String defaultUrl = mActivity.getResources().getStringArray(
+			R.array.listValues)[0];
 		return mPrefs.getString("newsurl", defaultUrl);
 	}
-	
+
+	/**
+	 * get News Title from Prefs.
+	 * @return string
+	 */
 	public String getNewsTitleFromPrefs()
 	{
-		String defaultTitle = activity.getResources().getStringArray(R.array.listNames)[0];
+		final String defaultTitle = mActivity.getResources().getStringArray(
+			R.array.listNames)[0];
 		return mPrefs.getString("newstitle", defaultTitle);
 	}
-	
+
+	/**
+	 * get Editor from SharedPreferences.
+	 * @return editor
+	 */
 	public SharedPreferences.Editor getEditor()
 	{
 		return mPrefs.edit();

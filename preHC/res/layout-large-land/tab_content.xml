@@ -1,0 +1,24 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+	<LinearLayout
+		android:id="@+id/headlinesLayout"
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+	
+		<fragment class="com.itnoles.shared.activity.MainActivity$HeadlinesFragment"
+			android:id="@+id/headlines"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1" />
+			
+		<fragment class="com.itnoles.shared.activity.WebDetailsFragment"
+			android:id="@+id/headlinesDetails"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1" />
+	</LinearLayout>
+	
+	<include layout="@layout/schedule_land_layout" />
+	<include layout="@layout/link_layout" />
+	<include layout="@layout/staff_layout" />
+</merge>

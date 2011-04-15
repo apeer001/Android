@@ -1,13 +1,9 @@
 <resources>
 	<string name="listPref_title">Headlines</string>
-	<string name="listPref_summary">change the news source</string>
 	<string name="listPref_dialogTitle">News Source</string>
+	<string name="listPref_summary">change the news source</string>
 	<string name="refresh">Refresh</string>
-	<string name="daynight">Day/Night</string>
 	<string name="share">Share</string>
-	
-	<!-- Text shown by list fragment when waiting for data to display. -->
-	<string name="loading">Loading...</string>
 	
 	<!-- Settings -->
 	<string name="settings">Settings</string>
@@ -16,5 +12,4 @@
 	<string name="author_name">Author Name</string>
 	<string name="author_email">Author Email</string>
 	<string name="author_website">Author Website</string>
-	<string name="general">General</string>
 </resources>

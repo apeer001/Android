@@ -13,42 +13,101 @@
 // limitations under the License.
 package com.itnoles.shared;
 
-public class News {
+/**
+ * It is one of the Modal object that shared between Controller and View.
+ * @author Jonathan Steele
+ */
+public class News
+{
+	/**
+	 * The member variable to hold String for title.
+	 */
 	private String mTitle;
+
+	/**
+	 * The member variable to hold String for link.
+	 */
 	private String mLink;
+
+	/**
+	 * The member variable to hold String for pubDate.
+	 */
 	private String mPubDate;
+
+	/**
+	 * The member variable to hold String for dese.
+	 */
 	private String mDesc;
-	
-	// getters and setters omitted for brevity
-	public String getTitle() {
+
+	/**
+	 * get value from mTitle.
+	 * @return mTitle
+	 */
+	public String getTitle()
+	{
 		return mTitle;
 	}
 
-	public void setTitle(String title) {
+	/**
+	 * set value to mTitle.
+	 * @param title string for title
+	 */
+	public void setTitle(String title)
+	{
 		mTitle = title;
 	}
 
-	public String getLink() {
+	/**
+	 * get value from mLink.
+	 * @return mLink
+	 */
+	public String getLink()
+	{
 		return mLink;
 	}
 
-	public void setLink(String link) {
+	/**
+	 * set value to mLink.
+	 * @param link string for link
+	 */
+	public void setLink(String link)
+	{
 		mLink = link;
 	}
 
-	public void setPubDate(String pubDate) {
+	/**
+	 * set value to mPubDate.
+	 * @param pubDate string for pubDate
+	 */
+	public void setPubDate(String pubDate)
+	{
 		mPubDate = pubDate;
 	}
-	
-	public String getPubDate() {
+
+	/**
+	 * get value from mPubDate.
+	 * @return mPubDate
+	 */
+	public String getPubDate()
+	{
 		return mPubDate;
 	}
-	
-	public void setDesc(String desc) {
+
+	/**
+	 * set value to mDesc..
+	 * @param desc string for desc
+	 */
+	public void setDesc(String desc)
+	{
 		mDesc = desc;
 	}
-	
-	public String getDesc() {
+
+	/**
+	 * get value from mDesc.
+	 * @return mDesc
+	 */
+	public String getDesc()
+	{
 		return mDesc;
 	}
 }

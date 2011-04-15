@@ -22,31 +22,56 @@ import android.widget.TextView;
 
 /**
  * This is the secondary fragment, displaying the details of a particular
- * item.
+ * schedule item.
+ * @author Jonathan Steele
  */
 public class ScheduleDetailsFragment extends Fragment
 {
-	private TextView school;
-	private TextView date;
-	private TextView time;
-	private TextView tv;
-	
+	/**
+	 * The member variable to hold TextView reference for school.
+	 */
+	private TextView mSchool;
+
+	/**
+	 * The member variable to hold TextView reference for date.
+	 */
+	private TextView mDate;
+
+	/**
+	 * The member variable to hold TextView reference for time.
+	 */
+	private TextView mTime;
+
+	/**
+	 * The member variable to hold TextView reference for tv.
+	 */
+	private TextView mTv;
+
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+		Bundle savedInstanceState)
 	{
-		View convertView = inflater.inflate(R.layout.schedule_item, container, false);
-		school = (TextView) convertView.findViewById(R.id.school);
-		date = (TextView) convertView.findViewById(R.id.date);
-		time = (TextView) convertView.findViewById(R.id.time);
-		tv = (TextView) convertView.findViewById(R.id.tv);
+		final View convertView = inflater.inflate(R.layout.schedule_item,
+			container, false);
+		mSchool = (TextView) convertView.findViewById(R.id.school);
+		mDate = (TextView) convertView.findViewById(R.id.date);
+		mTime = (TextView) convertView.findViewById(R.id.time);
+		mTv = (TextView) convertView.findViewById(R.id.tv);
 		return convertView;
 	}
-	
-	public void updateText(String update_school, String update_date, String update_time, String update_tv)
+
+	/**
+	 * Update Text in a specific TextView.
+	 * @param school text for School
+	 * @param date text for Date
+	 * @param time text for Time
+	 * @param tv text for TV
+	 */
+	public void updateText(String school, String date, String time, String tv)
 	{
-		school.setText(update_school);
-		date.setText(update_date);
-		time.setText(update_time);
-		tv.setText(update_tv);
+		mSchool.setText(school);
+		mDate.setText(date);
+		mTime.setText(time);
+		mTv.setText(tv);
 	}
 }

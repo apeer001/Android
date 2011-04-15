@@ -1,4 +1,4 @@
-//  Copyright 2011 Jonathan Steele
+//  Copyright 2010 Jonathan Steele
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,14 +13,20 @@
 // limitations under the License.
 package com.itnoles.shared;
 
-import android.os.Bundle;
-
-public class Utils
+/**
+ * Constants only file that use more than once class.
+ * @author Jonathan Steele
+ */
+public interface Constants
 {
-	public static Bundle setBundleURL(String url)
-	{
-		Bundle args = new Bundle();
-		args.putString("url", url);
-		return args;
-	}
+	/**
+	 * IO Buffer Size for BufferedInputStream.
+	 */
+	int BUF_SIZE = 1024;
+
+	/**
+	 * User Agent for AndroidHttpClient.
+	 */
+	String USER_AGENT = "Android";
 }
+

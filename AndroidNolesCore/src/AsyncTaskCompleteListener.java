@@ -13,7 +13,17 @@
 // limitations under the License.
 package com.itnoles.shared;
 
+/**
+ * Callback interface for a client to interact with the subclass for asynctask.
+ * @param <T1> any object
+ * @author Jonathan Steele
+ */
 public interface AsyncTaskCompleteListener<T1>
 {
-	public void onTaskComplete(T1 result);
+   /**
+	* It will called when AsyncTask finished loading data.
+	* @param result any object
+	*/
+    void onTaskComplete(T1 result);
 }
+

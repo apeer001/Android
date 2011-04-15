@@ -1,43 +1,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-	<LinearLayout
-		android:id="@+id/headlinesLayout"
-		android:orientation="horizontal"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
-		
-		<fragment class="com.itnoles.shared.activity.MainActivity$HeadlinesFragment"
-			android:id="@+id/headlines"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="45" />
-			
-		<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-			class="com.itnoles.shared.activity.WebDetailsFragment"
-			android:id="@+id/headlinesDetails"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="55" />
-	</LinearLayout>
-	
-	<LinearLayout
-		android:id="@+id/scheduleLayout"
-		android:orientation="horizontal"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
-	
-		<fragment class="com.itnoles.shared.activity.MainActivity$ScheduleFragment"
-			android:id="@+id/schedules"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="45" />
-		
-		<fragment class="com.itnoles.shared.activity.ScheduleDetailsFragment"
-			android:id="@+id/scheduleDetails"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="55" />
-	</LinearLayout>
-	
+	<include layout="@layout/headlines_layout" />
+	<include layout="@layout/schedule_land_layout" />
 	<include layout="@layout/link_layout" />
 	<include layout="@layout/staff_layout" />
 </merge>

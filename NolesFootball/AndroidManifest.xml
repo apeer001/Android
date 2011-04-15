@@ -13,12 +13,8 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name="com.itnoles.shared.activity.HeadlinesActivity" />
-		<activity android:name="com.itnoles.shared.activity.WebDetailsActivity" android:theme="@android:style/Theme.Translucent" />
-		<activity android:name="com.itnoles.shared.activity.ScheduleActivity" />
-		<activity android:name="com.itnoles.shared.activity.ScheduleDetailsActivity" />
-		<activity android:name="com.itnoles.shared.activity.LinkActivity" />
-		<activity android:name="com.itnoles.shared.activity.StaffActivity" />
+		<activity android:name="com.itnoles.shared.activity.MainActivity$WebDetailsActivity" android:theme="@android:style/Theme.Translucent" />
+		<activity android:name="com.itnoles.shared.activity.MainActivity$ScheduleDetailsActivity" />
 		<activity android:name="com.itnoles.shared.activity.SettingsActivity" />
 		<activity android:name="com.itnoles.shared.activity.AboutSettings" />
 	</application>

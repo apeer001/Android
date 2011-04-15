@@ -27,6 +27,11 @@ import android.preference.PreferenceScreen;
 
 import java.util.List;
 
+/**
+ * Activity that {@link android.preference.PreferenceActivity}
+ * load specific preferences.
+ * @author Jonathan Steele
+ */
 public class SettingsActivity extends PreferenceActivity
 {
 	@Override
@@ -34,37 +39,46 @@ public class SettingsActivity extends PreferenceActivity
 	{
 		super.onCreate(savedInstanceState);
 	}
-	
+
 	/**
 	 * Populate the activity with the top-level headers.
+	 * @param target reference for List<Header>
 	 */
 	@Override
-	public void onBuildHeaders(List<Header> target) {
+	public void onBuildHeaders(List<Header> target)
+	{
 		loadHeadersFromResource(R.xml.preference_headers, target);
 	}
-	
+
 	/**
 	 * This fragment shows the preferences for the first header.
 	 */
-	public static class GeneralFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+	public static class GeneralFragment extends PreferenceFragment
+	       implements OnSharedPreferenceChangeListener
+	{
+		/**
+		 * The member variable to hold PrefsUtils reference.
+		 */
 		private PrefsUtils mPrefs;
-		
+
 		@Override
-		public void onCreate(Bundle savedInstanceState) {
+		public void onCreate(Bundle savedInstanceState)
+		{
 			super.onCreate(savedInstanceState);
-			
+
 			// Load the preferences from an XML resource
 			addPreferencesFromResource(R.xml.general);
-			
+
 			mPrefs = new PrefsUtils(getActivity());
 		}
-		
+
 		@Override
 		public void onResume()
 		{
 			super.onResume();
 			// Set up a listener whenever a key changes
-			getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+			getPreferenceScreen().getSharedPreferences().
+			registerOnSharedPreferenceChangeListener(this);
 		}
 
 		@Override
@@ -72,21 +86,25 @@ public class SettingsActivity extends PreferenceActivity
 		{
 			super.onPause();
 			// Unregister the listener whenever a key changes
-			getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+			getPreferenceScreen().getSharedPreferences().
+			unregisterOnSharedPreferenceChangeListener(this);
 		}
-		
+
 		@Override
-		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-			Preference pref = findPreference(key);
-			SharedPreferences.Editor editor = mPrefs.getEditor();
-			if (key.equals("news"))
-			{
-				ListPreference newsPref = (ListPreference)pref;
-				int index = newsPref.findIndexOfValue(newsPref.getValue());
-				if (index != -1)
-				{
-					editor.putString("newstitle", newsPref.getEntries()[index].toString());
-					editor.putString("newsurl", newsPref.getEntryValues()[index].toString());
+		public void onSharedPreferenceChanged(
+			SharedPreferences sharedPreferences, String key)
+		{
+			final Preference pref = findPreference(key);
+			final SharedPreferences.Editor editor = mPrefs.getEditor();
+			if ("news".equals(key)) {
+				final ListPreference newsPref = (ListPreference) pref;
+				final int index = newsPref.findIndexOfValue(
+					newsPref.getValue());
+				if (index != -1) {
+					editor.putString("newstitle",
+						newsPref.getEntries()[index].toString());
+					editor.putString("newsurl",
+						newsPref.getEntryValues()[index].toString());
 					// Don't forget to apply your edits!!!
 					editor.apply();
 				}
@@ -94,25 +112,32 @@ public class SettingsActivity extends PreferenceActivity
 			}
 		}
 	}
-	
+
 	/**
 	 * This fragment shows the preferences for the second header.
 	 */
-	public static class AboutFragment extends PreferenceFragment {
+	public static class AboutFragment extends PreferenceFragment
+	{
 		@Override
-		public void onCreate(Bundle savedInstanceState) {
+		public void onCreate(Bundle savedInstanceState)
+		{
 			super.onCreate(savedInstanceState);
-			
+
 			// Load the preferences from an XML resource
 			addPreferencesFromResource(R.xml.about_settings);
 		}
-		
+
 		@Override
-		public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-			String key = preference.getKey();
-			if (key.equals("author_email"))
-				new IntentUtils(getActivity()).sendEmail(new String[] {preference.getSummary().toString()},
-				"App Feedback for " + getResources().getString(R.string.app_name));
+		public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+			Preference preference)
+		{
+			final String key = preference.getKey();
+			if ("author_email".equals(key)) {
+				new IntentUtils(getActivity()).sendEmail(
+					new String[] {preference.getSummary().toString()},
+					"App Feedback for " + getResources().getString(
+						R.string.app_name));
+			}
 			return super.onPreferenceTreeClick(preferenceScreen, preference);
 		}
 	}

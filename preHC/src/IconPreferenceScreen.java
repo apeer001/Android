@@ -23,48 +23,77 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
-public class IconPreferenceScreen extends Preference {
+/**
+ * This class allowed to have each preference to get own icon.
+ * @author Android
+ */
+public class IconPreferenceScreen extends Preference
+{
+	/**
+	 * The member variable to hold Drawable reference.
+	 */
 	private Drawable mIcon;
-	
-	public IconPreferenceScreen(Context context, AttributeSet attrs) {
+
+	/**
+	 * Constructor.
+	 * @param context reference for Context
+	 * @param attrs reference for AttributeSet
+	 */
+	public IconPreferenceScreen(Context context, AttributeSet attrs)
+	{
 		this(context, attrs, 0);
 	}
-	
-	public IconPreferenceScreen(Context context, AttributeSet attrs, int defStyle) {
+
+	/**
+	 * Constructor.
+	 * @param context reference for Context
+	 * @param attrs reference for AttributeSet
+	 * @param defStyle int for default styling
+	 */
+	public IconPreferenceScreen(Context context, AttributeSet attrs,
+		int defStyle)
+	{
 		super(context, attrs, defStyle);
 		setLayoutResource(R.layout.preference_icon);
-		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.IconPreferenceScreen, defStyle, 0);
+		final TypedArray a = context.obtainStyledAttributes(attrs,
+			R.styleable.IconPreferenceScreen, defStyle, 0);
 		mIcon = a.getDrawable(R.styleable.IconPreferenceScreen_icon);
 		a.recycle();
 	}
-	
+
 	@Override
-	public void onBindView(View view) {
+	public void onBindView(View view)
+	{
 		super.onBindView(view);
-		ImageView imageView = (ImageView) view.findViewById(R.id.icon);
-		if (imageView != null && mIcon != null)
+		final ImageView imageView = (ImageView) view.findViewById(R.id.icon);
+		if (imageView != null && mIcon != null) {
 			imageView.setImageDrawable(mIcon);
+		}
 	}
-	
+
 	/**
 	 * Sets the icon for this Preference with a Drawable.
 	 *
 	 * @param icon The icon for this Preference
 	 */
-	public void setIcon(Drawable icon) {
-		if ((icon == null && mIcon != null) || (icon != null && !icon.equals(mIcon))) {
+	public void setIcon(Drawable icon)
+	{
+		if ((icon == null && mIcon != null)
+			|| (icon != null && !icon.equals(mIcon)))
+		{
 			mIcon = icon;
 			notifyChanged();
 		}
 	}
-	
+
 	/**
 	 * Returns the icon of this Preference.
 	 *
 	 * @return The icon.
 	 * @see #setIcon(Drawable)
 	 */
-	public Drawable getIcon() {
+	public Drawable getIcon()
+	{
 		return mIcon;
 	}
 }
