@@ -18,61 +18,58 @@ import android.content.Intent;
 import android.net.Uri;
 
 /**
- * handling Intent with a specific method of action.
+ * It is one of the utilities class that is handling a specific Intent action.
  * @author Jonathan Steele
  */
-public class IntentUtils
+public final class IntentUtils
 {
 	/**
-	 * The member variable to hold Activity reference.
-	 */
-	private Activity mActivity;
-
-	/**
 	 * Constructor.
-	 * @param context reference of Activity
 	 */
-	public IntentUtils(Activity context)
+	private IntentUtils()
 	{
-		this.mActivity = context;
 	}
 
 	/**
 	 * Select an action with url.
+	 * @param activity reference for Activity
 	 * @param link url string
 	 */
-	public void selectAction(String link)
+	public static void selectAction(Activity activity, String link)
 	{
 		final Intent shareIntent = new Intent(Intent.ACTION_SEND);
 		shareIntent.setType("text/plain");
 		shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-		mActivity.startActivity(Intent.createChooser(shareIntent,
+		activity.startActivity(Intent.createChooser(shareIntent,
 			"Select an action"));
 	}
 
 	/**
 	 * Open Android Browser with url.
+	 * @param activity reference for Activity
 	 * @param url url string
 	 */
-	public void openBrowser(String url)
+	public static void openBrowser(Activity activity, String url)
 	{
 		final Intent viewIntent = new Intent(Intent.ACTION_VIEW,
 			Uri.parse(url));
-		mActivity.startActivity(viewIntent);
+		activity.startActivity(viewIntent);
 	}
 
 	/**
 	 * Select an action with email address.
+	 * @param activity reference for Activity
 	 * @param email email address
 	 * @param subject string for subject
 	 */
-	public void sendEmail(String[] email, String subject)
+	public static void sendEmail(Activity activity, String[] email,
+		String subject)
 	{
 		final Intent i = new Intent(Intent.ACTION_SEND);
 		i.setType("message/rfc822");
 		i.putExtra(Intent.EXTRA_EMAIL, email);
 		i.putExtra(Intent.EXTRA_SUBJECT, subject);
-		mActivity.startActivity(Intent.createChooser(i,
+		activity.startActivity(Intent.createChooser(i,
 			"Select email application."));
 	}
 }

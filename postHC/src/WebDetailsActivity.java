@@ -114,7 +114,7 @@ public class WebDetailsActivity extends Activity
 	 	{
 	 		switch (item.getItemId()) {
 	 		case R.string.share:
-	 			new IntentUtils(getActivity()).selectAction(
+	 			IntentUtils.selectAction(getActivity(), 
 	 				getArguments().getString("url"));
 	 			return true;
 	 		default:

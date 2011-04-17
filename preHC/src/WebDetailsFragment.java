@@ -95,7 +95,7 @@ public class WebDetailsFragment extends Fragment
 	{
 		switch (item.getItemId()) {
 		case R.string.share:
-			new IntentUtils(getActivity()).selectAction(mNewUrl);
+			IntentUtils.selectAction(getActivity(), mNewUrl);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

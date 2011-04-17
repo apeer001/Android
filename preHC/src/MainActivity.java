@@ -368,7 +368,7 @@ public class MainActivity extends FragmentActivity
 			final String url = getResources().getStringArray(
 				R.array.linkValues)[position];
 			// Take string from url and parse it to the default browsers
-			new IntentUtils(getActivity()).openBrowser(url);
+			IntentUtils.openBrowser(getActivity(), url);
 		}
 	}
 

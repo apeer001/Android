@@ -133,7 +133,7 @@ public class SettingsActivity extends PreferenceActivity
 		{
 			final String key = preference.getKey();
 			if ("author_email".equals(key)) {
-				new IntentUtils(getActivity()).sendEmail(
+				IntentUtils.sendEmail(getActivity(),
 					new String[] {preference.getSummary().toString()},
 					"App Feedback for " + getResources().getString(
 						R.string.app_name));

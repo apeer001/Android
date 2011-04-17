@@ -170,6 +170,7 @@ public class MainActivity extends Activity
     	 */
     	public void onTabUnselected(Tab tab, FragmentTransaction ft)
     	{
+    		// do nothing
     	}
 
     	/**
@@ -538,7 +539,7 @@ public class MainActivity extends Activity
 			final String url = getResources().getStringArray(
 				R.array.linkValues)[position];
 			// Take string from url and parse it to the default browsers
-			new IntentUtils(getActivity()).openBrowser(url);
+			IntentUtils.openBrowser(getActivity(), url);
 		}
 	}
 

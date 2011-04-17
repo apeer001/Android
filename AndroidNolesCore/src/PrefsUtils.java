@@ -18,7 +18,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * it is the class that is handing SharedPreferences.
+ * It is one of the utilities class that is handling SharedPreferences.
  * @author Jonathan Steele
  */
 public class PrefsUtils
@@ -46,7 +46,8 @@ public class PrefsUtils
 
 	/**
 	 * get News URL from Prefs.
-	 * @return string */
+	 * @return string
+	 */
 	public String getNewsURLFromPrefs()
 	{
 		final String defaultUrl = mActivity.getResources().getStringArray(
