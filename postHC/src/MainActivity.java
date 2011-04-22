@@ -335,17 +335,15 @@ public class MainActivity extends Activity
 		}
 
 		/**
-		  * Display Data to ListView when AsyncTask is updating from progress.
-		  * @param feed Data from News
-		  */
+		 * Display Data to ListView when AsyncTask is updating from progress.
+		 * @param feed Data from News
+		 */
 		public void onTaskComplete(News feed)
 		{
-			// If feed is null, return early
-			if (feed == null) {
-				return;
+			// If feed is not null, add it to NewsAdapter
+			if (feed != null) {
+				((NewsAdapter) getListAdapter()).add(feed);
 			}
-
-			((NewsAdapter) getListAdapter()).add(feed);
 		}
 
 		@Override

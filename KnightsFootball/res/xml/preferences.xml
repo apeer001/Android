@@ -1,4 +1,7 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" xmlns:settings="http://schemas.android.com/apk/res/com.itnoles.knightfootball">
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:settings="http://schemas.android.com/apk/res/com.itnoles.knightfootball"
+	android:title="@string/app_name">
 	<ListPreference
 		android:title="@string/listPref_title"
 		android:summary="@string/listPref_summary"
