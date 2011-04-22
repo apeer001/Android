@@ -13,7 +13,7 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import com.itnoles.shared.PrefsUtils;
+import com.itnoles.shared.Utils;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -32,9 +32,9 @@ public class SettingsActivity extends PreferenceActivity
        implements OnSharedPreferenceChangeListener
 {
 	/**
-	 * The member variable to hold PrefsUtils reference.
+	 * The member variable to hold SharedPreferences reference.
 	 */
-	private PrefsUtils mPrefs;
+	private SharedPreferences mPrefs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -44,7 +44,7 @@ public class SettingsActivity extends PreferenceActivity
 		// Load the XML preferences file
 		addPreferencesFromResource(R.xml.preferences);
 
-		mPrefs = new PrefsUtils(this);
+		mPrefs = Utils.getSharedPreferences(this);
 	}
 
 	@Override
@@ -88,11 +88,13 @@ public class SettingsActivity extends PreferenceActivity
 		String key)
 	{
 		final Preference pref = findPreference(key);
-		final SharedPreferences.Editor editor = mPrefs.getEditor();
+		final SharedPreferences.Editor editor = mPrefs.edit();
 		if ("news".equals(key)) {
 			final ListPreference newsPref = (ListPreference) pref;
 			final int index = newsPref.findIndexOfValue(newsPref.getValue());
 			if (index != -1) {
+				editor.putString("newstitle", newsPref.getEntries()[index].
+					toString());
 				editor.putString("newsurl", newsPref.getEntryValues()[index].
 					toString());
 				// Don't forget to commit or apply your edits!!!

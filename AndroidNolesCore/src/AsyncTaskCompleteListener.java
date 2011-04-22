@@ -26,4 +26,3 @@ public interface AsyncTaskCompleteListener<T1>
 	*/
     void onTaskComplete(T1 result);
 }
-

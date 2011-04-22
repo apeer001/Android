@@ -1,4 +1,4 @@
-//  Copyright 2011 Jonathan Steele
+//  Copyright 2010 Jonathan Steele
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,32 @@
 package com.itnoles.shared;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
 /**
- * It is one of the utilities class that is handling a specific Intent action.
+ * The Generic Utilities class.
  * @author Jonathan Steele
  */
-public final class IntentUtils
+public final class Utils
 {
 	/**
 	 * Constructor.
 	 */
-	private IntentUtils()
+	private Utils()
 	{
+	}
+
+	/**
+	 * Get SharedPreference Object.
+	 * @param activity reference for Activity
+	 * @return get sharedpreference with settings file
+	 */
+	public static SharedPreferences getSharedPreferences(Activity activity)
+	{
+		return activity.getSharedPreferences("settings", Context.MODE_PRIVATE);
 	}
 
 	/**
@@ -73,4 +85,3 @@ public final class IntentUtils
 			"Select email application."));
 	}
 }
-

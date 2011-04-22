@@ -13,7 +13,7 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import com.itnoles.shared.IntentUtils;
+import com.itnoles.shared.Utils;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -95,7 +95,7 @@ public class WebDetailsFragment extends Fragment
 	{
 		switch (item.getItemId()) {
 		case R.string.share:
-			IntentUtils.selectAction(getActivity(), mNewUrl);
+			Utils.selectAction(getActivity(), mNewUrl);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

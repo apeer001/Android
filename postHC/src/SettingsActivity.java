@@ -13,8 +13,7 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import com.itnoles.shared.IntentUtils;
-import com.itnoles.shared.PrefsUtils;
+import com.itnoles.shared.Utils;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -57,9 +56,9 @@ public class SettingsActivity extends PreferenceActivity
 	       implements OnSharedPreferenceChangeListener
 	{
 		/**
-		 * The member variable to hold PrefsUtils reference.
+		 * The member variable to hold SharedPreferences reference.
 		 */
-		private PrefsUtils mPrefs;
+		private SharedPreferences mPrefs;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState)
@@ -69,7 +68,7 @@ public class SettingsActivity extends PreferenceActivity
 			// Load the preferences from an XML resource
 			addPreferencesFromResource(R.xml.general);
 
-			mPrefs = new PrefsUtils(getActivity());
+			mPrefs = Utils.getSharedPreferences(getActivity());
 		}
 
 		@Override
@@ -95,7 +94,7 @@ public class SettingsActivity extends PreferenceActivity
 			SharedPreferences sharedPreferences, String key)
 		{
 			final Preference pref = findPreference(key);
-			final SharedPreferences.Editor editor = mPrefs.getEditor();
+			final SharedPreferences.Editor editor = mPrefs.edit();
 			if ("news".equals(key)) {
 				final ListPreference newsPref = (ListPreference) pref;
 				final int index = newsPref.findIndexOfValue(
@@ -133,7 +132,7 @@ public class SettingsActivity extends PreferenceActivity
 		{
 			final String key = preference.getKey();
 			if ("author_email".equals(key)) {
-				IntentUtils.sendEmail(getActivity(),
+				Utils.sendEmail(getActivity(),
 					new String[] {preference.getSummary().toString()},
 					"App Feedback for " + getResources().getString(
 						R.string.app_name));

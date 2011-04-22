@@ -67,6 +67,10 @@ public class JSONBackgroundTask
 	@Override
 	protected List<Map<String, String>> doInBackground(String... params)
 	{
+		if (isCancelled()) {
+			return null;
+		}
+
 		final String jsonString = NetUtils.inputStreamAsString(params[0]);
 		if (jsonString == null) {
 			return null;
@@ -98,6 +102,10 @@ public class JSONBackgroundTask
 	@Override
 	protected void onPostExecute(List<Map<String, String>> result)
 	{
+		// if result is null, return early
+		if (result == null) {
+			return;
+		}
 		mCallback.onTaskComplete(result);
 	}
 

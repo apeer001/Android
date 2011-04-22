@@ -16,11 +16,10 @@ package com.itnoles.shared.activity;
 
 import com.itnoles.shared.AsyncTaskCompleteListener;
 import com.itnoles.shared.FeedBackgroundTask;
-import com.itnoles.shared.IntentUtils;
 import com.itnoles.shared.JSONBackgroundTask;
 import com.itnoles.shared.News;
 import com.itnoles.shared.NewsAdapter;
-import com.itnoles.shared.PrefsUtils;
+import com.itnoles.shared.Utils;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -28,6 +27,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
+import android.content.SharedPreferences;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -103,11 +103,11 @@ public class MainActivity extends Activity
     {
     	switch(item.getItemId()) {
     	case R.string.daynight:
-    		if (mThemeId == android.R.style.Theme_Holo || mThemeId == -1) {
-    			mThemeId = android.R.style.Theme_Holo_Light;
+    		if (mThemeId == android.R.style.Theme_Holo_Light) {
+    			mThemeId = android.R.style.Theme_Holo;
     		}
     		else {
-                mThemeId = android.R.style.Theme_Holo;
+                mThemeId = android.R.style.Theme_Holo_Light;
             }
             recreate();
     		return true;
@@ -123,6 +123,19 @@ public class MainActivity extends Activity
         final int currentTabPos = getActionBar().getSelectedNavigationIndex();
         outState.putInt("tabpos", currentTabPos);
         outState.putInt("theme", mThemeId);
+    }
+
+    /**
+     * This is a method that supposted to call under Fragments called onPause.
+     * @param dualpane a flag from Fragment custom method for mDualPane
+     */
+    private void onDestroyWithDualPane(boolean dualpane)
+    {
+    	if (dualpane && !isChangingConfigurations()) {
+    		// replace details fragment with empty one
+    		getFragmentManager().beginTransaction().replace(R.id.details,
+    			new Fragment()).commit();
+    	}
     }
 
     /**
@@ -190,7 +203,7 @@ public class MainActivity extends Activity
 	 * to load a specific item for headlines.
 	 */
 	public static class HeadlinesFragment extends ListFragment
-	       implements AsyncTaskCompleteListener<List<News>>
+	       implements AsyncTaskCompleteListener<News>
 	{
 		/**
 		 * the field for preference in startActivityForResult
@@ -198,9 +211,9 @@ public class MainActivity extends Activity
 		private static final int PREFERENCE = 0;
 
 		/**
-		 * The member variable to hold PrefsUtils reference.
+		 * The member variable to hold SharedPreferences reference.
 		 */
-		private PrefsUtils mPrefs;
+		private SharedPreferences mPrefs;
 
 		/**
 		 * The member variable to hold FeedBackgroundTask reference.
@@ -225,14 +238,13 @@ public class MainActivity extends Activity
 			// We have a menu item to show in action bar.
 			setHasOptionsMenu(true);
 
-			mPrefs = new PrefsUtils(getActivity());
+			mPrefs = Utils.getSharedPreferences(getActivity());
 
 			// Get a new Data
 			getNewContents();
 
 			// Create an empty adapter we will use to display the loaded data.
-			final NewsAdapter mAdapter = new NewsAdapter(getActivity());
-			setListAdapter(mAdapter);
+			setListAdapter(new NewsAdapter(getActivity()));
 
 			// Check to see if we have a frame in which to embed the details
 			// fragment directly in the containing UI.
@@ -253,11 +265,7 @@ public class MainActivity extends Activity
 		{
 			super.onPause();
 
-			if (mDualPane && !getActivity().isChangingConfigurations()) {
-				// replace details fragment with empty one
-				getFragmentManager().beginTransaction().replace(R.id.details,
-					new Fragment()).commit();
-			}
+			((MainActivity) getActivity()).onDestroyWithDualPane(mDualPane);
 		}
 
 		@Override
@@ -265,8 +273,7 @@ public class MainActivity extends Activity
 		{
 			super.onDestroy();
 
-			// Clear all item in NewsAdapter
-			((NewsAdapter) getListAdapter()).clear();
+			clearItemAndCancelConnection();
 		}
 
 		@Override
@@ -294,43 +301,51 @@ public class MainActivity extends Activity
 		}
 
 		/**
+		 * Clear Item on NewsAdapter and Cancel AsyncTask Connection.
+		 */
+		private void clearItemAndCancelConnection()
+		{
+			// Clear all item in NewsAdapter
+			if (getListAdapter() != null) {
+				((NewsAdapter) getListAdapter()).clear();
+			}
+
+			// Cancel FeedBackgroundTask connection
+			if (mTask != null) {
+				mTask.cancel(true);
+			}
+		}
+
+		/**
 		 * Get a new data to display.
 		 */
 		private void getNewContents()
 		{
-			getActivity().getActionBar().setSubtitle(
-				mPrefs.getNewsTitleFromPrefs());
+			clearItemAndCancelConnection();
 
-			mTask = (FeedBackgroundTask) new FeedBackgroundTask(this).execute(
-				mPrefs.getNewsURLFromPrefs());
+			final String defaultTitle = getResources().getStringArray(
+				R.array.listNames)[0];
+			getActivity().getActionBar().setSubtitle(mPrefs.getString(
+				"newstitle", defaultTitle));
+
+			final String defaultUrl = getResources().getStringArray(
+				R.array.listValues)[0];
+			mTask = new FeedBackgroundTask(this);
+			mTask.execute(mPrefs.getString("newsurl", defaultUrl));
 		}
 
 		/**
-		  * Display Data to ListView when AsyncTask is finishing loading.
-		  * @param feed Data from FeedBackgroundTask
+		  * Display Data to ListView when AsyncTask is updating from progress.
+		  * @param feed Data from News
 		  */
-		public void onTaskComplete(List<News> feed)
+		public void onTaskComplete(News feed)
 		{
-			// If AsyncTask is cancelled, return early
-			if (mTask.isCancelled()) {
-				return;
-			}
-
-			if (mTask != null
-				&& mTask.getStatus() != FeedBackgroundTask.Status.FINISHED)
-			{
-				mTask.cancel(true);
-				mTask = null;
-			}
-
 			// If feed is null, return early
 			if (feed == null) {
 				return;
 			}
 
-			for (News news : feed) {
-				((NewsAdapter) getListAdapter()).add(news);
-			}
+			((NewsAdapter) getListAdapter()).add(feed);
 		}
 
 		@Override
@@ -424,8 +439,10 @@ public class MainActivity extends Activity
 			mDualPane = detailsFrame != null
 			    && detailsFrame.getVisibility() == View.VISIBLE;
 
-			mTask = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(
-				getString(R.string.schedule_url));
+			if (mTask == null) {
+				mTask = new JSONBackgroundTask(this);
+				mTask.execute(getResources().getString(R.string.schedule_url));
+			}
 		}
 
 		@Override
@@ -433,10 +450,18 @@ public class MainActivity extends Activity
 		{
 			super.onPause();
 
-			if (mDualPane && !getActivity().isChangingConfigurations()) {
-				// replace details fragment with empty one
-				getFragmentManager().beginTransaction().replace(R.id.details,
-					new Fragment()).commit();
+			((MainActivity) getActivity()).onDestroyWithDualPane(mDualPane);
+		}
+
+		@Override
+		public void onDestroy()
+		{
+			super.onDestroy();
+
+			// Clear all item and cancel in JSONBackgroundTask
+			if (mTask != null) {
+				mTask.clear();
+				mTask.cancel(true);
 			}
 		}
 
@@ -446,23 +471,6 @@ public class MainActivity extends Activity
 		  */
 		public void onTaskComplete(List<Map<String, String>> json)
 		{
-			// If AsyncTask is cancelled, return early
-			if (mTask.isCancelled()) {
-				return;
-			}
-
-			if (mTask != null
-				&& mTask.getStatus() != JSONBackgroundTask.Status.FINISHED)
-			{
-				mTask.cancel(true);
-				mTask = null;
-			}
-
-			// If json is null, return early
-			if (json == null) {
-				return;
-			}
-
 			setListAdapter(new SimpleAdapter(getActivity(), json,
 				android.R.layout.simple_list_item_1, new String[] {"school"},
 				new int[] {android.R.id.text1}));
@@ -539,7 +547,7 @@ public class MainActivity extends Activity
 			final String url = getResources().getStringArray(
 				R.array.linkValues)[position];
 			// Take string from url and parse it to the default browsers
-			IntentUtils.openBrowser(getActivity(), url);
+			Utils.openBrowser(getActivity(), url);
 		}
 	}
 
@@ -565,8 +573,22 @@ public class MainActivity extends Activity
 				detailFrame.setVisibility(View.GONE);
 			}
 
-			mTask = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(
-				getString(R.string.staff_url));
+			if (mTask == null) {
+				mTask = new JSONBackgroundTask(this);
+				mTask.execute(getResources().getString(R.string.staff_url));
+			}
+		}
+
+		@Override
+		public void onDestroy()
+		{
+			super.onDestroy();
+
+			// Clear all item and cancel in JSONBackgroundTask
+			if (mTask != null) {
+				mTask.clear();
+				mTask.cancel(true);
+			}
 		}
 
 		/**
@@ -575,23 +597,6 @@ public class MainActivity extends Activity
 		  */
 		public void onTaskComplete(List<Map<String, String>> json)
 		{
-			// If AsyncTask is cancelled, return early
-			if (mTask.isCancelled()) {
-				return;
-			}
-
-			if (mTask != null
-				&& mTask.getStatus() != JSONBackgroundTask.Status.FINISHED)
-			{
-				mTask.cancel(true);
-				mTask = null;
-			}
-
-			// if json is null, return early
-			if (json == null) {
-				return;
-			}
-
 			setListAdapter(new SimpleAdapter(getActivity(), json,
 				android.R.layout.simple_list_item_2,
 				new String[] {"name", "positions"},

@@ -13,7 +13,7 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import com.itnoles.shared.IntentUtils;
+import com.itnoles.shared.Utils;
 
 import android.os.Bundle;
 import android.preference.Preference;
@@ -42,7 +42,7 @@ public class AboutSettings extends PreferenceActivity
 	{
 		final String key = preference.getKey();
 		if ("author_email".equals(key)) {
-			IntentUtils.sendEmail(this,
+			Utils.sendEmail(this,
 				new String[] {preference.getSummary().toString()},
 				"App Feedback for " + getResources().getString(
 					R.string.app_name));

@@ -20,14 +20,12 @@ import android.util.Log;
 import android.util.Xml;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * It is the AsyncTask class for Atom and Feed Parsing.
  * @author Jonathan Steele
  */
-public class FeedBackgroundTask extends AsyncTask<String, Void, List<News>>
+public class FeedBackgroundTask extends AsyncTask<String, News, Void>
 {
 	/**
 	 * the field for Android's Log Tag.
@@ -37,7 +35,7 @@ public class FeedBackgroundTask extends AsyncTask<String, Void, List<News>>
 	/**
 	 * the member variable to hold AsyncTaskCompleteListener reference.
 	 */
-	private AsyncTaskCompleteListener<List<News>> mCallback;
+	private AsyncTaskCompleteListener<News> mCallback;
 
 	/**
 	 * The XML Tag field for Pub Date.
@@ -83,7 +81,7 @@ public class FeedBackgroundTask extends AsyncTask<String, Void, List<News>>
 	 * Constructor.
 	 * @param callback reference for AsyncTaskCompleteListener
 	 */
-	public FeedBackgroundTask(AsyncTaskCompleteListener<List<News>> callback)
+	public FeedBackgroundTask(AsyncTaskCompleteListener<News> callback)
 	{
 		this.mCallback = callback;
 	}
@@ -94,14 +92,17 @@ public class FeedBackgroundTask extends AsyncTask<String, Void, List<News>>
 	 * @return a new List with News object.
 	 */
 	@Override
-	protected List<News> doInBackground(String... params)
+	protected Void doInBackground(String... params)
 	{
+		if (isCancelled()) {
+			return null;
+		}
+
 		final String newsString = NetUtils.inputStreamAsString(params[0]);
 		if (newsString == null) {
 			return null;
 		}
 
-		List<News> news = null;
 		final XmlPullParser parser = Xml.newPullParser();
 		try {
 			parser.setInput(new StringReader(newsString));
@@ -110,9 +111,6 @@ public class FeedBackgroundTask extends AsyncTask<String, Void, List<News>>
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				String name = null;
 				switch (eventType) {
-				case XmlPullParser.START_DOCUMENT:
-					news = new ArrayList<News>();
-					break;
 				case XmlPullParser.START_TAG:
 					name = parser.getName();
 					if (name.equalsIgnoreCase(ITEM)
@@ -151,7 +149,7 @@ public class FeedBackgroundTask extends AsyncTask<String, Void, List<News>>
 					if (name.equalsIgnoreCase(ITEM)
 						|| name.equalsIgnoreCase(ENTRY) && currentNews != null)
 					{
-						news.add(currentNews);
+						publishProgress(currentNews);
 					}
 					break;
 				default:
@@ -163,16 +161,15 @@ public class FeedBackgroundTask extends AsyncTask<String, Void, List<News>>
 		catch (Exception e) {
 			Log.w(LOG_TAG, "bad feed parsing", e);
 		}
-		return news;
+		return null;
 	}
 
 	/**
-	 * Runs on the UI thread after doInBackground.
-	 * @param result reference for List<News>
+	 * Runs on the UI thread after publishProgress(Progress...) is invoked
+	 * @param values reference for News object.
 	 */
-	@Override
-	protected void onPostExecute(List<News> result)
+	protected void onProgressUpdate(News... values)
 	{
-		mCallback.onTaskComplete(result);
+		mCallback.onTaskComplete(values[0]);
 	}
 }

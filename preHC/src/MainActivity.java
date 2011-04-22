@@ -15,13 +15,13 @@ package com.itnoles.shared.activity;
 
 import com.itnoles.shared.AsyncTaskCompleteListener;
 import com.itnoles.shared.FeedBackgroundTask;
-import com.itnoles.shared.IntentUtils;
 import com.itnoles.shared.JSONBackgroundTask;
 import com.itnoles.shared.News;
 import com.itnoles.shared.NewsAdapter;
-import com.itnoles.shared.PrefsUtils;
+import com.itnoles.shared.Utils;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -102,7 +102,7 @@ public class MainActivity extends FragmentActivity
 	 * to load a specific item for headlines.
 	 */
 	public static class HeadlinesFragment extends ListFragment
-	       implements AsyncTaskCompleteListener<List<News>>
+	       implements AsyncTaskCompleteListener<News>
 	{
 		/**
 		 * The Constant for preference that use in startActivityforResult
@@ -110,9 +110,9 @@ public class MainActivity extends FragmentActivity
 		private static final int PREFERENCE = 0;
 
 		/**
-		 * The member variable to hold PrefsUtils reference.
+		 * The member variable to hold SharedPreferences reference.
 		 */
-		private PrefsUtils mPrefs;
+		private SharedPreferences mPrefs;
 
 		/**
 		 * The member variable to hold FeedBackgroundTask reference.
@@ -134,14 +134,21 @@ public class MainActivity extends FragmentActivity
 			// We have a menu item to show in the menu bar.
 			setHasOptionsMenu(true);
 
-			mPrefs = new PrefsUtils(getActivity());
+			mPrefs = Utils.getSharedPreferences(getActivity());
 
 			// Get a new Data
 			getNewContents();
 
 			// Create an empty adapter we will use to display the loaded data.
-			final NewsAdapter mAdapter = new NewsAdapter(getActivity());
-			setListAdapter(mAdapter);
+			setListAdapter(new NewsAdapter(getActivity()));
+		}
+
+		@Override
+		public void onDestroy()
+		{
+			super.onDestroy();
+
+			clearItemAndCancelConnection();
 		}
 
 		@Override
@@ -168,44 +175,51 @@ public class MainActivity extends FragmentActivity
 		}
 
 		/**
+		 * Clear Item on NewsAdapter and Cancel AsyncTask Connection.
+		 */
+		private void clearItemAndCancelConnection()
+		{
+			// Clear all item in NewsAdapter if is not null
+			if (getListAdapter() != null) {
+				((NewsAdapter) getListAdapter()).clear();
+			}
+
+			// Cancel FeedBackgroundTask connection
+			if (mTask != null) {
+				mTask.cancel(true);
+			}
+		}
+
+		/**
 		 * Get a new data to display.
 		 */
 		private void getNewContents()
 		{
-			((TextView) getView().findViewById(R.id.list_header_title)).
-			setText(mPrefs.getNewsTitleFromPrefs());
+			clearItemAndCancelConnection();
 
-			mTask = (FeedBackgroundTask) new FeedBackgroundTask(this).execute(
-				mPrefs.getNewsURLFromPrefs());
+			final String defaultTitle = getResources().getStringArray(
+				R.array.listNames)[0];
+			((TextView) getView().findViewById(R.id.list_header_title)).
+			setText(mPrefs.getString("newstitle", defaultTitle));
+
+			final String defaultUrl = getResources().getStringArray(
+				R.array.listValues)[0];
+			mTask = new FeedBackgroundTask(this);
+			mTask.execute(mPrefs.getString("newsurl", defaultUrl));
 		}
 
 		/**
 		  * Display Data to ListView when AsyncTask is finishing loading.
 		  * @param feed Data from FeedBackgroundTask
 		  */
-		public void onTaskComplete(List<News> feed)
+		public void onTaskComplete(News feed)
 		{
-			// If AsyncTask is cancelled, return early
-			if (mTask.isCancelled()) {
-				return;
-			}
-
-			if (mTask != null
-				&& mTask.getStatus() != FeedBackgroundTask.Status.FINISHED)
-			{
-				mTask.cancel(true);
-				mTask = null;
-			}
-
-			// if data is null, return early
 			if (feed == null) {
 				return;
 			}
 
-			// If data is not null, add it to NewsAdapter.
-			for (News news : feed) {
-				((NewsAdapter) getListAdapter()).add(news);
-			}
+			// add feed to NewsAdapter
+			((NewsAdapter) getListAdapter()).add(feed);
 		}
 
 		@Override
@@ -240,7 +254,9 @@ public class MainActivity extends FragmentActivity
 		public void onActivityResult(int requestCode, int resultCode,
 			Intent data)
 		{
-			getNewContents();
+			if (requestCode == PREFERENCE && resultCode == RESULT_OK) {
+				getNewContents();
+			}
 		}
 	}
 
@@ -286,8 +302,22 @@ public class MainActivity extends FragmentActivity
 		{
 			super.onActivityCreated(savedInstanceState);
 
-			mTask = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(
-				getResources().getString(R.string.schedule_url));
+			if (mTask == null) {
+				mTask = new JSONBackgroundTask(this);
+				mTask.execute(getResources().getString(R.string.schedule_url));
+			}
+		}
+
+		@Override
+		public void onDestroy()
+		{
+			super.onDestroy();
+
+			// Clear all item in JSONBackgroundTask
+			if (mTask != null) {
+				mTask.clear();
+				mTask.cancel(true);
+			}
 		}
 
 		/**
@@ -296,23 +326,6 @@ public class MainActivity extends FragmentActivity
 		  */
 		public void onTaskComplete(List<Map<String, String>> json)
 		{
-			// If AsyncTask is cancelled, return early
-			if (mTask.isCancelled()) {
-				return;
-			}
-
-			if (mTask != null
-				&& mTask.getStatus() != JSONBackgroundTask.Status.FINISHED)
-			{
-				mTask.cancel(true);
-				mTask = null;
-			}
-
-			// If json is null, return early
-			if (json == null) {
-				return;
-			}
-
 			setListAdapter(new SimpleAdapter(getActivity(), json,
 				android.R.layout.simple_list_item_1, new String[] {"school"},
 				new int[] {android.R.id.text1}));
@@ -368,7 +381,7 @@ public class MainActivity extends FragmentActivity
 			final String url = getResources().getStringArray(
 				R.array.linkValues)[position];
 			// Take string from url and parse it to the default browsers
-			IntentUtils.openBrowser(getActivity(), url);
+			Utils.openBrowser(getActivity(), url);
 		}
 	}
 
@@ -389,8 +402,22 @@ public class MainActivity extends FragmentActivity
 		{
 			super.onActivityCreated(savedInstanceState);
 
-			mTask = (JSONBackgroundTask) new JSONBackgroundTask(this).execute(
-				getResources().getString(R.string.staff_url));
+			if (mTask == null) {
+				mTask = new JSONBackgroundTask(this);
+				mTask.execute(getResources().getString(R.string.staff_url));
+			}
+		}
+
+		@Override
+		public void onDestroy()
+		{
+			super.onDestroy();
+
+			// Clear all item in JSONBackgroundTask
+			if (mTask != null) {
+				mTask.clear();
+				mTask.cancel(true);
+			}
 		}
 
 		/**
@@ -399,23 +426,6 @@ public class MainActivity extends FragmentActivity
 		  */
 		public void onTaskComplete(List<Map<String, String>> json)
 		{
-			// If AsyncTask is cancelled, return early
-			if (mTask.isCancelled()) {
-				return;
-			}
-
-			if (mTask != null
-				&& mTask.getStatus() != JSONBackgroundTask.Status.FINISHED)
-			{
-				mTask.cancel(true);
-				mTask = null;
-			}
-
-			// If json is null, return early
-			if (json == null) {
-				return;
-			}
-
 			setListAdapter(new SimpleAdapter(getActivity(), json,
 				android.R.layout.simple_list_item_2,
 				new String[] {"name", "positions"},

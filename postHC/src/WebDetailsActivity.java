@@ -13,7 +13,7 @@
 // limitations under the License.
 package com.itnoles.shared.activity;
 
-import com.itnoles.shared.IntentUtils;
+import com.itnoles.shared.Utils;
 
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -114,7 +114,7 @@ public class WebDetailsActivity extends Activity
 	 	{
 	 		switch (item.getItemId()) {
 	 		case R.string.share:
-	 			IntentUtils.selectAction(getActivity(), 
+	 			Utils.selectAction(getActivity(),
 	 				getArguments().getString("url"));
 	 			return true;
 	 		default:
