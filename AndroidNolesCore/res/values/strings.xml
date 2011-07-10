@@ -4,12 +4,17 @@
 	<string name="listPref_summary">change the news source</string>
 	<string name="refresh">Refresh</string>
 	<string name="share">Share</string>
+	<string name="daynight">Day/Night</string>
 
 	<!-- Settings -->
+	<string name="general">General</string>
+	<string name="analytics_settings">Analytics Enabled</string>
 	<string name="settings">Settings</string>
 	<string name="about_settings">About App</string>
 	<string name="app_version">Application Version</string>
 	<string name="author_name">Author Name</string>
 	<string name="author_email">Author Email</string>
 	<string name="author_website">Author Website</string>
+    
+     <string name="permission_write">Modify schedule data</string>
 </resources>

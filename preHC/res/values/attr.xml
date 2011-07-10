@@ -1,5 +1,0 @@
-<resources>
-	<declare-styleable name="IconPreferenceScreen">
-		<attr name="icon" format="reference" />
-	</declare-styleable>
-</resources>

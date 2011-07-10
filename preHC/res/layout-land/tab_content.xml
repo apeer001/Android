@@ -1,6 +1,0 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
-	<include layout="@layout/headlines_layout" />
-	<include layout="@layout/schedule_land_layout" />
-	<include layout="@layout/link_layout" />
-	<include layout="@layout/staff_layout" />
-</merge>
