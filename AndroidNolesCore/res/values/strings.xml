@@ -3,12 +3,10 @@
 	<string name="listPref_dialogTitle">News Source</string>
 	<string name="listPref_summary">change the news source</string>
 	<string name="refresh">Refresh</string>
-	<string name="share">Share</string>
 	<string name="daynight">Day/Night</string>
 
 	<!-- Settings -->
 	<string name="general">General</string>
-	<string name="analytics_settings">Analytics Enabled</string>
 	<string name="settings">Settings</string>
 	<string name="about_settings">About App</string>
 	<string name="app_version">Application Version</string>
