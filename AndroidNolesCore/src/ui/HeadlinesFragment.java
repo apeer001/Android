@@ -38,15 +38,11 @@ import com.itnoles.shared.SportsApplication;
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.io.RemoteExecutor;
 import com.itnoles.shared.io.HeadlinesHandler;
-import com.itnoles.shared.service.SyncService;
 import com.itnoles.shared.ui.phone.SettingsActivity;
-import com.itnoles.shared.ui.tablet.WebDetailsFragment;
 import com.itnoles.shared.ui.tablet.SettingsMultiPaneActivity;
 import com.itnoles.shared.util.FragmentUtils;
 import com.itnoles.shared.util.News;
 import com.itnoles.shared.util.UrlIntentListener;
-
-import org.apache.http.client.HttpClient;
 
 public class HeadlinesFragment extends ListFragment
 {
@@ -189,24 +185,15 @@ public class HeadlinesFragment extends ListFragment
         }
     }
 
-    private static synchronized HttpClient getHttpClient(Context context)
-    {
-        if (sHttpClient == null) {
-            sHttpClient = SyncService.getHttpClient(context);
-        }
-        return sHttpClient;
-    }
-
     private class FeedLoadTask extends AsyncTask<String, News, Void>
     {
         @Override
         protected Void doInBackground(String... params)
         {
             final String param = params[0];
-            final HttpClient httpClient = getHttpClient(getActivity());
-            final RemoteExecutor executor = new RemoteExecutor(httpClient, null);
+            final RemoteExecutor remoteExecutor = new RemoteExecutor(getActivity(), null);
             final HeadlinesHandler handler = new HeadlinesHandler();
-            executor.executeWithSAXParser(param, handler);
+            remoteExecutor.executeWithSAXParser(param, handler);
             for (News value : handler.getFeeds()) {
                 publishProgress(value);
             }

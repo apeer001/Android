@@ -36,8 +36,7 @@ public class AboutSettings extends PreferenceActivity
 	}
 
 	@Override
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-		Preference preference)
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
 	{
 		final String key = preference.getKey();
 		if ("author_email".equals(key)) {

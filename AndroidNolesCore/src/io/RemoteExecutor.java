@@ -16,13 +16,14 @@
 
 package com.itnoles.shared.io;
 
+import android.content.Context;
 import android.content.ContentResolver;
 import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -44,12 +45,12 @@ public class RemoteExecutor
     private static SAXParserFactory sSAXFactory;
     private static XmlPullParserFactory sPullFactory;
 
-    private final HttpClient mHttpClient;
+    private final DefaultHttpClient mHttpClient;
     private final ContentResolver mResolver;
 
-    public RemoteExecutor(HttpClient httpClient, ContentResolver resolver)
+    public RemoteExecutor(Context context, ContentResolver resolver)
     {
-        mHttpClient = httpClient;
+        mHttpClient = HttpClientFactory.createThreadSafeHttpClient(context);
         mResolver = resolver;
     }
 
@@ -96,9 +97,7 @@ public class RemoteExecutor
         }
     }
 
-    private static void parseWithSAXParser(InputStream in,
-        DefaultHandler handler) throws SAXException,
-        ParserConfigurationException, IOException
+    private static void parseWithSAXParser(InputStream in, DefaultHandler handler) throws SAXException, ParserConfigurationException, IOException
     {
         if (sSAXFactory == null) {
             sSAXFactory = SAXParserFactory.newInstance();

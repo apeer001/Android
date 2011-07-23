@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.itnoles.shared.ui.tablet;
+package com.itnoles.shared.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
