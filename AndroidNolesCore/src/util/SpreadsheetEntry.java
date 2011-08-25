@@ -35,7 +35,7 @@ import static org.xmlpull.v1.XmlPullParser.TEXT;
 
 public class SpreadsheetEntry extends HashMap<String, String>
 {
-    private static final Pattern CONTENTPATTERN = Pattern.compile(
+    private static final Pattern CONTENT_PATTERN = Pattern.compile(
             "(?:^|, )([_a-zA-Z0-9]+): (.*?)(?=\\s*$|, [_a-zA-Z0-9]+: )",
             Pattern.DOTALL);
 
@@ -44,7 +44,7 @@ public class SpreadsheetEntry extends HashMap<String, String>
     private static Matcher getContentMatcher(CharSequence input)
     {
         if (sContentMatcher == null) {
-            sContentMatcher = CONTENTPATTERN.matcher(input);
+            sContentMatcher = CONTENT_PATTERN.matcher(input);
         }
         else {
             sContentMatcher.reset(input);

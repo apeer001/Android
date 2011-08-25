@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2011 Jonathan Steele
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.itnoles.shared.ui;
@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,17 +39,16 @@ import com.itnoles.shared.SportsApplication;
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.io.RemoteExecutor;
 import com.itnoles.shared.io.HeadlinesHandler;
+import com.itnoles.shared.service.SyncService;
 import com.itnoles.shared.ui.phone.SettingsActivity;
 import com.itnoles.shared.ui.tablet.SettingsMultiPaneActivity;
-import com.itnoles.shared.util.FragmentUtils;
 import com.itnoles.shared.util.News;
 import com.itnoles.shared.util.UrlIntentListener;
 
+import org.apache.http.impl.client.DefaultHttpClient;
+
 public class HeadlinesFragment extends ListFragment
 {
-    private static final String LOG_TAG = "HeadlinesFragment";
-    private static HttpClient sHttpClient;
-
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
     private String mPrefTitle;
@@ -111,13 +111,6 @@ public class HeadlinesFragment extends ListFragment
     }
 
     @Override
-    public void onPause()
-    {
-        FragmentUtils.dispatchPause(mDualPane, this);
-        super.onPause();
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, android.view.MenuInflater inflater)
     {
         // Place an action bar item for settings.
@@ -125,7 +118,7 @@ public class HeadlinesFragment extends ListFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item)
+    public boolean onOptionsItemSelected(MenuItem item)
     {
         switch (item.getItemId()) {
         case R.id.refresh:
@@ -191,7 +184,8 @@ public class HeadlinesFragment extends ListFragment
         protected Void doInBackground(String... params)
         {
             final String param = params[0];
-            final RemoteExecutor remoteExecutor = new RemoteExecutor(getActivity(), null);
+            final DefaultHttpClient httpClient = SyncService.getHttpClient(getActivity());
+            final RemoteExecutor remoteExecutor = new RemoteExecutor(httpClient, null);
             final HeadlinesHandler handler = new HeadlinesHandler();
             remoteExecutor.executeWithSAXParser(param, handler);
             for (News value : handler.getFeeds()) {

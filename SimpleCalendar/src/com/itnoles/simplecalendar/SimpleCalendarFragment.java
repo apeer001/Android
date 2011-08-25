@@ -3,14 +3,12 @@ package com.itnoles.simplecalendar;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -21,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleCalendarFragment extends Fragment implements View.OnClickListener
+public class SimpleCalendarFragment extends Fragment
 {
     private static final String LOG_TAG = "CalendarFragment";
     private static final String dateTemplate = "MMMM yyyy";
@@ -31,9 +29,8 @@ public class SimpleCalendarFragment extends Fragment implements View.OnClickList
     private GridView mGridView;
     private Calendar mCalendar;
     private DisplayMetrics mMetrics;
-    private int month, year;
-    private TextView currentMonth;
-    private ImageView prevMonth, nextMonth;
+    private int mMonth, mYear;
+    private TextView mCurrentMonth;
     
     private Map<String, String> getMap()
     {
@@ -54,79 +51,62 @@ public class SimpleCalendarFragment extends Fragment implements View.OnClickList
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
+        mCalendar = Calendar.getInstance();
+        mMonth = mCalendar.get(Calendar.MONTH) + 1;
+        mYear = mCalendar.get(Calendar.YEAR);
+        Log.d(LOG_TAG, "Calendar Instance: Month: " + mMonth + ", Year: " + mYear);
+        
         mGridView = (GridView) getView().findViewById(R.id.calendar);
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView parent, View v, int position, long id)
-	       {
-	           final CalendarListFragment events = (CalendarListFragment) getFragmentManager().findFragmentById(R.id.events);
-	           final String tag = v.getTag().toString();
-	           if (TextUtils.isEmpty(tag) || events == null) {
-	               return;
-                }
-                final List<Map<String, String>> entries = new ArrayList<Map<String, String>>();
-                if ("9.3.2011".equals(tag)) {
-                    entries.add(getMap());
-                }
-                Log.i(LOG_TAG, "Tag = " + tag);
-                events.display(entries);
+
+        final ImageView prevMonth = (ImageView) getView().findViewById(R.id.prevMonth);
+        prevMonth.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v)
+            {
+                if (mMonth <= 1) {
+                    mMonth = 12;
+                    mYear--;
+	           }
+	           else {
+	               mMonth--;
+	           }
+	           Log.d(LOG_TAG, "Setting Prev Month in MonthAdapter: " + "Month: " + mMonth + " Year: " + mYear);
+	           setMonthCellToDate(mMonth, mYear);
             }
         });
 
-        mCalendar = Calendar.getInstance();
-        month = mCalendar.get(Calendar.MONTH) + 1;
-        year = mCalendar.get(Calendar.YEAR);
-        final int week_month = mCalendar.get(Calendar.WEEK_OF_MONTH);
-        Log.d(LOG_TAG, "Calendar Instance: Month: " + month + ", Year: " + year + ", Week Of Month: " + week_month);
+        mCurrentMonth = (TextView) getView().findViewById(R.id.currentMonth);
+        mCurrentMonth.setText(dateFormatter.format(dateTemplate, mCalendar.getTime()));
 
-        prevMonth = (ImageView) getView().findViewById(R.id.prevMonth);
-        prevMonth.setOnClickListener(this);
-
-        currentMonth = (TextView) getView().findViewById(R.id.currentMonth);
-        currentMonth.setText(dateFormatter.format(dateTemplate, mCalendar.getTime()));
-
-        nextMonth = (ImageView) getView().findViewById(R.id.nextMonth);
-        nextMonth.setOnClickListener(this);
+        final ImageView nextMonth = (ImageView) getView().findViewById(R.id.nextMonth);
+        nextMonth.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v)
+            {
+                if (mMonth > 11) {
+                    mMonth = 1;
+                    mYear++;
+                }
+                else {
+                    mMonth++;
+		       }
+		       Log.d(LOG_TAG, "Setting Next Month in : MonthAdapter" + "Month: " + mMonth + " Year: " + mYear);
+		       setMonthCellToDate(mMonth, mYear);
+            }
+        });
 
         mMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
-        getAdapter(month, year);
+        getAdapter();
     }
 
-    private void getAdapter(int month, int year)
+    private void getAdapter()
     {
-        mGridView.setAdapter(new MonthAdapter(getActivity(), month, year, mMetrics));
+        mGridView.setAdapter(new MonthAdapter(getActivity(), mMonth, mYear, mMetrics, getMap(), mGridView));
     }
 
-    private void setGridCellAdapterToDate(int month, int year)
+    private void setMonthCellToDate(int month, int year)
     {
         mCalendar.set(year, month - 1, mCalendar.get(Calendar.DAY_OF_MONTH));
-        currentMonth.setText(dateFormatter.format(dateTemplate, mCalendar.getTime()));
-        getAdapter(month, year);
-    }
-        
-    @Override
-    public void onClick(View v) {
-        if (v == prevMonth) {
-            if (month <= 1) {
-                 month = 12;
-                 year--;
-	       }
-	       else {
-	           month--;
-	       }
-	       Log.d(LOG_TAG, "Setting Prev Month in MonthAdapter: " + "Month: " + month + " Year: " + year);
-	       setGridCellAdapterToDate(month, year);
-	   }
-	   if (v == nextMonth) {
-	       if (month > 11) {
-	           month = 1;
-	           year++;
-		  }
-		  else {
-		      month++;
-		  }
-		  Log.d(LOG_TAG, "Setting Next Month in : MonthAdapter" + "Month: " + month + " Year: " + year);
-		  setGridCellAdapterToDate(month, year);
-	   }
+        mCurrentMonth.setText(dateFormatter.format(dateTemplate, mCalendar.getTime()));
+        getAdapter();
     }
 }

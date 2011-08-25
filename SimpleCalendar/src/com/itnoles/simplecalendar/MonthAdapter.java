@@ -9,12 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 
 public class MonthAdapter extends BaseAdapter
 {
@@ -28,9 +30,11 @@ public class MonthAdapter extends BaseAdapter
     private LayoutInflater mInflater;
     private DisplayMetrics mDisplayMetrics;
     private List<String> mItems;
+    private Map<String, String> mData;
+    private GridView mGrid;
     private int mMonth, mYear, mDaysShown, mDaysLastMonth, mDaysNextMonth, mDayHeight;
 
-	public MonthAdapter(Context context, int month, int year, DisplayMetrics metrics)
+	public MonthAdapter(Context context, int month, int year, DisplayMetrics metrics, Map<String, String> data, GridView grid)
 	{
 		mInflater = LayoutInflater.from(context);
 		mMonth = month;
@@ -38,6 +42,8 @@ public class MonthAdapter extends BaseAdapter
 		mCalendar = new GregorianCalendar(year, month - 1, 1);
 		mCalendarToday = Calendar.getInstance();
 		mDisplayMetrics = metrics;
+		mData = data;
+		mGrid = grid;
 		populateMonth();
 	}
 	
@@ -162,21 +168,31 @@ public class MonthAdapter extends BaseAdapter
 		    final int day = date[0];
 		    final int month = date[1];
 		    final int year = date[2];
-
+		    
+		    final String tag = month + "." + day + "." + year;
 			if (month != mMonth) {
 				// previous or next month
 				dayText.setTextColor(Color.LTGRAY);
 				subDay.setVisibility(View.GONE);
 			} else {
 				// current month
-				subDay.setVisibility(View.GONE);
+				final String date_map = mData.get("date");
+				if (date_map.equals(tag)) {
+				    if (IS_HONEYCOMB) {
+				        subDay.setText(date_map);
+				    }
+				    subDay.setVisibility(View.VISIBLE);
+				}
+				else {
+				    subDay.setVisibility(View.GONE);
+				}
 
 				if (isToday(day, month, year)) {
 					dayText.setTextColor(Color.WHITE);
 					dayText.setBackgroundColor(Color.BLUE);
+					mGrid.setSelection(position);
 				}
 			}
-			final String tag = month + "." + day + "." + year;
 			convertView.setTag(tag);
 		} else {
 		     subDay.setVisibility(View.GONE);

@@ -4,6 +4,7 @@
 	<string name="listPref_summary">change the news source</string>
 	<string name="refresh">Refresh</string>
 	<string name="daynight">Day/Night</string>
+	<string name="nodata">No Data</string>
 
 	<!-- Settings -->
 	<string name="general">General</string>

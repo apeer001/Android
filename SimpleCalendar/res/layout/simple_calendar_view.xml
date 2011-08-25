@@ -5,12 +5,40 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 	
-	<include layout="@layout/calendar_header" />
-	<include layout="@layout/calendar_grid" />
+	<LinearLayout
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content">
 
-     <fragment class="com.itnoles.simplecalendar.CalendarListFragment"
-        android:id="@+id/events"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-    />
+        <ImageView
+            android:id="@+id/prevMonth"
+            android:src="@drawable/calendar_left_arrow_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/currentMonth"
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/nextMonth"
+            android:src="@drawable/calendar_right_arrow_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+     </LinearLayout>
+
+	<GridView
+	    android:id="@+id/calendar"
+	    android:numColumns="7"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="1"
+	    android:gravity="center"
+	    android:horizontalSpacing="1px"
+	    android:verticalSpacing="1px"
+	    android:background="#DADADA" />
 </LinearLayout>
