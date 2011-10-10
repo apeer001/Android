@@ -35,7 +35,7 @@ public interface SportsConstants
     String ENTRY = "entry";
 
     String UPDATED = "updated";
-    String CONTENT_AUTHORITY = "com.itnoles.shared";
+    String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
 
     boolean SUPPORTS_GINGERBREAD = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD;
     boolean SUPPORTS_HONEYCOMB = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB;

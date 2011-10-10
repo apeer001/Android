@@ -11,7 +11,7 @@ public class MainActivity extends FragmentActivity
     {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
-            final SimpleCalendarFragment fragment = new SimpleCalendarFragment();
+            final ScheduleFragment fragment = new ScheduleFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(android.R.id.content, fragment)
                     .commit();

@@ -23,9 +23,9 @@ import android.preference.PreferenceManager;
 import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
 import com.itnoles.shared.util.base.IStrictMode;
 
-public class SportsApplication extends Application
+public abstract class AbstractApplication extends Application
 {
-    private SharedPreferences mPrefs;
+    protected SharedPreferences mPrefs;
 
     @Override
     public void onCreate()
@@ -40,17 +40,8 @@ public class SportsApplication extends Application
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
-    public String getNewsTitle()
-    {
-        final String defaultTitle = getResources().getStringArray(R.array.listNames)[0];
-        return mPrefs.getString(SportsConstants.SP_KEY_NEWS_TITLE, defaultTitle);
-    }
-
-    public String getNewsURL()
-    {
-        final String defaultUrl = getResources().getStringArray(R.array.listValues)[0];
-        return mPrefs.getString(SportsConstants.SP_KEY_NEWS_URL, defaultUrl);
-    }
+    public abstract String getNewsTitle();
+    public abstract String getNewsURL();
 
     public SharedPreferences.Editor getSharedPreferenceEditor()
     {

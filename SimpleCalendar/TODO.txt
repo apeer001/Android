@@ -1,3 +1,2 @@
 A) Week View
 B) Day View
-C) ViewPager

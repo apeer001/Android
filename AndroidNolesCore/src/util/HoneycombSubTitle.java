@@ -14,21 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.shared.ui.phone;
+package com.itnoles.shared.util;
 
-import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
-import com.itnoles.shared.R;
+import com.itnoles.shared.util.base.ISubTitle;
 
-public class SettingsActivity extends PreferenceActivity
+public class HoneycombSubTitle implements ISubTitle
 {
-    @Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-
-		// Load the XML preferences file
-		addPreferencesFromResource(R.xml.preferences);
-	}
+    public void displaySubTitle(Fragment fragment, String subtitle)
+    {
+        ((FragmentActivity) fragment.getActivity()).getSupportActionBar().setSubtitle(subtitle);
+    }
 }

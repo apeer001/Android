@@ -20,6 +20,7 @@ import android.content.Context;
 
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.util.base.IStrictMode;
+import com.itnoles.shared.util.base.ISubTitle;
 import com.itnoles.shared.util.base.SharedPreferenceSaver;
 
 /**
@@ -30,8 +31,8 @@ import com.itnoles.shared.util.base.SharedPreferenceSaver;
 public class PlatformSpecificImplementationFactory
 {
     /**
-     * Create a new StrictMode instance.
-     * @return StrictMode
+     * Create a new IStrictMode instance.
+     * @return IStrictMode or null if it is not Gingerbread
      */
     public static IStrictMode getStrictMode()
     {
@@ -45,9 +46,19 @@ public class PlatformSpecificImplementationFactory
      */
     public static SharedPreferenceSaver getSharedPreferenceSaver(Context ctx)
     {
-        return SportsConstants.SUPPORTS_GINGERBREAD ?
-            new GingerbreadSharedPreferenceSaver(ctx) :
-            SportsConstants.SUPPORTS_FROYO ?
-            new FroyoSharedPreferenceSaver(ctx) :
-            new LegacySharedPreferenceSaver(ctx);
+        return SportsConstants.SUPPORTS_GINGERBREAD
+            ? new GingerbreadSharedPreferenceSaver(ctx)
+            : SportsConstants.SUPPORTS_FROYO
+            ? new FroyoSharedPreferenceSaver(ctx)
+            : new LegacySharedPreferenceSaver(ctx);
+    }
+
+    /**
+     * Create a new ISubTitle instance.
+     * @return ISubTitle
+     */
+    public static ISubTitle getSubTitle()
+    {
+        return SportsConstants.SUPPORTS_HONEYCOMB ? new HoneycombSubTitle() : new LegacySubTitle();
+    }
 }

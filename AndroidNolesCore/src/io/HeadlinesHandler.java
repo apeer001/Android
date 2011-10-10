@@ -48,8 +48,9 @@ public class HeadlinesHandler extends DefaultHandler
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
+    public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException
     {
+        super.startElement(uri, localName, name, attributes);
         if ("item".equals(localName) || SportsConstants.ENTRY.equals(localName)) {
             mNews = new News();
         }
@@ -62,8 +63,9 @@ public class HeadlinesHandler extends DefaultHandler
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException
+    public void endElement(String uri, String localName, String name) throws SAXException
     {
+        super.endElement(uri, localName, name);
         if (mNews != null) {
             if ("item".equals(localName) || SportsConstants.ENTRY.equals(localName)) {
                 mListNews.add(mNews);

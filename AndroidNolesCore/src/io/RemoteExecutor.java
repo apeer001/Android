@@ -18,36 +18,30 @@ package com.itnoles.shared.io;
 
 import android.content.ContentResolver;
 import android.util.Log;
+import android.util.Xml;
+
+import com.itnoles.shared.util.ParserUtils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.xml.sax.InputSource;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 public class RemoteExecutor
 {
     private static final String LOG_TAG = "RemoteExecutor";
-    private static SAXParserFactory sSAXFactory;
-    private static XmlPullParserFactory sPullFactory;
 
-    private final DefaultHttpClient mHttpClient;
+    private final HttpClient mHttpClient;
     private final ContentResolver mResolver;
 
-    public RemoteExecutor(DefaultHttpClient httpClient, ContentResolver resolver)
+    public RemoteExecutor(HttpClient httpClient, ContentResolver resolver)
     {
         mHttpClient = httpClient;
         mResolver = resolver;
@@ -63,23 +57,13 @@ public class RemoteExecutor
         return resp.getEntity().getContent();
     }
 
-    private static XmlPullParser parseWithXMLPullParser(InputStream in) throws XmlPullParserException
-    {
-        if (sPullFactory == null) {
-            sPullFactory = XmlPullParserFactory.newInstance();
-        }
-        final XmlPullParser parser = sPullFactory.newPullParser();
-        parser.setInput(in, null);
-        return parser;
-    }
-
     public void executeWithPullParser(String url, XmlHandler handler)
     {
         final HttpGet request = new HttpGet(url);
         try {
             final InputStream input = getInputStream(request);
             try {
-                final XmlPullParser parser = parseWithXMLPullParser(input);
+                final XmlPullParser parser = ParserUtils.newPullParser(input);
                 handler.parseAndApply(parser, mResolver);
             }
             catch (XmlPullParserException e) {
@@ -98,32 +82,17 @@ public class RemoteExecutor
         }
     }
 
-    private static void parseWithSAXParser(InputStream in, DefaultHandler handler) throws SAXException, ParserConfigurationException, IOException
-    {
-        if (sSAXFactory == null) {
-            sSAXFactory = SAXParserFactory.newInstance();
-        }
-        final SAXParser saxParser = sSAXFactory.newSAXParser();
-        final XMLReader reader = saxParser.getXMLReader();
-        reader.setContentHandler(handler);
-        reader.parse(new InputSource(in));
-    }
-
-    public void executeWithSAXParser(String url, DefaultHandler handler)
+    public void executeWithSAXParser(String url, ContentHandler handler)
     {
         final HttpGet request = new HttpGet(url);
         try {
             final InputStream input = getInputStream(request);
             try {
-                parseWithSAXParser(input, handler);
+                Xml.parse(input, Xml.Encoding.UTF_8, handler);
             }
             catch (SAXException e) {
                 request.abort();
                 Log.w(LOG_TAG, "Malformed response for " + request.getRequestLine(), e);
-            }
-            catch (ParserConfigurationException e) {
-                request.abort();
-                Log.w(LOG_TAG, "Serious Configuration Error", e);
             }
             finally {
                 if (input != null) {
