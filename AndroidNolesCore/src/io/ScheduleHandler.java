@@ -32,7 +32,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.itnoles.shared.util.ParserUtils.queryItemDetails;
+import static com.itnoles.shared.util.ParserUtils.queryItemUpdated;
 import static com.itnoles.shared.util.ParserUtils.sanitizeId;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
@@ -57,7 +57,7 @@ public class ScheduleHandler extends XmlHandler
                 final Uri scheduleUri = Schedule.buildScheduleUri(scheduleId);
 
                 // Check for existing details, only update when changed
-                final long localUpdated = queryItemDetails(scheduleUri, resolver);
+                final long localUpdated = queryItemUpdated(scheduleUri, resolver);
                 final long serverUpdated = entry.getUpdated();
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "found schedule " + entry.toString());

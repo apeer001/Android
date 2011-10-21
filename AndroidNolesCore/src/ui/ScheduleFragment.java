@@ -28,11 +28,15 @@ import android.view.View;
 
 import com.itnoles.shared.R;
 import com.itnoles.shared.provider.ScheduleContract.Schedule;
+import com.itnoles.shared.util.Lists;
+
+import java.util.List;
 
 public class ScheduleFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
     private static final int SCHEDULE_LOADER = 0x01;
     private static final String LOG_TAG = "ScheduleFragment";
+    private static final String[] PROJECTION = {Schedule.DATE, Schedule.TIME, Schedule.SCHOOL};
 
     private SimpleCursorAdapter mAdapter;
 
@@ -45,13 +49,11 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
             detailFrame.setVisibility(View.GONE);
         }
 
-        final String[] projection = {Schedule.SCHOOL, Schedule.TIME};
-
         getLoaderManager().initLoader(SCHEDULE_LOADER, null, this);
 
         mAdapter = new SimpleCursorAdapter(getActivity(),
-            android.R.layout.simple_list_item_2, null, projection,
-            new int[] {android.R.id.text1, android.R.id.text2},
+            R.layout.schedule_item, null, PROJECTION,
+            new int[] {R.id.date, R.id.time, R.id.school},
             CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         setListAdapter(mAdapter);
     }
@@ -59,8 +61,13 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args)
     {
-        final String[] projection = {"_id", Schedule.DATE, Schedule.TIME, Schedule.SCHOOL};
-        return new CursorLoader(getActivity(), Schedule.CONTENT_URI, projection, null, null, null);
+        final List<String> projectionList = Lists.newArrayList();
+        projectionList.add("_id");
+        for (String projection : PROJECTION) {
+            projectionList.add(projection);
+        }
+        final String[] newProjection = projectionList.toArray(new String[projectionList.size()]);
+        return new CursorLoader(getActivity(), Schedule.CONTENT_URI, newProjection, null, null, null);
     }
 
     @Override

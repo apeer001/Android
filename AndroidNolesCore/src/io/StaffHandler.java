@@ -32,7 +32,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.itnoles.shared.util.ParserUtils.queryItemDetails;
+import static com.itnoles.shared.util.ParserUtils.queryItemUpdated;
 import static com.itnoles.shared.util.ParserUtils.sanitizeId;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
@@ -56,7 +56,7 @@ public class StaffHandler extends XmlHandler
                 final Uri staffUri = Staff.buildStaffUri(staffId);
 
                 // Check for existing details, only update when changed
-                final long localUpdated = queryItemDetails(staffUri, resolver);
+                final long localUpdated = queryItemUpdated(staffUri, resolver);
                 final long serverUpdated = entry.getUpdated();
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "found staff " + entry.toString());

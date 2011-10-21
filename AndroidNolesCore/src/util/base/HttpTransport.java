@@ -16,29 +16,16 @@
 
 package com.itnoles.shared.util.base;
 
-import android.content.Context;
 import android.text.format.DateUtils;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public abstract class HttpTransport
 {
     public static final int CONN_TIMEOUT = 20 * (int) DateUtils.SECOND_IN_MILLIS;
 
-    private Context mContext;
-    
-    public HttpTransport(Context context)
-    {
-        this.mContext = context;
-    }
-
-    public abstract InputStream execute() throws IOException;
-
-    public Context getContext()
-    {
-        return mContext;
-    }
+    public abstract LowLevelHttpResponse buildResponse(String url) throws IOException;
 
     /**
      * Default implementation does nothing, but subclasses may override to attempt to abort the
@@ -46,5 +33,11 @@ public abstract class HttpTransport
      */
     public void shutdown()
     {
+    }
+
+    public abstract class LowLevelHttpResponse
+    {
+        public abstract InputStream execute() throws IOException;
+        public abstract void disconnect();
     }
 }

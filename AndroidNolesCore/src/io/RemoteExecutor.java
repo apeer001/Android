@@ -18,16 +18,10 @@ package com.itnoles.shared.io;
 
 import android.content.ContentResolver;
 import android.util.Log;
-import android.util.Xml;
 
 import com.itnoles.shared.util.ParserUtils;
+import com.itnoles.shared.util.base.HttpTransport;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -38,71 +32,36 @@ public class RemoteExecutor
 {
     private static final String LOG_TAG = "RemoteExecutor";
 
-    private final HttpClient mHttpClient;
+    private HttpTransport mTransport;
     private final ContentResolver mResolver;
 
-    public RemoteExecutor(HttpClient httpClient, ContentResolver resolver)
+    public RemoteExecutor(HttpTransport transport, ContentResolver resolver)
     {
-        mHttpClient = httpClient;
+        mTransport = transport;
         mResolver = resolver;
-    }
-
-    private InputStream getInputStream(HttpGet request) throws IOException
-    {
-        final HttpResponse resp = mHttpClient.execute(request);
-        final int status = resp.getStatusLine().getStatusCode();
-        if (status != HttpStatus.SC_OK) {
-            Log.w(LOG_TAG, "Unexpected server response " + resp.getStatusLine() + " for " + request.getRequestLine());
-        }
-        return resp.getEntity().getContent();
     }
 
     public void executeWithPullParser(String url, XmlHandler handler)
     {
-        final HttpGet request = new HttpGet(url);
         try {
-            final InputStream input = getInputStream(request);
+            final HttpTransport.LowLevelHttpResponse response = mTransport.buildResponse(url);
+            final InputStream input = response.execute();
             try {
                 final XmlPullParser parser = ParserUtils.newPullParser(input);
                 handler.parseAndApply(parser, mResolver);
             }
             catch (XmlPullParserException e) {
-                request.abort();
-                Log.w(LOG_TAG, "Malformed response for " + request.getRequestLine(), e);
+                Log.w(LOG_TAG, "Malformed response", e);
             }
             finally {
                 if (input != null) {
                     input.close();
                 }
+                response.disconnect();
             }
         }
         catch (IOException e) {
-            request.abort();
-            Log.w(LOG_TAG, "Problem reading remote response for " + request.getRequestLine(), e);
-        }
-    }
-
-    public void executeWithSAXParser(String url, ContentHandler handler)
-    {
-        final HttpGet request = new HttpGet(url);
-        try {
-            final InputStream input = getInputStream(request);
-            try {
-                Xml.parse(input, Xml.Encoding.UTF_8, handler);
-            }
-            catch (SAXException e) {
-                request.abort();
-                Log.w(LOG_TAG, "Malformed response for " + request.getRequestLine(), e);
-            }
-            finally {
-                if (input != null) {
-                    input.close();
-                }
-            }
-        }
-        catch (IOException e) {
-            request.abort();
-            Log.w(LOG_TAG, "Problem reading remote response for " + request.getRequestLine(), e);
+            Log.w(LOG_TAG, "Problem reading remote response", e);
         }
     }
 }

@@ -1,12 +1,30 @@
+/*
+ * Copyright (C) 2011 Jonathan Steele
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.itnoles.shared.ui;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +34,24 @@ import android.widget.TextView;
 
 import com.itnoles.shared.R;
 import com.itnoles.shared.SportsConstants;
+import com.itnoles.shared.io.HeadlinesHandler;
 import com.itnoles.shared.util.News;
+import com.itnoles.shared.util.ParserUtils;
+import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
 import com.itnoles.shared.util.UrlIntentListener;
+import com.itnoles.shared.util.base.HttpTransport;
+import com.itnoles.shared.util.base.ISubTitle;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 public abstract class AbstractHeadlinesFragment extends ListFragment
 {
+    public static final String LOG_TAG = "HeadlinesFragment";
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
 
@@ -109,7 +140,58 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
 
     protected abstract void showSettings();
 
-    protected static class NewsAdapter extends ArrayAdapter<News>
+    protected void setSubTitle(String subtitle)
+    {
+        final ISubTitle getSubtitle = PlatformSpecificImplementationFactory.getSubTitle();
+        getSubtitle.displaySubTitle(this, subtitle);
+    }
+
+    protected AsyncTask<String, News, Void> getLoadNewsTask()
+    {
+        return new AsyncTask<String, News, Void>() {
+            @Override
+            protected Void doInBackground(String... params)
+            {
+                final String param = params[0];
+                final HttpTransport transport = PlatformSpecificImplementationFactory.getTransport(getActivity());
+                try {
+                    final HttpTransport.LowLevelHttpResponse response = transport.buildResponse(param);
+                    final InputStream input = response.execute();
+                    try {
+                        final XmlPullParser parser = ParserUtils.newPullParser(input);
+                        final HeadlinesHandler handler = new HeadlinesHandler();
+                        final List<News> news = handler.parse(parser);
+                        if (news != null) {
+                            for (News value : news) {
+                                publishProgress(value);
+                            }
+                        }
+                    }
+                    catch(XmlPullParserException e) {
+                        Log.w(LOG_TAG, "Malformed response", e);
+                    }
+                    finally {
+                        if (input != null) {
+                            input.close();
+                        }
+                        response.disconnect();
+                    }
+                }
+                catch(IOException e) {
+                    Log.w(LOG_TAG, "Problem reading remote response", e);
+                }
+                return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(News... values)
+            {
+                ((NewsAdapter) getListAdapter()).add(values[0]);
+            }
+        };
+    }
+
+    private static class NewsAdapter extends ArrayAdapter<News>
     {
         private LayoutInflater mLayoutInflater;
 
@@ -155,12 +237,12 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
 
             return convertView;
         }
+    }
 
-        class ViewHolder
-        {
-            TextView mTitle;
-            TextView mDate;
-            TextView mDesc;
-        }
+    static class ViewHolder
+    {
+        TextView mTitle;
+        TextView mDate;
+        TextView mDesc;
     }
 }

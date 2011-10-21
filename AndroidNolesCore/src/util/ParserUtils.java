@@ -88,7 +88,11 @@ public class ParserUtils
         return sTime.toMillis(false);
     }
 
-    public static long queryItemDetails(Uri uri, ContentResolver resolver)
+    /**
+     * Query and return the {@link SportsConstants#UPDATED} time for the requested
+     * {@link Uri}. Expects the {@link Uri} to reference a single item.
+     */
+    public static long queryItemUpdated(Uri uri, ContentResolver resolver)
     {
         final String[] projection = {SportsConstants.UPDATED};
         final Cursor cursor = resolver.query(uri, projection, null, null, null);
@@ -103,6 +107,11 @@ public class ParserUtils
         return -1;
     }
 
+     /**
+     * Query and return the newest {@link SportsConstants#UPDATED} time for all
+     * entries under the requested {@link Uri}. Expects the {@link Uri} to
+     * reference a directory of several items.
+     */
     public static long queryDirUpdated(Uri uri, ContentResolver resolver)
     {
         final String[] projection = {"MAX(" + SportsConstants.UPDATED + ")"};

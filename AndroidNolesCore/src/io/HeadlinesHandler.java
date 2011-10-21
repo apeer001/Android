@@ -20,66 +20,49 @@ import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.util.Lists;
 import com.itnoles.shared.util.News;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.IOException;
 import java.util.List;
 
-public class HeadlinesHandler extends DefaultHandler
+public class HeadlinesHandler
 {
-    private List<News> mListNews;
-    private News mNews;
-    private StringBuilder mBuilder;
-
-    @Override
-    public void characters(char[] ch, int start, int length) throws SAXException
+    public List<News> parse(XmlPullParser parser) throws XmlPullParserException, IOException
     {
-        super.characters(ch, start, length);
-        mBuilder.append(ch, start, length);
-    }
-
-    @Override
-    public void startDocument() throws SAXException
-    {
-        super.startDocument();
-        mListNews = Lists.newArrayList();
-        mBuilder = new StringBuilder();
-    }
-
-    @Override
-    public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException
-    {
-        super.startElement(uri, localName, name, attributes);
-        if ("item".equals(localName) || SportsConstants.ENTRY.equals(localName)) {
-            mNews = new News();
-        }
-        if (mNews != null) {
-            if (SportsConstants.LINK.equals(localName) && attributes.getLength() > 0) {
-                final String url = attributes.getValue("href");
-                mNews.setLink(url);
+        List<News> news = null;
+        News currentNews = null;
+        int type;
+        while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
+            String name = null;
+            switch(type) {
+            case XmlPullParser.START_DOCUMENT:
+                news = Lists.newArrayList();
+                break;
+            case XmlPullParser.START_TAG:
+                name = parser.getName();
+                if ("item".equals(name) || SportsConstants.ENTRY.equals(name)) {
+                    currentNews = new News();
+                }
+                if (currentNews != null) {
+                    if (SportsConstants.LINK.equals(name) && parser.getAttributeCount() > 0) {
+                        final String url = parser.getAttributeValue(null, "url");
+                        currentNews.setLink(url);
+                    }
+                }
+                break;
+            case XmlPullParser.END_TAG:
+                name = parser.getName();
+                if ("item".equals(name) || SportsConstants.ENTRY.equals(name)) {
+                    news.add(currentNews);
+                }
+                else if (currentNews != null) {
+                    currentNews.setValue(name, parser.nextText());
+                }
+                break;
+            default:
             }
         }
-    }
-
-    @Override
-    public void endElement(String uri, String localName, String name) throws SAXException
-    {
-        super.endElement(uri, localName, name);
-        if (mNews != null) {
-            if ("item".equals(localName) || SportsConstants.ENTRY.equals(localName)) {
-                mListNews.add(mNews);
-            }
-            else {
-                final String text = mBuilder.toString().trim();
-                mNews.setValue(localName, text);
-            }
-        }
-        mBuilder.setLength(0);
-    }
-
-    public List<News> getFeeds()
-    {
-        return mListNews;
+        return news;
     }
 }
