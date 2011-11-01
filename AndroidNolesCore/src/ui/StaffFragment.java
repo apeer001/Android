@@ -24,8 +24,8 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.view.View;
 
+import com.androidquery.AQuery;
 import com.itnoles.shared.R;
 import com.itnoles.shared.provider.ScheduleContract.Staff;
 
@@ -38,10 +38,8 @@ public class StaffFragment extends ListFragment implements LoaderManager.LoaderC
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        final View detailFrame = getActivity().findViewById(R.id.details);
-        if (detailFrame != null) {
-            detailFrame.setVisibility(View.GONE);
-        }
+        final AQuery aq = new AQuery(getActivity());
+        aq.id(R.id.details).gone();
 
         final String[] projection = {Staff.NAME, Staff.POSITIONS, };
 
@@ -51,7 +49,6 @@ public class StaffFragment extends ListFragment implements LoaderManager.LoaderC
             android.R.layout.simple_list_item_2, null, projection,
             new int[] {android.R.id.text1, android.R.id.text2},
             CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
         setListAdapter(mAdapter);
     }
 

@@ -16,7 +16,9 @@
 
 package com.itnoles.shared.ui;
 
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -25,11 +27,11 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ListView;
 
+import com.androidquery.AQuery;
 import com.itnoles.shared.R;
 import com.itnoles.shared.provider.ScheduleContract.Link;
-import com.itnoles.shared.util.UrlIntentListener;
 
 public class LinkFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
@@ -40,11 +42,8 @@ public class LinkFragment extends ListFragment implements LoaderManager.LoaderCa
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-
-        final View detailFrame = getActivity().findViewById(R.id.details);
-        if (detailFrame != null) {
-            detailFrame.setVisibility(View.GONE);
-        }
+        final AQuery aq = new AQuery(getActivity());
+        aq.id(R.id.details).gone();
 
         final String[] projection = {Link.NAME};
 
@@ -53,19 +52,8 @@ public class LinkFragment extends ListFragment implements LoaderManager.LoaderCa
         mAdapter = new SimpleCursorAdapter(getActivity(),
             android.R.layout.simple_list_item_1, null, projection,
             new int[] {android.R.id.text1},
-            CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent)
-            {
-                final View view = super.getView(position, convertView, parent);
-                final Cursor cursor = getCursor();
-                view.setTag(cursor.getString(cursor.getColumnIndex(Link.URL)));
-                return view;
-            }
-        };
-
+            CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         setListAdapter(mAdapter);
-        getListView().setOnItemClickListener(new UrlIntentListener());
     }
 
     @Override
@@ -85,5 +73,16 @@ public class LinkFragment extends ListFragment implements LoaderManager.LoaderCa
     public void onLoaderReset(Loader<Cursor> loader)
     {
         mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id)
+    {
+        final Cursor cursor = mAdapter.getCursor();
+        cursor.moveToPosition(position);
+        final String urlString = cursor.getString(cursor.getColumnIndex(Link.URL));
+        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlString));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }

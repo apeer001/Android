@@ -32,8 +32,8 @@ public class HeadlinesHandler
     {
         List<News> news = null;
         News currentNews = null;
-        int type;
-        while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
+        int type = parser.getEventType();
+        while (type != XmlPullParser.END_DOCUMENT) {
             String name = null;
             switch(type) {
             case XmlPullParser.START_DOCUMENT:
@@ -44,24 +44,25 @@ public class HeadlinesHandler
                 if ("item".equals(name) || SportsConstants.ENTRY.equals(name)) {
                     currentNews = new News();
                 }
-                if (currentNews != null) {
+                else if (currentNews != null) {
                     if (SportsConstants.LINK.equals(name) && parser.getAttributeCount() > 0) {
                         final String url = parser.getAttributeValue(null, "url");
                         currentNews.setLink(url);
+                    }
+                    else {
+                        currentNews.setValue(name, parser.nextText());
                     }
                 }
                 break;
             case XmlPullParser.END_TAG:
                 name = parser.getName();
-                if ("item".equals(name) || SportsConstants.ENTRY.equals(name)) {
+                if ("item".equals(name) || SportsConstants.ENTRY.equals(name) && currentNews != null) {
                     news.add(currentNews);
-                }
-                else if (currentNews != null) {
-                    currentNews.setValue(name, parser.nextText());
                 }
                 break;
             default:
             }
+            type = parser.next();
         }
         return news;
     }

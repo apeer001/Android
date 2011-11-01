@@ -65,6 +65,9 @@ public class PlatformSpecificImplementationFactory
 
     public static HttpTransport getTransport(Context context)
     {
+        if (!NetworkUtils.isNetworkConnected(context)) {
+            return null;
+        }
         return SportsConstants.SUPPORTS_GINGERBREAD ? new NetHttp() : new ApacheHttp(context);
     }
 }

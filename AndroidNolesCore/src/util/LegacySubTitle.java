@@ -17,8 +17,8 @@
 package com.itnoles.shared.util;
 
 import android.support.v4.app.Fragment;
-import android.widget.TextView;
 
+import com.androidquery.AQuery;
 import com.itnoles.shared.R;
 import com.itnoles.shared.util.base.ISubTitle;
 
@@ -26,7 +26,7 @@ public class LegacySubTitle implements ISubTitle
 {
     public void displaySubTitle(Fragment fragment, String subtitle)
     {
-        final TextView vSubTitle = (TextView) fragment.getView().findViewById(R.id.list_header_title);
-        vSubTitle.setText(subtitle);
+    	final AQuery aq = new AQuery(fragment.getActivity());
+    	aq.id(R.id.list_header_title).text(subtitle);
     }
 }

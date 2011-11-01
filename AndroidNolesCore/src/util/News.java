@@ -16,6 +16,8 @@
 
 package com.itnoles.shared.util;
 
+import android.text.format.Time;
+
 /**
  * It is one of the Modal object that shared between Controller and View.
  */
@@ -31,11 +33,20 @@ public class News
 	    if ("title".equals(key)) {
 	        mTitle = value;
 	    }
-	    else if ("pubDate".equals(key) || "published".equals(key)) {
+	    else if ("pubDate".equals(key)) {
 	        mPubDate = value;
+	    }
+	    else if ("published".equals(key)) {
+	    	final Time time = new Time();
+	    	time.parse3339(value);
+	    	time.normalize(false);
+	    	mPubDate = time.format("%a");
 	    }
 	    else if ("description".equals(key) || "content".equals(key)) {
 	        mDesc = value;
+	    }
+	    else if ("link".equals(key)) {
+	    	mLink = value;
 	    }
     }
 

@@ -17,7 +17,6 @@
 package com.itnoles.shared.util;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 
 import com.itnoles.shared.util.base.ISubTitle;
 
@@ -25,6 +24,6 @@ public class HoneycombSubTitle implements ISubTitle
 {
     public void displaySubTitle(Fragment fragment, String subtitle)
     {
-        ((FragmentActivity) fragment.getActivity()).getSupportActionBar().setSubtitle(subtitle);
+        fragment.getSupportActivity().getSupportActionBar().setSubtitle(subtitle);
     }
 }

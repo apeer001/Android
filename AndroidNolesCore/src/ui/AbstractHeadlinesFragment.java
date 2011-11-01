@@ -17,10 +17,11 @@
 package com.itnoles.shared.ui;
 
 import android.content.Context;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ModernAsyncTask;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
 import android.text.Html;
@@ -32,13 +33,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.androidquery.AQuery;
 import com.itnoles.shared.R;
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.io.HeadlinesHandler;
+import com.itnoles.shared.ui.phone.WebDetailsActivity;
 import com.itnoles.shared.util.News;
 import com.itnoles.shared.util.ParserUtils;
 import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
-import com.itnoles.shared.util.UrlIntentListener;
 import com.itnoles.shared.util.base.HttpTransport;
 import com.itnoles.shared.util.base.ISubTitle;
 
@@ -109,7 +111,6 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
         final int getItemId = item.getItemId();
         if (getItemId == R.id.settings) {
             showSettings();
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -117,12 +118,14 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
     @Override
     public void onListItemClick(ListView l, View v, int position, long id)
     {
+        final News news = (News) getListAdapter().getItem(position);
+        final String urlString = news.getLink();
+
         if (mDualPane) {
             if (mShownCheckPosition != position) {
                 // If we are not currently showing a fragment for the new
                 // position, we need to create and install a new one.
-                final String tag = v.getTag().toString();
-                final WebDetailsFragment df = WebDetailsFragment.newInstance(tag);
+                final WebDetailsFragment df = WebDetailsFragment.newInstance(urlString);
 
                 // Execute a transaction, replacing any existing fragment
                 // with this one inside the frame.
@@ -134,7 +137,10 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
             }
         }
         else {
-            l.setOnItemClickListener(new UrlIntentListener());
+            final Intent intent = new Intent();
+            intent.setClass(getActivity(), WebDetailsActivity.class);
+            intent.putExtra("url", urlString);
+            startActivity(intent);
         }
     }
 
@@ -146,14 +152,17 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
         getSubtitle.displaySubTitle(this, subtitle);
     }
 
-    protected AsyncTask<String, News, Void> getLoadNewsTask()
+    protected ModernAsyncTask<String, News, Void> getLoadNewsTask()
     {
-        return new AsyncTask<String, News, Void>() {
+        return new ModernAsyncTask<String, News, Void>() {
             @Override
             protected Void doInBackground(String... params)
             {
                 final String param = params[0];
                 final HttpTransport transport = PlatformSpecificImplementationFactory.getTransport(getActivity());
+                if (transport == null) {
+                    return null;
+                }
                 try {
                     final HttpTransport.LowLevelHttpResponse response = transport.buildResponse(param);
                     final InputStream input = response.execute();
@@ -211,16 +220,19 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
             if (convertView == null) {
                 convertView = mLayoutInflater.inflate(R.layout.headlines_item, null);
 
+                final AQuery aq = new AQuery(convertView);
+
                 // Creates a ViewHolder and store references to the three
                 // children views we want to bind data to.
                 holder = new ViewHolder();
-                holder.mTitle = (TextView) convertView.findViewById(R.id.title);
-                holder.mDate = (TextView) convertView.findViewById(R.id.date);
-                holder.mDesc = (TextView) convertView.findViewById(R.id.description);
+                holder.mTitle = aq.id(R.id.title).getTextView();
+                holder.mDate = aq.id(R.id.date).getTextView();
+                holder.mDesc = aq.id(R.id.description).getTextView();
                 convertView.setTag(R.id.headlines_viewholder, holder);
 	        }
 	        else {
-	            holder = (ViewHolder) convertView.getTag(R.id.headlines_viewholder);
+                final AQuery aq = new AQuery(convertView);
+	            holder = (ViewHolder) aq.getTag(R.id.headlines_viewholder);
 	        }
 
             final News news = getItem(position);
@@ -233,7 +245,6 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
             else {
                 holder.mDesc.setText(text);
             }
-            convertView.setTag(news.getLink());
 
             return convertView;
         }

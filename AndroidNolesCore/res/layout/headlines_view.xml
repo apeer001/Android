@@ -3,7 +3,14 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical">
 
-	<include layout="@layout/list_seperator" />
+	<TextView
+		android:id="@+id/list_header_title"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="2dip"
+		android:paddingBottom="2dip"
+		android:paddingLeft="5dip"
+		style="?android:attr/listSeparatorTextViewStyle" />
 
      <ListView
 	    android:id="@android:id/list"

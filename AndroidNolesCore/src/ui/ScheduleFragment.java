@@ -24,8 +24,8 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.view.View;
 
+import com.androidquery.AQuery;
 import com.itnoles.shared.R;
 import com.itnoles.shared.provider.ScheduleContract.Schedule;
 import com.itnoles.shared.util.Lists;
@@ -35,7 +35,6 @@ import java.util.List;
 public class ScheduleFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
     private static final int SCHEDULE_LOADER = 0x01;
-    private static final String LOG_TAG = "ScheduleFragment";
     private static final String[] PROJECTION = {Schedule.DATE, Schedule.TIME, Schedule.SCHOOL};
 
     private SimpleCursorAdapter mAdapter;
@@ -44,10 +43,8 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
-        final View detailFrame = getActivity().findViewById(R.id.details);
-        if (detailFrame != null) {
-            detailFrame.setVisibility(View.GONE);
-        }
+        final AQuery aq = new AQuery(getActivity());
+        aq.id(R.id.details).gone();
 
         getLoaderManager().initLoader(SCHEDULE_LOADER, null, this);
 
