@@ -74,6 +74,11 @@ public class WebDetailsFragment extends Fragment
     public void onDestroyView()
     {
         super.onDestroyView();
-        mWebView.destroy();
+
+        if (mWebView != null) {
+            mWebView.freeMemory();
+            mWebView.destroy();
+            mWebView = null;
+        }
     }
 }

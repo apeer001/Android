@@ -20,12 +20,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.support.v4.app.SherlockPreferenceActivity;
 
 import com.itnoles.shared.R;
 
-public class AboutSettings extends PreferenceActivity
+public class AboutSettings extends SherlockPreferenceActivity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)

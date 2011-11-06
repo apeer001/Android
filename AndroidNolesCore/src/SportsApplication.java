@@ -13,11 +13,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.itnoles.shared.util.base;
 
-import android.support.v4.app.Fragment;
+package com.itnoles.shared;
 
-public interface ISubTitle
+import android.app.Application;
+
+import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
+import com.itnoles.shared.util.base.IStrictMode;
+
+public class SportsApplication extends Application
 {
-    void displaySubTitle(Fragment fragment, String subtitle);
+    @Override
+    public final void onCreate()
+    {
+        super.onCreate();
+        if (SportsConstants.DEVELOPER_MODE) {
+            final IStrictMode strictMode = PlatformSpecificImplementationFactory.getStrictMode();
+            if (strictMode != null) {
+                strictMode.enableStrictMode();
+            }
+        }
+    }
 }

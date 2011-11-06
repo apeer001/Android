@@ -18,7 +18,9 @@ package com.itnoles.shared.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.ModernAsyncTask;
@@ -42,7 +44,6 @@ import com.itnoles.shared.util.News;
 import com.itnoles.shared.util.ParserUtils;
 import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
 import com.itnoles.shared.util.base.HttpTransport;
-import com.itnoles.shared.util.base.ISubTitle;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -53,7 +54,11 @@ import java.util.List;
 
 public abstract class AbstractHeadlinesFragment extends ListFragment
 {
-    public static final String LOG_TAG = "HeadlinesFragment";
+    private static final String LOG_TAG = "HeadlinesFragment";
+    protected static final int PREFERENCE = 1;
+
+    protected SharedPreferences mSharedPrefs;
+
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
 
@@ -71,31 +76,23 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
     {
         super.onActivityCreated(savedState);
 
+        // Load Shared Preference Manager
+        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
-        // Create an empty adapter we will use to display the loaded data.
-        setListAdapter(new NewsAdapter(getActivity()));
+        startUpdate();
 
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
         final View detailsFrame = getActivity().findViewById(R.id.details);
         // If users click in non-dual pane tabs,
         // it cause this one to be gone too.
-        if (detailsFrame != null && detailsFrame.getVisibility() == View.GONE) {
+        if (detailsFrame != null && detailsFrame.getVisibility() != View.VISIBLE) {
             detailsFrame.setVisibility(View.VISIBLE);
         }
         mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-
-        if (getListAdapter() != null) {
-            ((NewsAdapter) getListAdapter()).clear();
-        }
     }
 
     @Override
@@ -144,17 +141,30 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
         }
     }
 
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode)
+    {
+        super.startActivityForResult(intent, requestCode);
+        Log.i(LOG_TAG, Integer.toString(requestCode));
+    }
+
     protected abstract void showSettings();
+    protected abstract void startUpdate();
 
     protected void setSubTitle(String subtitle)
     {
-        final ISubTitle getSubtitle = PlatformSpecificImplementationFactory.getSubTitle();
-        getSubtitle.displaySubTitle(this, subtitle);
+        if (SportsConstants.SUPPORTS_HONEYCOMB) {
+            getSupportActivity().getSupportActionBar().setSubtitle(subtitle);
+        }
+        else {
+            final AQuery aq = new AQuery(getView());
+            aq.id(R.id.list_header_title).text(subtitle);
+        }
     }
 
-    protected ModernAsyncTask<String, News, Void> getLoadNewsTask()
+    protected ModernAsyncTask<String, List<News>, Void> getLoadNewsTask()
     {
-        return new ModernAsyncTask<String, News, Void>() {
+        return new ModernAsyncTask<String, List<News>, Void>() {
             @Override
             protected Void doInBackground(String... params)
             {
@@ -169,12 +179,7 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
                     try {
                         final XmlPullParser parser = ParserUtils.newPullParser(input);
                         final HeadlinesHandler handler = new HeadlinesHandler();
-                        final List<News> news = handler.parse(parser);
-                        if (news != null) {
-                            for (News value : news) {
-                                publishProgress(value);
-                            }
-                        }
+                        publishProgress(handler.parse(parser));
                     }
                     catch(XmlPullParserException e) {
                         Log.w(LOG_TAG, "Malformed response", e);
@@ -193,9 +198,10 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
             }
 
             @Override
-            protected void onProgressUpdate(News... values)
+            protected void onProgressUpdate(List<News>... values)
             {
-                ((NewsAdapter) getListAdapter()).add(values[0]);
+                final NewsAdapter adapter = new NewsAdapter(getActivity(), values[0]);
+                setListAdapter(adapter);
             }
         };
     }
@@ -204,9 +210,9 @@ public abstract class AbstractHeadlinesFragment extends ListFragment
     {
         private LayoutInflater mLayoutInflater;
 
-        public NewsAdapter(Context context)
+        public NewsAdapter(Context context, List<News> data)
         {
-            super(context, 0);
+            super(context, 0, data);
             mLayoutInflater = LayoutInflater.from(context);
         }
 
