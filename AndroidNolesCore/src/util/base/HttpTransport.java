@@ -21,9 +21,8 @@ import android.text.format.DateUtils;
 import java.io.IOException;
 import java.io.InputStream;
 
-public abstract class HttpTransport
-{
-    public static final int CONN_TIMEOUT = 20 * (int) DateUtils.SECOND_IN_MILLIS;
+public abstract class HttpTransport {
+    protected static final int CONN_TIMEOUT = 20 * (int) DateUtils.SECOND_IN_MILLIS;
 
     public abstract LowLevelHttpResponse buildResponse(String url) throws IOException;
 
@@ -31,12 +30,10 @@ public abstract class HttpTransport
      * Default implementation does nothing, but subclasses may override to attempt to abort the
      * connection or release allocated system resources for this connection.
      */
-    public void shutdown()
-    {
+    public void shutdown() {
     }
 
-    public abstract class LowLevelHttpResponse
-    {
+    public abstract class LowLevelHttpResponse {
         public abstract InputStream execute() throws IOException;
         public abstract void disconnect();
     }

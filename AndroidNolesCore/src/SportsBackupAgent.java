@@ -23,11 +23,9 @@ import android.app.backup.SharedPreferencesBackupHelper;
  * A class that specifies which of the shared preferences you want to backup
  * to the Google Backup Service.
  */
-public class SportsBackupAgent extends BackupAgentHelper
-{
+public class SportsBackupAgent extends BackupAgentHelper {
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         final String packagePrefs = getPackageName() + "_preferences";
         final SharedPreferencesBackupHelper helper = new SharedPreferencesBackupHelper(this, packagePrefs);
         addHelper(SportsConstants.SP_KEY_NEWS_TITLE, helper);

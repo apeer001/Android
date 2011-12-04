@@ -20,27 +20,23 @@ import android.util.Log;
 
 import com.itnoles.shared.util.base.HttpTransport;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public final class NetHttp extends HttpTransport
-{
+final class NetHttp extends HttpTransport {
     private static final String LOG_TAG = "NetHttp";
 
     @Override
-    public Response buildResponse(String url) throws IOException
-    {
+    public Response buildResponse(String url) throws IOException {
         return new Response(url);
     }
 
-    public class Response extends LowLevelHttpResponse
-    {
+    final class Response extends LowLevelHttpResponse {
         private final HttpURLConnection mConnection;
 
-        public Response(String url) throws IOException
-        {
+        public Response(String url) throws IOException {
             this.mConnection = (HttpURLConnection) new URL(url).openConnection();
             mConnection.setUseCaches(false);
             mConnection.setInstanceFollowRedirects(false);
@@ -49,17 +45,16 @@ public final class NetHttp extends HttpTransport
         }
 
         @Override
-        public InputStream execute() throws IOException
-        {
+        public BufferedInputStream execute() throws IOException {
             if (mConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 Log.w(LOG_TAG, "Unexpected server response " + mConnection.getResponseMessage());
+                return null;
             }
-            return mConnection.getInputStream();
+            return new BufferedInputStream(mConnection.getInputStream());
         }
 
         @Override
-        public void disconnect()
-        {
+        public void disconnect() {
             mConnection.disconnect();
         }
     }

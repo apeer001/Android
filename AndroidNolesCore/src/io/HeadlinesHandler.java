@@ -26,10 +26,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.List;
 
-public class HeadlinesHandler
-{
-    public List<News> parse(XmlPullParser parser) throws XmlPullParserException, IOException
-    {
+public class HeadlinesHandler {
+    public List<News> parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         List<News> news = null;
         News currentNews = null;
         int type = parser.getEventType();
@@ -43,13 +41,11 @@ public class HeadlinesHandler
                 name = parser.getName();
                 if ("item".equals(name) || SportsConstants.ENTRY.equals(name)) {
                     currentNews = new News();
-                }
-                else if (currentNews != null) {
+                } else if (currentNews != null) {
                     if (SportsConstants.LINK.equals(name) && parser.getAttributeCount() > 0) {
                         final String url = parser.getAttributeValue(null, "url");
                         currentNews.setLink(url);
-                    }
-                    else {
+                    } else {
                         currentNews.setValue(name, parser.nextText());
                     }
                 }

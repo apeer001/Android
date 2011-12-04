@@ -22,15 +22,13 @@ import java.util.LinkedHashMap;
 /**
  * Provides static methods for creating mutable {@code Maps} instances easily.
  */
-public class Maps
-{
+public class Maps {
     /**
      * Creates a {@code HashMap} instance.
      *
      * @return a newly-created, initially-empty {@code HashMap}
      */
-    public static <K, V> HashMap<K, V> newHashMap()
-    {
+    public static <K, V> HashMap<K, V> newHashMap() {
         return new HashMap<K, V>();
     }
 
@@ -39,8 +37,7 @@ public class Maps
      *
      * @return a newly-created, initially-empty {@code HashMap}
      */
-    public static <K, V> LinkedHashMap<K, V> newLinkedHashMap()
-    {
+    public static <K, V> LinkedHashMap<K, V> newLinkedHashMap() {
         return new LinkedHashMap<K, V>();
     }
 }

@@ -26,21 +26,17 @@ import android.preference.PreferenceScreen;
 
 import com.itnoles.shared.R;
 
-public class AboutFragment extends PreferenceFragment
-{
-	private PackageManager getPackageManager()
-	{
+public class AboutFragment extends PreferenceFragment {
+	private PackageManager getPackageManager() {
 		return getActivity().getPackageManager();
 	}
 
-	private String getPackageName()
-	{
+	private String getPackageName() {
 		return getActivity().getPackageName();
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// Load the preferences from an XML resource
@@ -49,26 +45,19 @@ public class AboutFragment extends PreferenceFragment
 		final Preference appVersion = findPreference("app_version");
 		try {
 			appVersion.setSummary(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
-		}
-		catch(NameNotFoundException e) {
+		} catch(NameNotFoundException e) {
 		    appVersion.setSummary("");
 		}
 	}
 
 	@Override
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
-	{
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 		final String key = preference.getKey();
 		if ("author_email".equals(key)) {
 			final Intent i = new Intent(Intent.ACTION_SEND);
 			i.setType("message/rfc822");
 			i.putExtra(Intent.EXTRA_EMAIL, new String[] {preference.getSummary().toString()});
-			try {
-		    	i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback for " + getPackageManager().getApplicationInfo(getPackageName(), 0).labelRes);
-		    }
-		    catch(NameNotFoundException e) {
-		    	i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
-		    }
+		    i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
 		    startActivity(Intent.createChooser(i, "Select email application."));
 		}
 

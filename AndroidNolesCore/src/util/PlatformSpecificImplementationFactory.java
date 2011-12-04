@@ -28,14 +28,12 @@ import com.itnoles.shared.util.base.SharedPreferenceSaver;
  * of a variety of classes with platform specific
  * implementations.
  */
-public class PlatformSpecificImplementationFactory
-{
+public class PlatformSpecificImplementationFactory {
     /**
      * Create a new IStrictMode instance.
      * @return IStrictMode or null if it is not Gingerbread
      */
-    public static IStrictMode getStrictMode()
-    {
+    public static IStrictMode getStrictMode() {
         return SportsConstants.SUPPORTS_GINGERBREAD ? new GingerbreadStrictMode() : null;
     }
 
@@ -44,21 +42,13 @@ public class PlatformSpecificImplementationFactory
      * @param context Context
      * @return SharedPreferenceSaver
      */
-    public static SharedPreferenceSaver getSharedPreferenceSaver(Context ctx)
-    {
+    public static SharedPreferenceSaver getSharedPreferenceSaver(Context ctx) {
         return SportsConstants.SUPPORTS_GINGERBREAD
             ? new GingerbreadSharedPreferenceSaver(ctx)
-            : SportsConstants.SUPPORTS_FROYO
-            ? new FroyoSharedPreferenceSaver(ctx)
-            : new LegacySharedPreferenceSaver(ctx);
+            : new FroyoSharedPreferenceSaver(ctx);
     }
 
-    public static HttpTransport getTransport(Context context)
-    {
-        // If Network is not connected, return null
-        if (!NetworkUtils.isNetworkConnected(context)) {
-            return null;
-        }
-        return SportsConstants.SUPPORTS_GINGERBREAD ? new NetHttp() : new ApacheHttp(context);
+    public static HttpTransport getTransport() {
+        return SportsConstants.SUPPORTS_GINGERBREAD ? new NetHttp() : new AndroidHttp();
     }
 }

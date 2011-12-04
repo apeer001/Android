@@ -23,8 +23,7 @@ import java.util.Collections;
  * Provides static methods for creating {@code List} instances easily, and other
  * utility methods for working with lists.
  */
-public class Lists
-{
+public class Lists {
     /**
      * Creates an empty {@code ArrayList} instance.
      *
@@ -33,8 +32,7 @@ public class Lists
      *
      * @return a newly-created, initially-empty {@code ArrayList}
      */
-    public static <E> ArrayList<E> newArrayList()
-    {
+    public static <E> ArrayList<E> newArrayList() {
         return new ArrayList<E>();
     }
 
@@ -56,8 +54,7 @@ public class Lists
      * @param elements the elements that the list should contain, in order
      * @return a newly-created {@code ArrayList} containing those elements
      */
-    public static <E> ArrayList<E> newArrayList(E... elements)
-    {
+    public static <E> ArrayList<E> newArrayList(E... elements) {
         final int capacity = (elements.length * 110) / 100 + 5;
         final ArrayList<E> list = new ArrayList<E>(capacity);
         Collections.addAll(list, elements);

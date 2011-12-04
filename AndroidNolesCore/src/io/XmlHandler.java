@@ -30,8 +30,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public abstract class XmlHandler
-{
+public abstract class XmlHandler {
     private static final String LOG_TAG = "XmlHandler";
 
     /**
@@ -39,23 +38,18 @@ public abstract class XmlHandler
      * {@link ContentProviderOperation} that are immediately applied using the
      * given {@link ContentResolver}.
      */
-    public void parseAndApply(XmlPullParser parser, ContentResolver resolver)
-    {
+    public void parseAndApply(XmlPullParser parser, ContentResolver resolver) {
         try {
             final ArrayList<ContentProviderOperation> batch = parse(parser, resolver);
             resolver.applyBatch(SportsConstants.CONTENT_AUTHORITY, batch);
-        }
-        catch (XmlPullParserException e) {
+        } catch (XmlPullParserException e) {
             Log.w(LOG_TAG, "Problem parsing XML response", e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Log.w(LOG_TAG, "Problem reading response", e);
-        }
-        catch (RemoteException e) {
+        } catch (RemoteException e) {
             // Failed binder transactions aren't recoverable
             Log.w(LOG_TAG, "Problem applying batch operation", e);
-        }
-        catch (OperationApplicationException e) {
+        } catch (OperationApplicationException e) {
             // Failures like constraint violation aren't recoverable
             // wrapping around to retry parsing again.
             Log.w(LOG_TAG, "Problem applying batch operation", e);

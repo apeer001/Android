@@ -23,12 +23,10 @@ import android.support.v4.app.FragmentActivity;
 
 import com.itnoles.shared.ui.WebDetailsFragment;
 
-public class WebDetailsActivity extends FragmentActivity
-{
+public class WebDetailsActivity extends FragmentActivity {
 	// Called when the activity is first created.
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {

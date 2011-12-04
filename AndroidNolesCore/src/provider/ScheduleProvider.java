@@ -39,8 +39,7 @@ import com.itnoles.shared.provider.ScheduleContract.Staff;
 
 import java.util.ArrayList;
 
-public class ScheduleProvider extends ContentProvider
-{
+public class ScheduleProvider extends ContentProvider {
     private static final String LOG_TAG = "ScheduleProvider";
 
     private SQLiteDatabase mScheduleDB;
@@ -61,8 +60,7 @@ public class ScheduleProvider extends ContentProvider
      * Build and return a {@link UriMatcher} that catches all {@link Uri}
      * variations supported by this {@link ContentProvider}.
      */
-    private static UriMatcher buildUriMatcher()
-    {
+    private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = SportsConstants.CONTENT_AUTHORITY;
         matcher.addURI(authority, "schedule", SCHEDULE);
@@ -77,15 +75,13 @@ public class ScheduleProvider extends ContentProvider
     }
 
     @Override
-    public boolean onCreate()
-    {
+    public boolean onCreate() {
         final Context context = getContext();
 
         final ScheduleDatabaseHelper dbHelper = new ScheduleDatabaseHelper(context, DATABASE_NAME, null, DATABASE_VERSION);
         try {
             mScheduleDB = dbHelper.getWritableDatabase();
-        }
-        catch (SQLiteException e) {
+        } catch (SQLiteException e) {
             mScheduleDB = null;
             Log.e(LOG_TAG, "Database Opening exception");
         }
@@ -95,8 +91,7 @@ public class ScheduleProvider extends ContentProvider
 
      /** {@inheritDoc} */
     @Override
-    public String getType(Uri uri)
-    {
+    public String getType(Uri uri) {
         final int match = URIMATCHER.match(uri);
         switch (match) {
         case SCHEDULE:
@@ -118,8 +113,7 @@ public class ScheduleProvider extends ContentProvider
 
     /** {@inheritDoc} */
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
-    {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         final SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         final int match = URIMATCHER.match(uri);
         switch (match) {
@@ -161,8 +155,7 @@ public class ScheduleProvider extends ContentProvider
 
     /** {@inheritDoc} */
     @Override
-    public Uri insert(Uri uri, ContentValues values)
-    {
+    public Uri insert(Uri uri, ContentValues values) {
         final int match = URIMATCHER.match(uri);
         switch (match) {
         case SCHEDULE:
@@ -187,8 +180,7 @@ public class ScheduleProvider extends ContentProvider
 
     /** {@inheritDoc} */
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs)
-    {
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         int count;
         final int match = URIMATCHER.match(uri);
         switch (match) {
@@ -220,8 +212,7 @@ public class ScheduleProvider extends ContentProvider
 
      /** {@inheritDoc} */
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs)
-    {
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
         int count;
         final int match = URIMATCHER.match(uri);
         switch (match) {
@@ -257,8 +248,7 @@ public class ScheduleProvider extends ContentProvider
      * any single one fails.
      */
     @Override
-    public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations) throws OperationApplicationException
-    {
+    public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations) throws OperationApplicationException {
         mScheduleDB.beginTransaction();
         try {
             final int numOperations = operations.size();
@@ -268,23 +258,19 @@ public class ScheduleProvider extends ContentProvider
             }
             mScheduleDB.setTransactionSuccessful();
             return results;
-        }
-        finally {
+        } finally {
             mScheduleDB.endTransaction();
         }
     }
 
     // Helper class for opening, creating, and managing database version control
-    private static class ScheduleDatabaseHelper extends SQLiteOpenHelper
-    {
-        public ScheduleDatabaseHelper(Context context, String name, CursorFactory factory, int version)
-        {
+    private static class ScheduleDatabaseHelper extends SQLiteOpenHelper {
+        public ScheduleDatabaseHelper(Context context, String name, CursorFactory factory, int version) {
             super(context, name, factory, version);
         }
 
         @Override
-        public void onCreate(SQLiteDatabase db)
-        {
+        public void onCreate(SQLiteDatabase db) {
             db.execSQL("CREATE TABLE schedule ("
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "schedule_id TEXT,"
@@ -312,8 +298,7 @@ public class ScheduleProvider extends ContentProvider
         }
 
         @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
-        {
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             if (oldVersion != DATABASE_VERSION) {
                 Log.w(LOG_TAG, "Destroying old data during upgrade");
 

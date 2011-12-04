@@ -1,4 +1,4 @@
-<h2>What is AndroidNolesCore?</h2>
+<h1>What is AndroidNolesCore?</h1>
 <p>It is a library for Android that I will use in any sports team applications.</p>
 
 <h2>Are you going to develop this further?</h2>
@@ -17,4 +17,4 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses</a></code></pre>
+along with this program.  If not, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses</a></code></pre>

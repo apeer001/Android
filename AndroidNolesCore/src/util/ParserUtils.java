@@ -30,8 +30,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
-public class ParserUtils
-{
+public class ParserUtils {
     /** Used to sanitize a string to be {@link Uri} safe. */
     private static final Pattern SANITIZE_PATTERN = Pattern.compile("[^a-z0-9-_]");
     private static final Pattern PARENT_PATTERN = Pattern.compile("\\(.*?\\)");
@@ -43,8 +42,7 @@ public class ParserUtils
      * Sanitize the given string to be {@link Uri} safe for building
      * {@link ContentProvider} paths.
      */
-    public static String sanitizeId(String input)
-    {
+    public static String sanitizeId(String input) {
         return sanitizeId(input, false);
     }
 
@@ -52,8 +50,7 @@ public class ParserUtils
      * Sanitize the given string to be {@link Uri} safe for building
      * {@link ContentProvider} paths.
      */
-    public static String sanitizeId(String input, boolean stripParen)
-    {
+    public static String sanitizeId(String input, boolean stripParen) {
         if (input == null) {
             return null;
         }
@@ -68,8 +65,7 @@ public class ParserUtils
      * Build and return a new {@link XmlPullParser} with the given
      * {@link InputStream} assigned to it.
      */
-    public static XmlPullParser newPullParser(InputStream input) throws XmlPullParserException
-    {
+    public static XmlPullParser newPullParser(InputStream input) throws XmlPullParserException {
         if (sFactory == null) {
             sFactory = XmlPullParserFactory.newInstance();
         }
@@ -82,8 +78,7 @@ public class ParserUtils
      * Parse the given string as a RFC 3339 timestamp, returning the value as
      * milliseconds since the epoch.
      */
-    public static long parseTime(String time)
-    {
+    public static long parseTime(String time) {
         sTime.parse3339(time);
         return sTime.toMillis(false);
     }
@@ -92,16 +87,14 @@ public class ParserUtils
      * Query and return the {@link SportsConstants#UPDATED} time for the requested
      * {@link Uri}. Expects the {@link Uri} to reference a single item.
      */
-    public static long queryItemUpdated(Uri uri, ContentResolver resolver)
-    {
+    public static long queryItemUpdated(Uri uri, ContentResolver resolver) {
         final String[] projection = {SportsConstants.UPDATED};
         final Cursor cursor = resolver.query(uri, projection, null, null, null);
         try {
             if (cursor.moveToFirst()) {
                 return cursor.getLong(0);
             }
-        }
-        finally {
+        } finally {
             cursor.close();
         }
         return -1;
@@ -112,15 +105,13 @@ public class ParserUtils
      * entries under the requested {@link Uri}. Expects the {@link Uri} to
      * reference a directory of several items.
      */
-    public static long queryDirUpdated(Uri uri, ContentResolver resolver)
-    {
+    public static long queryDirUpdated(Uri uri, ContentResolver resolver) {
         final String[] projection = {"MAX(" + SportsConstants.UPDATED + ")"};
         final Cursor cursor = resolver.query(uri, projection, null, null, null);
         try {
             cursor.moveToFirst();
             return cursor.getLong(0);
-        }
-        finally {
+        } finally {
             cursor.close();
         }
     }

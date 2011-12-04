@@ -6,7 +6,6 @@
 	
 	<TextView android:id="@+id/title"
 		android:layout_width="fill_parent"
-		android:layout_weight="1.0"
 		android:layout_height="wrap_content"
 		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:paddingLeft="6dip"
@@ -14,7 +13,6 @@
 		
 	<TextView android:id="@+id/date"
 		android:layout_width="fill_parent"
-		android:layout_weight="1.0"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/title"
 		android:textAppearance="?android:attr/textAppearanceSmall"
@@ -23,7 +21,6 @@
 		
 	<TextView android:id="@+id/description"
 		android:layout_width="fill_parent"
-		android:layout_weight="1.0"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/date"
 		android:textAppearance="?android:attr/textAppearanceSmall"

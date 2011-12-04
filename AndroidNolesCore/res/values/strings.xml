@@ -11,6 +11,4 @@
 	<string name="author_name">Author Name</string>
 	<string name="author_email">Author Email</string>
 	<string name="author_website">Author Website</string>
-
-     <string name="permission_write">Modify schedule data</string>
 </resources>

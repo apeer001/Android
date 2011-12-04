@@ -28,39 +28,33 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class RemoteExecutor
-{
+public class RemoteExecutor {
     private static final String LOG_TAG = "RemoteExecutor";
 
     private HttpTransport mTransport;
     private final ContentResolver mResolver;
 
-    public RemoteExecutor(HttpTransport transport, ContentResolver resolver)
-    {
+    public RemoteExecutor(HttpTransport transport, ContentResolver resolver) {
         mTransport = transport;
         mResolver = resolver;
     }
 
-    public void executeWithPullParser(String url, XmlHandler handler)
-    {
+    public void executeWithPullParser(String url, XmlHandler handler) {
         try {
             final HttpTransport.LowLevelHttpResponse response = mTransport.buildResponse(url);
             final InputStream input = response.execute();
             try {
                 final XmlPullParser parser = ParserUtils.newPullParser(input);
                 handler.parseAndApply(parser, mResolver);
-            }
-            catch (XmlPullParserException e) {
+            } catch (XmlPullParserException e) {
                 Log.w(LOG_TAG, "Malformed response", e);
-            }
-            finally {
+            } finally {
                 if (input != null) {
                     input.close();
                 }
                 response.disconnect();
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Log.w(LOG_TAG, "Problem reading remote response", e);
         }
     }

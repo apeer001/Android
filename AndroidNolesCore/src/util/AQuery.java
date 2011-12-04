@@ -14,24 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.shared;
+package com.itnoles.shared.util;
 
-import android.app.Application;
+import android.content.Context;
+import android.view.View;
 
-import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
-import com.itnoles.shared.util.base.IStrictMode;
+import com.androidquery.AbstractAQuery;
 
-public class SportsApplication extends Application
-{
-    @Override
-    public final void onCreate()
-    {
-        super.onCreate();
-        if (SportsConstants.DEVELOPER_MODE) {
-            final IStrictMode strictMode = PlatformSpecificImplementationFactory.getStrictMode();
-            if (strictMode != null) {
-                strictMode.enableStrictMode();
-            }
-        }
-    }
+public class AQuery extends AbstractAQuery<AQuery> {
+	public AQuery(Context context) {
+		super(context);
+	}
+
+	public AQuery(View view) {
+		super(view);
+	}
+
+	public boolean isVisible() {
+		return view != null && view.getVisibility() == View.VISIBLE;
+	}
 }

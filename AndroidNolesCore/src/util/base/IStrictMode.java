@@ -21,8 +21,7 @@ package com.itnoles.shared.util.base;
  * implementations that offer the full Strict Mode functionality
  * available in each platform release.
  */
-public interface IStrictMode
-{
+public interface IStrictMode {
     /**
      * Enable {@link StrictMode} using whichever platform-specific flags
      * you wish.

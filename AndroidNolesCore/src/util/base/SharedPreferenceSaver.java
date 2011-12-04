@@ -26,12 +26,10 @@ import android.content.SharedPreferences;
  * {@link SharedPreferences} to the Google {@link BackupService} on
  * platforms where this is available.
  */
-public abstract class SharedPreferenceSaver
-{
+public abstract class SharedPreferenceSaver {
     private Context mContext;
 
-    protected SharedPreferenceSaver(Context context)
-    {
+    protected SharedPreferenceSaver(Context context) {
         this.mContext = context;
     }
 
@@ -40,7 +38,6 @@ public abstract class SharedPreferenceSaver
      * @param editor Shared Preferences Editor to commit.
      * @param backup Backup to the cloud if possible.
      */
-    public void savePreferences(SharedPreferences.Editor editor, boolean backup)
-    {
+    public void savePreferences(SharedPreferences.Editor editor, boolean backup) {
     }
 }

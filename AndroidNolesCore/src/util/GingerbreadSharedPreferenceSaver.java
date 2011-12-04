@@ -19,16 +19,13 @@ package com.itnoles.shared.util;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
-public class GingerbreadSharedPreferenceSaver extends FroyoSharedPreferenceSaver
-{
-    public GingerbreadSharedPreferenceSaver(Context context)
-    {
+public class GingerbreadSharedPreferenceSaver extends FroyoSharedPreferenceSaver {
+    public GingerbreadSharedPreferenceSaver(Context context) {
         super(context);
     }
 
     @Override
-    public void savePreferences(Editor editor, boolean backup)
-    {
+    public void savePreferences(Editor editor, boolean backup) {
         editor.apply();
         mBackupManager.dataChanged();
     }

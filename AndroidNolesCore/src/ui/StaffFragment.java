@@ -18,56 +18,25 @@ package com.itnoles.shared.ui;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 
-import com.androidquery.AQuery;
-import com.itnoles.shared.R;
 import com.itnoles.shared.provider.ScheduleContract.Staff;
 
-public class StaffFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>
-{
+public class StaffFragment extends ContentAwareFragment {
     private static final int STAFF_LOADER = 0x03;
-    private SimpleCursorAdapter mAdapter;
+    private static final String[] PROJECTION = {Staff.NAME, Staff.POSITIONS};
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final AQuery aq = new AQuery(getActivity());
-        aq.id(R.id.details).gone();
-
-        final String[] projection = {Staff.NAME, Staff.POSITIONS, };
-
         getLoaderManager().initLoader(STAFF_LOADER, null, this);
-
-        mAdapter = new SimpleCursorAdapter(getActivity(),
-            android.R.layout.simple_list_item_2, null, projection,
-            new int[] {android.R.id.text1, android.R.id.text2},
-            CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-        setListAdapter(mAdapter);
+        setCursorAdapter(android.R.layout.simple_list_item_2, PROJECTION, new int[] {android.R.id.text1, android.R.id.text2});
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args)
-    {
-        final String[] projection = {"_id", Staff.NAME, Staff.POSITIONS, };
-        return new CursorLoader(getActivity(), Staff.CONTENT_URI, projection, null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
-    {
-        mAdapter.swapCursor(cursor);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader)
-    {
-        mAdapter.swapCursor(null);
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        final String[] newProjection = getNewProjectionList(PROJECTION);
+        return new CursorLoader(getActivity(), Staff.CONTENT_URI, newProjection, null, null, null);
     }
 }

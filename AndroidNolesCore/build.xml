@@ -45,6 +45,13 @@
             unless="sdk.dir"
     />
 
+    <target name="-pre-build">
+        <copy file="templates/SportsConstants.java" todir="${source.absolute.dir}" overwrite="true">
+            <filterset>
+                <filter token="DEBUG" value="${build.is.packaging.debug}"/>
+            </filterset>
+        </copy>
+    </target>
 
 <!-- extension targets. Uncomment the ones where you want to do custom work
      in between standard targets -->

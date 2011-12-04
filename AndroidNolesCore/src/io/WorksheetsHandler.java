@@ -40,20 +40,17 @@ import java.util.HashMap;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
-public class WorksheetsHandler extends XmlHandler
-{
+public class WorksheetsHandler extends XmlHandler {
     private static final String TAG = "WorksheetsHandler";
 
     private RemoteExecutor mExecutor;
 
-    public WorksheetsHandler(RemoteExecutor executor)
-    {
+    public WorksheetsHandler(RemoteExecutor executor) {
         mExecutor = executor;
     }
 
     @Override
-    public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException
-    {
+    public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException {
         final HashMap<String, WorksheetEntry> sheets = Maps.newHashMap();
 
         // walk response, collecting all known spreadsheets
@@ -73,8 +70,7 @@ public class WorksheetsHandler extends XmlHandler
         return Lists.newArrayList();
     }
 
-    private void considerUpdate(HashMap<String, WorksheetEntry> sheets, String sheetName, Uri targetDir, ContentResolver resolver)
-    {
+    private void considerUpdate(HashMap<String, WorksheetEntry> sheets, String sheetName, Uri targetDir, ContentResolver resolver) {
         final WorksheetEntry entry = sheets.get(sheetName);
         if (entry == null) {
             Log.w(TAG, "Missing '" + sheetName + "' worksheet data");
@@ -95,16 +91,13 @@ public class WorksheetsHandler extends XmlHandler
         }
     }
 
-    private XmlHandler createRemoteHandler(WorksheetEntry entry)
-    {
+    private XmlHandler createRemoteHandler(WorksheetEntry entry) {
         final String title = entry.getTitle();
         if (SportsConstants.SCHEDULE.equals(title)) {
             return new ScheduleHandler();
-        }
-        else if (SportsConstants.LINK.equals(title)) {
+        } else if (SportsConstants.LINK.equals(title)) {
             return new LinkHandler();
-        }
-        else if (SportsConstants.STAFF.equals(title)) {
+        } else if (SportsConstants.STAFF.equals(title)) {
             return new StaffHandler();
         }
         return null;

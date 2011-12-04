@@ -25,12 +25,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-public class WebDetailsFragment extends Fragment
-{
+public class WebDetailsFragment extends Fragment {
     private WebView mWebView;
 
-	public static WebDetailsFragment newInstance(String urlString)
-	{
+	public static WebDetailsFragment newInstance(String urlString) {
 	    final WebDetailsFragment f = new WebDetailsFragment();
 
 		// Supply url and index input as an argument.
@@ -41,22 +39,19 @@ public class WebDetailsFragment extends Fragment
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	    mWebView = new WebView(getActivity());
 	    return mWebView;
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState)
-	{
+	public void onActivityCreated(Bundle savedInstanceState) {
 	    super.onActivityCreated(savedInstanceState);
 
 	    mWebView.getSettings().setJavaScriptEnabled(true);
 	    mWebView.getSettings().setBuiltInZoomControls(true);
 	    mWebView.setWebViewClient(new WebViewClient() {
-	        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl)
-	 	    {
+	        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 	 	 	    Toast.makeText(getActivity(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
 	 	    }
 	    });
@@ -64,15 +59,13 @@ public class WebDetailsFragment extends Fragment
     }
 
     @Override
-    public void onLowMemory()
-    {
+    public void onLowMemory() {
         super.onLowMemory();
         mWebView.freeMemory();
     }
 
     @Override
-    public void onDestroyView()
-    {
+    public void onDestroyView() {
         super.onDestroyView();
 
         if (mWebView != null) {

@@ -21,15 +21,13 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
-import android.support.v4.app.SherlockPreferenceActivity;
 
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.itnoles.shared.R;
 
-public class AboutSettings extends SherlockPreferenceActivity
-{
+public class AboutSettings extends SherlockPreferenceActivity {
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// Load the XML preferences file
@@ -38,28 +36,22 @@ public class AboutSettings extends SherlockPreferenceActivity
 		final Preference appVersion = findPreference("app_version");
 		try {
 			appVersion.setSummary(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
-		}
-		catch(NameNotFoundException e) {
+		} catch(NameNotFoundException e) {
 		    appVersion.setSummary("");
 		}
 	}
 
 	@Override
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference)
-	{
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 		final String key = preference.getKey();
 		if ("author_email".equals(key)) {
 		    final Intent i = new Intent(Intent.ACTION_SEND);
 		    i.setType("message/rfc822");
 		    i.putExtra(Intent.EXTRA_EMAIL, new String[] {preference.getSummary().toString()});
-		    try {
-		    	i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback for " + getPackageManager().getApplicationInfo(getPackageName(), 0).labelRes);
-		    }
-		    catch(NameNotFoundException e) {
-		    	i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
-		    }
+		    i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
 		    startActivity(Intent.createChooser(i, "Select email application."));
 		}
+
 		return super.onPreferenceTreeClick(preferenceScreen, preference);
 	}
 }

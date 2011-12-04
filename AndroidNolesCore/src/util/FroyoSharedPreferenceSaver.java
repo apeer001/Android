@@ -20,19 +20,18 @@ import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
-public class FroyoSharedPreferenceSaver extends LegacySharedPreferenceSaver
-{
+import com.itnoles.shared.util.base.SharedPreferenceSaver;
+
+public class FroyoSharedPreferenceSaver extends SharedPreferenceSaver {
     protected BackupManager mBackupManager;
 
-    public FroyoSharedPreferenceSaver(Context context)
-    {
+    public FroyoSharedPreferenceSaver(Context context) {
         super(context);
         mBackupManager = new BackupManager(context);
     }
 
     @Override
-    public void savePreferences(Editor editor, boolean backup)
-    {
+    public void savePreferences(Editor editor, boolean backup) {
         editor.commit();
         mBackupManager.dataChanged();
     }

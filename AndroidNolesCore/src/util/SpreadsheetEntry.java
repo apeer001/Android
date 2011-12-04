@@ -33,20 +33,17 @@ import static org.xmlpull.v1.XmlPullParser.END_TAG;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 import static org.xmlpull.v1.XmlPullParser.TEXT;
 
-public class SpreadsheetEntry extends HashMap<String, String>
-{
+public class SpreadsheetEntry extends HashMap<String, String> {
     private static final Pattern CONTENT_PATTERN = Pattern.compile(
             "(?:^|, )([_a-zA-Z0-9]+): (.*?)(?=\\s*$|, [_a-zA-Z0-9]+: )",
             Pattern.DOTALL);
 
     private static Matcher sContentMatcher;
 
-    private static Matcher getContentMatcher(CharSequence input)
-    {
+    private static Matcher getContentMatcher(CharSequence input) {
         if (sContentMatcher == null) {
             sContentMatcher = CONTENT_PATTERN.matcher(input);
-        }
-        else {
+        } else {
             sContentMatcher.reset(input);
         }
         return sContentMatcher;
@@ -54,38 +51,31 @@ public class SpreadsheetEntry extends HashMap<String, String>
 
     private long mUpdated;
 
-    public long getUpdated()
-    {
+    public long getUpdated() {
         return mUpdated;
     }
 
     public static SpreadsheetEntry fromParser(XmlPullParser parser)
-        throws XmlPullParserException, IOException
-    {
+        throws XmlPullParserException, IOException {
         final int depth = parser.getDepth();
         final SpreadsheetEntry entry = new SpreadsheetEntry();
 
         String tag = null;
         int type;
         while (((type = parser.next()) != END_TAG
-            || parser.getDepth() > depth) && type != END_DOCUMENT)
-        {
+            || parser.getDepth() > depth) && type != END_DOCUMENT) {
             if (type == START_TAG) {
                 tag = parser.getName();
-            }
-            else if (type == END_TAG) {
+            } else if (type == END_TAG) {
                 tag = null;
-            }
-            else if (type == TEXT) {
+            } else if (type == TEXT) {
                 if ("updated".equals(tag)) {
                     final String text = parser.getText();
                     entry.mUpdated = ParserUtils.parseTime(text);
-                }
-                else if ("title".equals(tag)) {
+                } else if ("title".equals(tag)) {
                     final String text = parser.getText();
                     entry.put("title", text);
-                }
-                else if ("content".equals(tag)) {
+                } else if ("content".equals(tag)) {
                     final String text = parser.getText();
                     final Matcher matcher = getContentMatcher(text);
                     while (matcher.find()) {

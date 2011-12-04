@@ -1,3 +1,4 @@
 <resources>
+	<item type="id" name="settings" />
     <item type="id" name="headlines_viewholder" />
 </resources>

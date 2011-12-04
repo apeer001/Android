@@ -37,13 +37,11 @@ import static com.itnoles.shared.util.ParserUtils.sanitizeId;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
-public class StaffHandler extends XmlHandler
-{
+public class StaffHandler extends XmlHandler {
     private static final String TAG = "StaffHandler";
 
     @Override
-    public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException
-    {
+    public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException {
         final ArrayList<ContentProviderOperation> batch = Lists.newArrayList();
 
         // Walk document, parsing any incoming entries

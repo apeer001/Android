@@ -25,34 +25,27 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.itnoles.shared.R;
+import com.itnoles.shared.util.AQuery;
 
-public abstract class AbstractTeamFragment extends ListFragment
-{
+public abstract class AbstractTeamFragment extends ListFragment {
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
 
     @Override
-    public void onActivityCreated(Bundle savedState)
-    {
+    public void onActivityCreated(Bundle savedState) {
         super.onActivityCreated(savedState);
 
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
-        final View detailsFrame = getActivity().findViewById(R.id.details);
-        // If users click in non-dual pane tabs,
-        // it cause this one to be gone too.
-        if (detailsFrame != null && detailsFrame.getVisibility() == View.GONE) {
-            detailsFrame.setVisibility(View.VISIBLE);
-        }
-        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+        final AQuery aq = new AQuery(getActivity());
+        mDualPane = aq.id(R.id.details).visible().isVisible();
 
         final ArrayAdapter adapter = ArrayAdapter.createFromResource(getActivity(), resourceID(), android.R.layout.simple_list_item_1);
         setListAdapter(adapter);
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id)
-    {
+    public void onListItemClick(ListView l, View v, int position, long id) {
         switch(position) {
         case 0:
             final ScheduleFragment schedule = new ScheduleFragment();
@@ -66,20 +59,18 @@ public abstract class AbstractTeamFragment extends ListFragment
         }
     }
 
-    private void replaceFragmentInFrame(Fragment fragment)
-    {
-        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+    private void replaceFragmentInFrame(Fragment fragment) {
+        final FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (mDualPane) {
             final int position = getSelectedItemPosition();
             if (mShownCheckPosition != position) {
                 ft.replace(R.id.details, fragment).commit();
                 mShownCheckPosition = position;
             }
-        }
-        else {
+        } else {
             ft.addToBackStack("team").replace(R.id.titles, fragment).commit();
         }
     }
 
-    public abstract int resourceID();
+    protected abstract int resourceID();
 }

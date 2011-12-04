@@ -25,7 +25,7 @@ public interface SportsConstants {
     String STAFF = "staff";
 
     // it use Ant to replace this value
-    boolean DEVELOPER_MODE = true;
+    boolean DEVELOPER_MODE = @DEBUG@;
 
     String SP_KEY_NEWS_TITLE = "SP_KEY_NEWS_TITLE";
     String SP_KEY_NEWS_URL = "SP_KEY_NEWS_URL";

@@ -28,45 +28,38 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
-public class WorksheetEntry
-{
+public class WorksheetEntry {
     private static final String REL_LISTFEED = "http://schemas.google.com/spreadsheets/2006#listfeed";
     private long mUpdated;
     private String mTitle;
     private String mListFeed;
 
-    public long getUpdated()
-    {
+    public long getUpdated() {
         return mUpdated;
     }
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return mTitle;
     }
 
-    public String getListFeed()
-    {
+    public String getListFeed() {
         return mListFeed;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "title=" + mTitle + ", updated=" + mUpdated + " ("+ DateUtils.getRelativeTimeSpanString(mUpdated) + ")";
     }
 
     public static WorksheetEntry fromParser(XmlPullParser parser)
-        throws XmlPullParserException, IOException
-    {
+        throws XmlPullParserException, IOException {
         final int depth = parser.getDepth();
         final WorksheetEntry entry = new WorksheetEntry();
 
         String tag = null;
         int type;
         while (((type = parser.next()) != END_TAG
-            || parser.getDepth() > depth) && type != END_DOCUMENT)
-        {
+            || parser.getDepth() > depth) && type != END_DOCUMENT) {
             if (type == START_TAG) {
                 tag = parser.getName();
                 if ("link".equals(tag)) {
@@ -76,16 +69,13 @@ public class WorksheetEntry
                         entry.mListFeed = href;
                     }
                 }
-            }
-            else if (type == END_TAG) {
+            } else if (type == END_TAG) {
                 tag = null;
-            }
-            else if (type == TEXT) {
+            } else if (type == TEXT) {
                 final String text = parser.getText();
                 if ("title".equals(tag)) {
                     entry.mTitle = text;
-                }
-                else if ("updated".equals(tag)) {
+                } else if ("updated".equals(tag)) {
                     entry.mUpdated = ParserUtils.parseTime(text);
                 }
             }
