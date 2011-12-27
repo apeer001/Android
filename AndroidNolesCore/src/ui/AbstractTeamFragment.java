@@ -25,7 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.itnoles.shared.R;
-import com.itnoles.shared.util.AQuery;
+import com.itnoles.shared.util.UIUtils;
 
 public abstract class AbstractTeamFragment extends ListFragment {
     private boolean mDualPane;
@@ -37,8 +37,7 @@ public abstract class AbstractTeamFragment extends ListFragment {
 
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
-        final AQuery aq = new AQuery(getActivity());
-        mDualPane = aq.id(R.id.details).visible().isVisible();
+        mDualPane = UIUtils.checkDualPaneForTablet(getActivity());
 
         final ArrayAdapter adapter = ArrayAdapter.createFromResource(getActivity(), resourceID(), android.R.layout.simple_list_item_1);
         setListAdapter(adapter);
@@ -47,15 +46,15 @@ public abstract class AbstractTeamFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         switch(position) {
-        case 0:
-            final ScheduleFragment schedule = new ScheduleFragment();
-            replaceFragmentInFrame(schedule);
-            break;
-        case 1:
-            final StaffFragment staff = new StaffFragment();
-            replaceFragmentInFrame(staff);
-            break;
-        default:
+            case 0:
+                final ScheduleFragment schedule = new ScheduleFragment();
+                replaceFragmentInFrame(schedule);
+                break;
+            case 1:
+                final StaffFragment staff = new StaffFragment();
+                replaceFragmentInFrame(staff);
+                break;
+            default:
         }
     }
 

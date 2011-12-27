@@ -17,21 +17,14 @@
 package com.itnoles.shared.io;
 
 import android.content.ContentResolver;
-import android.util.Log;
 
-import com.itnoles.shared.util.ParserUtils;
+import com.itnoles.shared.util.XMLPullParserUtils;
 import com.itnoles.shared.util.base.HttpTransport;
 
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 public class RemoteExecutor {
-    private static final String LOG_TAG = "RemoteExecutor";
-
-    private HttpTransport mTransport;
+    private final HttpTransport mTransport;
     private final ContentResolver mResolver;
 
     public RemoteExecutor(HttpTransport transport, ContentResolver resolver) {
@@ -39,23 +32,11 @@ public class RemoteExecutor {
         mResolver = resolver;
     }
 
-    public void executeWithPullParser(String url, XmlHandler handler) {
-        try {
-            final HttpTransport.LowLevelHttpResponse response = mTransport.buildResponse(url);
-            final InputStream input = response.execute();
-            try {
-                final XmlPullParser parser = ParserUtils.newPullParser(input);
+    public void executeWithPullParser(String url, final XmlHandler handler) {
+        XMLPullParserUtils.execute(mTransport, url, new XMLPullParserUtils.XMLPullParserManager() {
+            public void onPostExecute(XmlPullParser parser) {
                 handler.parseAndApply(parser, mResolver);
-            } catch (XmlPullParserException e) {
-                Log.w(LOG_TAG, "Malformed response", e);
-            } finally {
-                if (input != null) {
-                    input.close();
-                }
-                response.disconnect();
             }
-        } catch (IOException e) {
-            Log.w(LOG_TAG, "Problem reading remote response", e);
-        }
+        });
     }
 }

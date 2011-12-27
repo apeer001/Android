@@ -1,7 +1,5 @@
 <resources>
-	<string name="listPref_title">Headlines</string>
-	<string name="listPref_dialogTitle">News Source</string>
-	<string name="listPref_summary">change the news source</string>
+	<string name="empty_headlines">No headlines available.</string>
 
 	<!-- Settings -->
 	<string name="general">General</string>
@@ -11,4 +9,7 @@
 	<string name="author_name">Author Name</string>
 	<string name="author_email">Author Email</string>
 	<string name="author_website">Author Website</string>
+	<string name="listPref_title">Headlines</string>
+	<string name="listPref_dialogTitle">News Source</string>
+	<string name="listPref_summary">change the news source</string>
 </resources>

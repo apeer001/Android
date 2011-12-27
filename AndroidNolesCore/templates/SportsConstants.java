@@ -16,27 +16,27 @@
 
 package com.itnoles.shared;
 
-public interface SportsConstants {
+public final class SportsConstants {
+    private SportsConstants() {
+    }
+
     /**
      * Worksheet Table name
      */
-    String SCHEDULE = "schedule";
-    String LINK = "link";
-    String STAFF = "staff";
+    public static final String SCHEDULE = "schedule";
+    public static final String LINK = "link";
+    public static final String STAFF = "staff";
 
     // it use Ant to replace this value
-    boolean DEVELOPER_MODE = @DEBUG@;
+    public static final boolean DEVELOPER_MODE = @DEBUG@;
 
-    String SP_KEY_NEWS_TITLE = "SP_KEY_NEWS_TITLE";
-    String SP_KEY_NEWS_URL = "SP_KEY_NEWS_URL";
-    String SP_KEY_NEWS_REFRESH = "SP_KEY_NEWS_REFRESH";
+    public static final String SP_KEY_NEWS_TITLE = "SP_KEY_NEWS_TITLE";
+    public static final String SP_KEY_NEWS_URL = "SP_KEY_NEWS_URL";
+    public static final String SP_KEY_NEWS_REFRESH = "SP_KEY_NEWS_REFRESH";
 
     // ATOM Tags
-    String ENTRY = "entry";
+    public static final String ENTRY = "entry";
 
-    String UPDATED = "updated";
-    String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
-
-    boolean SUPPORTS_GINGERBREAD = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD; //>= 2.3
-    boolean SUPPORTS_HONEYCOMB = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB; //>= 3.0
+    public static final String UPDATED = "updated";
+    public static final String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
 }

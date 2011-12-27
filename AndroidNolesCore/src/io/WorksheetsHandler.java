@@ -43,7 +43,7 @@ import static org.xmlpull.v1.XmlPullParser.START_TAG;
 public class WorksheetsHandler extends XmlHandler {
     private static final String TAG = "WorksheetsHandler";
 
-    private RemoteExecutor mExecutor;
+    private final RemoteExecutor mExecutor;
 
     public WorksheetsHandler(RemoteExecutor executor) {
         mExecutor = executor;
@@ -56,7 +56,7 @@ public class WorksheetsHandler extends XmlHandler {
         // walk response, collecting all known spreadsheets
         int type;
         while ((type = parser.next()) != END_DOCUMENT) {
-            if (type == START_TAG && "entry".equals(parser.getName())) {
+            if (type == START_TAG && SportsConstants.ENTRY.equals(parser.getName())) {
                 final WorksheetEntry entry = WorksheetEntry.fromParser(parser);
                 Log.d(TAG, "found worksheet " + entry.toString());
                 sheets.put(entry.getTitle(), entry);
@@ -67,6 +67,7 @@ public class WorksheetsHandler extends XmlHandler {
         considerUpdate(sheets, SportsConstants.SCHEDULE, Schedule.CONTENT_URI, resolver);
         considerUpdate(sheets, SportsConstants.LINK, Link.CONTENT_URI, resolver);
         considerUpdate(sheets, SportsConstants.STAFF, Staff.CONTENT_URI, resolver);
+
         return Lists.newArrayList();
     }
 

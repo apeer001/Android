@@ -17,7 +17,6 @@
 package com.itnoles.shared.ui.tablet;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -27,14 +26,6 @@ import android.preference.PreferenceScreen;
 import com.itnoles.shared.R;
 
 public class AboutFragment extends PreferenceFragment {
-	private PackageManager getPackageManager() {
-		return getActivity().getPackageManager();
-	}
-
-	private String getPackageName() {
-		return getActivity().getPackageName();
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,7 +35,7 @@ public class AboutFragment extends PreferenceFragment {
 
 		final Preference appVersion = findPreference("app_version");
 		try {
-			appVersion.setSummary(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+			appVersion.setSummary(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);
 		} catch(NameNotFoundException e) {
 		    appVersion.setSummary("");
 		}

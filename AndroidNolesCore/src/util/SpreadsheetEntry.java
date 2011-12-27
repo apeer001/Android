@@ -35,16 +35,17 @@ import static org.xmlpull.v1.XmlPullParser.TEXT;
 
 public class SpreadsheetEntry extends HashMap<String, String> {
     private static final Pattern CONTENT_PATTERN = Pattern.compile(
-            "(?:^|, )([_a-zA-Z0-9]+): (.*?)(?=\\s*$|, [_a-zA-Z0-9]+: )",
-            Pattern.DOTALL);
+            "(?:^|, )([_a-zA-Z0-9]+): (.*?)(?=\\s*$|, [_a-zA-Z0-9]+: )", Pattern.DOTALL);
 
     private static Matcher sContentMatcher;
 
     private static Matcher getContentMatcher(CharSequence input) {
-        if (sContentMatcher == null) {
-            sContentMatcher = CONTENT_PATTERN.matcher(input);
-        } else {
-            sContentMatcher.reset(input);
+        synchronized(Matcher.class) {
+            if (sContentMatcher == null) {
+                sContentMatcher = CONTENT_PATTERN.matcher(input);
+            } else {
+                sContentMatcher.reset(input);
+            }
         }
         return sContentMatcher;
     }
@@ -55,15 +56,13 @@ public class SpreadsheetEntry extends HashMap<String, String> {
         return mUpdated;
     }
 
-    public static SpreadsheetEntry fromParser(XmlPullParser parser)
-        throws XmlPullParserException, IOException {
+    public static SpreadsheetEntry fromParser(XmlPullParser parser) throws XmlPullParserException, IOException {
         final int depth = parser.getDepth();
         final SpreadsheetEntry entry = new SpreadsheetEntry();
 
         String tag = null;
         int type;
-        while (((type = parser.next()) != END_TAG
-            || parser.getDepth() > depth) && type != END_DOCUMENT) {
+        while (((type = parser.next()) != END_TAG || parser.getDepth() > depth) && type != END_DOCUMENT) {
             if (type == START_TAG) {
                 tag = parser.getName();
             } else if (type == END_TAG) {

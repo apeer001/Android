@@ -19,12 +19,12 @@ package com.itnoles.shared.ui.phone;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
+import android.support.v4.app.SherlockPreferenceActivity;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.itnoles.shared.R;
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
-import com.itnoles.shared.util.base.SharedPreferenceSaver;
+import com.itnoles.shared.util.base.ISharedPreferenceSaver;
 
 public abstract class AbstractGeneralSettings extends SherlockPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	protected ListPreference mNewsPref;
@@ -60,8 +60,8 @@ public abstract class AbstractGeneralSettings extends SherlockPreferenceActivity
 		    edit.putString(SportsConstants.SP_KEY_NEWS_TITLE, mNewsPref.getEntry().toString());
 		    edit.putString(SportsConstants.SP_KEY_NEWS_URL, mNewsPref.getValue());
 		    edit.putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, true);
-		    final SharedPreferenceSaver saver = PlatformSpecificImplementationFactory.getSharedPreferenceSaver(this);
-		    saver.savePreferences(edit, false);
+		    final ISharedPreferenceSaver saver = PlatformSpecificImplementationFactory.getSharedPreferenceSaver(this);
+		    saver.savePreferences(edit);
 		}
 	}
 }

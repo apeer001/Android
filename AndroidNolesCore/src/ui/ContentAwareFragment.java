@@ -36,6 +36,7 @@ public abstract class ContentAwareFragment extends ListFragment implements Loade
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         final AQuery aq = new AQuery(getActivity());
         aq.id(R.id.details).gone();
     }

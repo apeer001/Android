@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.itnoles.shared.util.ParserUtils.queryItemUpdated;
-import static com.itnoles.shared.util.ParserUtils.sanitizeId;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
@@ -50,8 +49,8 @@ public class StaffHandler extends XmlHandler {
             if (type == START_TAG && SportsConstants.ENTRY.equals(parser.getName())) {
                 // Process single spreadsheet row at a time
                 final SpreadsheetEntry entry = SpreadsheetEntry.fromParser(parser);
-                final String staffId = sanitizeId(entry.get("title"));
-                final Uri staffUri = Staff.buildStaffUri(staffId);
+                final String title = entry.get("title");
+                final Uri staffUri = Staff.buildStaffUri(title);
 
                 // Check for existing details, only update when changed
                 final long localUpdated = queryItemUpdated(staffUri, resolver);
@@ -70,8 +69,7 @@ public class StaffHandler extends XmlHandler {
 
                 final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(Staff.CONTENT_URI);
                 builder.withValue(SportsConstants.UPDATED, serverUpdated);
-                builder.withValue(Staff.STAFF_ID, staffId);
-                builder.withValue(Staff.NAME, entry.get("title"));
+                builder.withValue(Staff.NAME, title);
                 builder.withValue(Staff.POSITIONS, entry.get(Staff.POSITIONS));
 
                 // Normal staff details ready, write to provider

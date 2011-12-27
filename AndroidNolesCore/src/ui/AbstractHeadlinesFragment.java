@@ -19,18 +19,16 @@ package com.itnoles.shared.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.content.res.Resources;
+//import android.content.pm.ActivityInfo;
+//import android.content.res.Configuration;
+//import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
+//import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,25 +37,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.itnoles.shared.R;
+import com.itnoles.shared.SportsConstants;
+import com.itnoles.shared.io.AsyncListLoader;
 import com.itnoles.shared.io.HeadlinesHandler;
 import com.itnoles.shared.ui.phone.WebDetailsActivity;
 import com.itnoles.shared.util.AQuery;
 import com.itnoles.shared.util.NetworkUtils;
 import com.itnoles.shared.util.News;
-import com.itnoles.shared.util.ParserUtils;
 import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
+import com.itnoles.shared.util.UIUtils;
+import com.itnoles.shared.util.XMLPullParserUtils;
 import com.itnoles.shared.util.base.HttpTransport;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 public abstract class AbstractHeadlinesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
-    private static final String LOG_TAG = "HeadlinesFragment";
-
     protected SharedPreferences mSharedPrefs;
 
     // This is the Adapter being used to display the list's data.
@@ -69,15 +67,11 @@ public abstract class AbstractHeadlinesFragment extends ListFragment implements 
     public void onActivityCreated(Bundle savedState) {
         super.onActivityCreated(savedState);
 
-        // Give some text to display if there is no data. In a real
-        // application this would come from a resource.
-        setEmptyText("No applications");
+        // Give some text to display if there is no data.
+        setEmptyText(getString(R.string.empty_headlines));
 
         // Load Shared Preference Manager
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-        // Set the actionbar's subtitle
-        ((AbstractMainActivity) getActivity()).setActionBarSubtitle(getNewsTitle());
 
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new NewsListAdapter(getActivity());
@@ -86,14 +80,28 @@ public abstract class AbstractHeadlinesFragment extends ListFragment implements 
         // Start out with a progress indicator.
         setListShown(false);
 
-        // Prepare the loader.  Either re-connect with an existing one,
+        // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
 
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
-        final AQuery aq = new AQuery(getActivity());
-        mDualPane = aq.id(R.id.details).visible().isVisible();
+        mDualPane = UIUtils.checkDualPaneForTablet(getActivity());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Restart the Loaders for shared prefences changes when SP_KEY_NEWS_REFRESH is true
+        if (mSharedPrefs.getBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, false)) {
+            getLoaderManager().restartLoader(0, null, this);
+            mSharedPrefs.edit().putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, false).commit();
+        }
+
+        // Set the actionbar's subtitle
+        final String title = mSharedPrefs.getString(SportsConstants.SP_KEY_NEWS_TITLE, "Latest Football news");
+        ((AbstractMainActivity) getActivity()).setActionBarSubtitle(title);
     }
 
     @Override
@@ -116,8 +124,7 @@ public abstract class AbstractHeadlinesFragment extends ListFragment implements 
                 mShownCheckPosition = position;
             }
         } else {
-            final Intent intent = new Intent();
-            intent.setClass(getActivity(), WebDetailsActivity.class);
+            final Intent intent = new Intent(getActivity(), WebDetailsActivity.class);
             intent.putExtra("url", urlString);
             startActivity(intent);
         }
@@ -148,14 +155,13 @@ public abstract class AbstractHeadlinesFragment extends ListFragment implements 
         mAdapter.setData(null);
     }
 
-    protected abstract String getNewsTitle();
     protected abstract String getNewsURL();
 
     /**
      * Helper for determining if the configuration has changed in an interesting
-     * way so we need to rebuild the app list.
+     * way so we need to rebuild the news list.
      */
-    static class InterestingConfigChanges {
+    /*static class InterestingConfigChanges {
         final Configuration mLastConfiguration = new Configuration();
         int mLastDensity;
 
@@ -169,15 +175,12 @@ public abstract class AbstractHeadlinesFragment extends ListFragment implements 
             }
             return false;
         }
-    }
+    }*/
 
     /**
      * A custom Loader that loads all of the headlines.
      */
-    static class NewsListLoader extends AsyncTaskLoader<List<News>> {
-        final InterestingConfigChanges mLastConfig = new InterestingConfigChanges();
-
-        List<News> mNews;
+    static class NewsListLoader extends AsyncListLoader<List<News>> {
         String mURL;
 
         public NewsListLoader(Context context, String url) {
@@ -186,140 +189,33 @@ public abstract class AbstractHeadlinesFragment extends ListFragment implements 
         }
 
         /**
-         * This is where the bulk of our work is done.  This function is
+         * This is where the bulk of our work is done. This function is
          * called in a background thread and should generate a new set of
          * data to be published by the loader.
          */
         @Override
         public List<News> loadInBackground() {
+            final NetworkUtils network = new NetworkUtils(getContext());
+            if (!network.isNetworkConnected()) {
+                return null;
+            }
+            final HeadlinesHandler handler = new HeadlinesHandler();
             final HttpTransport transport = PlatformSpecificImplementationFactory.getTransport();
             try {
-                final HttpTransport.LowLevelHttpResponse response = transport.buildResponse(mURL);
-                final InputStream input = response.execute();
-                try {
-                    final XmlPullParser parser = ParserUtils.newPullParser(input);
-                    final HeadlinesHandler handler = new HeadlinesHandler();
-                    return handler.parse(parser);
-                } catch(XmlPullParserException e) {
-                    Log.w(LOG_TAG, "Malformed response", e);
-                } finally {
-                    if (input != null) {
-                        input.close();
+                XMLPullParserUtils.execute(transport, mURL, new XMLPullParserUtils.XMLPullParserManager() {
+                    public void onPostExecute(XmlPullParser parser) throws XmlPullParserException, IOException {
+                        handler.parse(parser);
                     }
-                    response.disconnect();
-                }
-            } catch(IOException e) {
-                Log.w(LOG_TAG, "Problem reading remote response", e);
+                });
             } finally {
                 transport.shutdown();
             }
-            return null;
-        }
-
-        /**
-         * Called when there is new data to deliver to the client.  The
-         * super class will take care of delivering it; the implementation
-         * here just adds a little more logic.
-         */
-        @Override
-        public void deliverResult(List<News> news) {
-            if (isReset()) {
-                // An async query came in while the loader is stopped.  We
-                // don't need the result.
-                if (news != null) {
-                    onReleaseResources(news);
-                }
-            }
-            final List<News> oldNews = news;
-            mNews = news;
-
-            if (isStarted()) {
-                // If the Loader is currently started, we can immediately
-                // deliver its results.
-                super.deliverResult(news);
-            }
-
-            // At this point we can release the resources associated with
-            // 'oldNews' if needed; now that the new result is delivered we
-            // know that it is no longer in use.
-            if (oldNews != null) {
-                onReleaseResources(oldNews);
-            }
-        }
-
-        /**
-         * Handles a request to start the Loader.
-         */
-        @Override
-        protected void onStartLoading() {
-            if (mNews != null) {
-                // If we currently have a result available, deliver it
-                // immediately.
-                deliverResult(mNews);
-            }
-
-            // Has something interesting in the configuration changed since we
-            // last built the news list?
-            final boolean configChange = mLastConfig.applyNewConfig(getContext().getResources());
-
-            if (mNews == null || configChange && NetworkUtils.isNetworkConnected(getContext())) {
-                // If the data has changed since the last time it was loaded
-                // or is not currently available, start a load.
-                forceLoad();
-            }
-        }
-
-        /**
-         * Handles a request to stop the Loader.
-         */
-        @Override
-        protected void onStopLoading() {
-            // Attempt to cancel the current load task if possible.
-            cancelLoad();
-        }
-
-        /**
-         * Handles a request to cancel a load.
-         */
-        @Override
-        public void onCanceled(List<News> news) {
-            super.onCanceled(news);
-
-            // At this point we can release the resources associated with 'news'
-            // if needed.
-            onReleaseResources(news);
-        }
-
-        /**
-         * Handles a request to completely reset the Loader.
-         */
-        @Override
-        protected void onReset() {
-            super.onReset();
-
-            // Ensure the loader is stopped
-            onStopLoading();
-
-            // At this point we can release the resources associated with 'news'
-            // if needed.
-            if (mNews != null) {
-                onReleaseResources(mNews);
-                mNews = null;
-            }
-        }
-
-        /**
-        * Helper function to take care of releasing resources associated
-        * with an actively loaded data set.
-        */
-        protected void onReleaseResources(List<News> apps) {
-            // For a simple List<> there is nothing to do.  For something
-            // like a Cursor, we would close it here.
+            return handler.getNews();
         }
     }
 
     static class NewsListAdapter extends ArrayAdapter<News> {
-        private LayoutInflater mLayoutInflater;
+        private final LayoutInflater mLayoutInflater;
 
         public NewsListAdapter(Context context) {
             super(context, 0);
@@ -364,12 +260,7 @@ public abstract class AbstractHeadlinesFragment extends ListFragment implements 
             final News news = getItem(position);
             holder.mTitle.setText(news.getTitle());
             holder.mDate.setText(news.getPubDate());
-            final String text = news.getDesc();
-            if (text.contains("<") && text.contains(">")) {
-                holder.mDesc.setText(Html.fromHtml(text));
-            } else {
-                holder.mDesc.setText(text);
-            }
+            UIUtils.setTextMaybeHtml(holder.mDesc, news.getDesc());
 
             return convertView;
         }

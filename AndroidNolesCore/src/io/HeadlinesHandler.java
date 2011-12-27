@@ -24,42 +24,46 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 public class HeadlinesHandler {
-    public List<News> parse(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<News> news = null;
+    private ArrayList<News> mList;
+
+    public void parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         News currentNews = null;
         int type = parser.getEventType();
         while (type != XmlPullParser.END_DOCUMENT) {
             String name = null;
             switch(type) {
-            case XmlPullParser.START_DOCUMENT:
-                news = Lists.newArrayList();
-                break;
-            case XmlPullParser.START_TAG:
-                name = parser.getName();
-                if ("item".equals(name) || SportsConstants.ENTRY.equals(name)) {
-                    currentNews = new News();
-                } else if (currentNews != null) {
-                    if (SportsConstants.LINK.equals(name) && parser.getAttributeCount() > 0) {
-                        final String url = parser.getAttributeValue(null, "url");
-                        currentNews.setLink(url);
-                    } else {
-                        currentNews.setValue(name, parser.nextText());
+                case XmlPullParser.START_DOCUMENT:
+                    mList = Lists.newArrayList();
+                    break;
+                case XmlPullParser.START_TAG:
+                    name = parser.getName();
+                    if ("item".equals(name) || SportsConstants.ENTRY.equals(name)) {
+                        currentNews = new News();
+                    } else if (currentNews != null) {
+                        if (SportsConstants.LINK.equals(name) && parser.getAttributeCount() > 0) {
+                            final String url = parser.getAttributeValue(null, "url");
+                            currentNews.setValue(name, url);
+                        } else {
+                            currentNews.setValue(name, parser.nextText());
+                        }
                     }
-                }
-                break;
-            case XmlPullParser.END_TAG:
-                name = parser.getName();
-                if ("item".equals(name) || SportsConstants.ENTRY.equals(name) && currentNews != null) {
-                    news.add(currentNews);
-                }
-                break;
-            default:
+                    break;
+                case XmlPullParser.END_TAG:
+                    name = parser.getName();
+                    if ("item".equals(name) || SportsConstants.ENTRY.equals(name) && currentNews != null) {
+                        mList.add(currentNews);
+                        break;
+                    }
+                default:
             }
             type = parser.next();
         }
-        return news;
+    }
+
+    public ArrayList<News> getNews() {
+        return mList;
     }
 }

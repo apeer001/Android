@@ -17,11 +17,9 @@
 package com.itnoles.shared.service;
 
 import android.app.IntentService;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 
 import com.itnoles.shared.io.RemoteExecutor;
+import com.itnoles.shared.util.NetworkUtils;
 import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
 import com.itnoles.shared.util.base.HttpTransport;
 
@@ -29,9 +27,8 @@ public abstract class AbstractSyncService extends IntentService {
     protected static final String TAG = "SyncService";
 
     protected RemoteExecutor mRemoteExecutor;
+    protected NetworkUtils mNetwork;
     protected HttpTransport mTransport;
-
-    private ConnectivityManager mConnectManager;
 
     public AbstractSyncService() {
        super(TAG);
@@ -40,14 +37,8 @@ public abstract class AbstractSyncService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-
         mTransport = PlatformSpecificImplementationFactory.getTransport();
         mRemoteExecutor = new RemoteExecutor(mTransport, getContentResolver());
-        mConnectManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-    }
-
-    protected boolean isNetworkConnected() {
-        final NetworkInfo activeNetwork = mConnectManager.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        mNetwork = new NetworkUtils(this);
     }
 }

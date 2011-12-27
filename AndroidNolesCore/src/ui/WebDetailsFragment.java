@@ -25,6 +25,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+/**
+ * A fragment that displays a WebView.
+ *
+ * The WebView is automically paused or resumed when the Fragment is paused or resumed.
+ */
 public class WebDetailsFragment extends Fragment {
     private WebView mWebView;
 
@@ -38,8 +43,14 @@ public class WebDetailsFragment extends Fragment {
 		return f;
 	}
 
+	/**
+     * Called to instantiate the view. Creates and returns the WebView.
+     */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		if (mWebView != null) {
+			mWebView.destroy();
+		}
 	    mWebView = new WebView(getActivity());
 	    return mWebView;
 	}
@@ -58,20 +69,50 @@ public class WebDetailsFragment extends Fragment {
 	    mWebView.loadUrl(getArguments().getString("url"));
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running. Resumes the WebView.
+     */
+    @Override
+    public void onResume() {
+        mWebView.onResume();
+        super.onResume();
+    }
+
+    /**
+     * Called when the fragment is no longer resumed. Pauses the WebView.
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        mWebView.onPause();
+    }
+
+    /**
+     * Called when the overall system is running low on memory.
+     */
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mWebView.freeMemory();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
 
         if (mWebView != null) {
-            mWebView.freeMemory();
+        	/**
+        	 * Free memory on WebView
+        	 */
+        	mWebView.freeMemory();
+        }
+    }
+
+    /**
+     * Called when the fragment is no longer in use.
+     * Free memory and destroy the internal state of the WebView.
+     */
+    @Override
+    public void onDestroy() {
+        if (mWebView != null) {
+        	mWebView.freeMemory();
             mWebView.destroy();
             mWebView = null;
         }
+        super.onDestroy();
     }
 }

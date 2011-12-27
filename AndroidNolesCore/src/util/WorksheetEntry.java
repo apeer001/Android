@@ -30,6 +30,7 @@ import java.io.IOException;
 
 public class WorksheetEntry {
     private static final String REL_LISTFEED = "http://schemas.google.com/spreadsheets/2006#listfeed";
+
     private long mUpdated;
     private String mTitle;
     private String mListFeed;
@@ -51,15 +52,13 @@ public class WorksheetEntry {
         return "title=" + mTitle + ", updated=" + mUpdated + " ("+ DateUtils.getRelativeTimeSpanString(mUpdated) + ")";
     }
 
-    public static WorksheetEntry fromParser(XmlPullParser parser)
-        throws XmlPullParserException, IOException {
+    public static WorksheetEntry fromParser(XmlPullParser parser) throws XmlPullParserException, IOException {
         final int depth = parser.getDepth();
         final WorksheetEntry entry = new WorksheetEntry();
 
         String tag = null;
         int type;
-        while (((type = parser.next()) != END_TAG
-            || parser.getDepth() > depth) && type != END_DOCUMENT) {
+        while (((type = parser.next()) != END_TAG || parser.getDepth() > depth) && type != END_DOCUMENT) {
             if (type == START_TAG) {
                 tag = parser.getName();
                 if ("link".equals(tag)) {

@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.itnoles.shared.util.ParserUtils.queryItemUpdated;
-import static com.itnoles.shared.util.ParserUtils.sanitizeId;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
@@ -50,9 +49,8 @@ public class ScheduleHandler extends XmlHandler {
             if (type == START_TAG && SportsConstants.ENTRY.equals(parser.getName())) {
                 // Process single spreadsheet row at a time
                 final SpreadsheetEntry entry = SpreadsheetEntry.fromParser(parser);
-
-                final String scheduleId = sanitizeId(entry.get("title"));
-                final Uri scheduleUri = Schedule.buildScheduleUri(scheduleId);
+                final String title = entry.get("title");
+                final Uri scheduleUri = Schedule.buildScheduleUri(title);
 
                 // Check for existing details, only update when changed
                 final long localUpdated = queryItemUpdated(scheduleUri, resolver);
@@ -71,8 +69,7 @@ public class ScheduleHandler extends XmlHandler {
 
                 final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(Schedule.CONTENT_URI);
                 builder.withValue(SportsConstants.UPDATED, serverUpdated);
-                builder.withValue(Schedule.SCHEDULE_ID, scheduleId);
-                builder.withValue(Schedule.DATE, entry.get("title"));
+                builder.withValue(Schedule.DATE, title);
                 builder.withValue(Schedule.TIME, entry.get(Schedule.TIME));
                 builder.withValue(Schedule.SCHOOL, entry.get(Schedule.SCHOOL));
 

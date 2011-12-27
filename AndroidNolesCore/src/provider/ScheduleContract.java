@@ -21,40 +21,46 @@ import android.provider.BaseColumns;
 
 import com.itnoles.shared.SportsConstants;
 
-public class ScheduleContract {
+public final class ScheduleContract {
     private ScheduleContract() {
     }
 
     private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + SportsConstants.CONTENT_AUTHORITY);
 
-    public static class Schedule implements BaseColumns {
+    public static final class Schedule implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(SportsConstants.SCHEDULE).build();
-        public static final String SCHEDULE_ID = "schedule_id";
         public static final String DATE = "date";
         public static final String TIME = "time";
         public static final String SCHOOL = "school";
+
+        private Schedule() {
+        }
 
         public static Uri buildScheduleUri(String scheduleId) {
             return CONTENT_URI.buildUpon().appendPath(scheduleId).build();
         }
     }
 
-    public static class Link implements BaseColumns {
+    public static final class Link implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(SportsConstants.LINK).build();
-        public static final String LINK_ID = "link_id";
         public static final String NAME = "name";
         public static final String URL = "url";
+
+        private Link() {
+        }
 
         public static Uri buildLinkUri(String linkId) {
             return CONTENT_URI.buildUpon().appendPath(linkId).build();
         }
     }
 
-    public static class Staff implements BaseColumns {
+    public static final class Staff implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(SportsConstants.STAFF).build();
-        public static final String STAFF_ID = "staff_id";
         public static final String NAME = "name";
         public static final String POSITIONS = "positions";
+
+        private Staff() {
+        }
 
         public static Uri buildStaffUri(String staffId) {
             return CONTENT_URI.buildUpon().appendPath(staffId).build();

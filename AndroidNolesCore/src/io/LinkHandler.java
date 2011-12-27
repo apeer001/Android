@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.itnoles.shared.util.ParserUtils.queryItemUpdated;
-import static com.itnoles.shared.util.ParserUtils.sanitizeId;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
@@ -50,8 +49,8 @@ public class LinkHandler extends XmlHandler {
             if (type == START_TAG && SportsConstants.ENTRY.equals(parser.getName())) {
                 // Process single spreadsheet row at a time
                 final SpreadsheetEntry entry = SpreadsheetEntry.fromParser(parser);
-                final String linkId = sanitizeId(entry.get("title"));
-                final Uri linkUri = Link.buildLinkUri(linkId);
+                final String title = entry.get("title");
+                final Uri linkUri = Link.buildLinkUri(title);
 
                 // Check for existing details, only update when changed
                 final long localUpdated = queryItemUpdated(linkUri, resolver);
@@ -70,8 +69,7 @@ public class LinkHandler extends XmlHandler {
 
                 final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(Link.CONTENT_URI);
                 builder.withValue(SportsConstants.UPDATED, serverUpdated);
-                builder.withValue(Link.LINK_ID, linkId);
-                builder.withValue(Link.NAME, entry.get("title"));
+                builder.withValue(Link.NAME, title);
                 builder.withValue(Link.URL, entry.get("link"));
 
                 // Normal staff details ready, write to provider

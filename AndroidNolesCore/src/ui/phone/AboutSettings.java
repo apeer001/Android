@@ -21,8 +21,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
+import android.support.v4.app.SherlockPreferenceActivity;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.itnoles.shared.R;
 
 public class AboutSettings extends SherlockPreferenceActivity {

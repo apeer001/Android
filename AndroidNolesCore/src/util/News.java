@@ -16,16 +16,24 @@
 
 package com.itnoles.shared.util;
 
-import android.text.format.Time;
+import android.util.Log;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * It is one of the Modal object that shared between Controller and View.
  */
 public class News {
+    private static final String LOG_TAG = "News";
+
 	private String mTitle;
 	private String mLink;
 	private String mPubDate;
 	private String mDesc;
+	private Date mPublished;
 
 	public void setValue(String key, String value) {
 	    if ("title".equals(key)) {
@@ -33,15 +41,21 @@ public class News {
 	    } else if ("pubDate".equals(key)) {
 	        mPubDate = value;
 	    } else if ("published".equals(key)) {
-	    	final Time time = new Time();
-	    	time.parse3339(value);
-	    	time.normalize(false);
-	    	mPubDate = time.format("%a");
+	    	setPublished(value);
 	    } else if ("description".equals(key) || "content".equals(key)) {
 	        mDesc = value;
 	    } else if ("link".equals(key)) {
 	    	mLink = value;
 	    }
+    }
+
+    private void setPublished(String date) {
+    	final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    	try {
+    		mPublished = s.parse(date);
+    	} catch (ParseException e) {
+    		Log.w(LOG_TAG, "Fail to parse published date", e);
+    	}
     }
 
     public String getTitle() {
@@ -52,11 +66,11 @@ public class News {
 		return mLink;
 	}
 
-	public void setLink(String link) {
-		mLink = link;
-	}
-
 	public String getPubDate() {
+		if (mPublished != null) {
+			final SimpleDateFormat s = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.US);
+			return s.format(mPublished);
+		}
 		return mPubDate;
 	}
 

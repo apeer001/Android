@@ -17,17 +17,18 @@
 package com.itnoles.shared.ui;
 
 import android.os.Bundle;
+import android.support.v4.app.ActionBar;
+import android.support.v4.app.ActionBar.Tab;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-//import android.support.v4.app.FragmentTransaction;
-import android.view.Menu;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 
-import com.actionbarsherlock.ActionBarSherlock;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.Tab;
+//import com.actionbarsherlock.app.ActionBar;
+//import com.actionbarsherlock.app.ActionBar.Tab;
 //import com.actionbarsherlock.view.Menu;
 //import com.actionbarsherlock.view.MenuInflater;
 //import com.actionbarsherlock.view.MenuItem;
@@ -37,7 +38,6 @@ import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
 import com.itnoles.shared.util.base.IStrictMode;
 
 public abstract class AbstractMainActivity extends FragmentActivity {
-    final ActionBarSherlock mSherlock = ActionBarSherlock.wrap(this);
     protected ActionBar mActionBar;
 
     @Override
@@ -49,9 +49,9 @@ public abstract class AbstractMainActivity extends FragmentActivity {
             }
         }
 		super.onCreate(savedInstanceState);
-		mSherlock.setContentView(R.layout.fragment_layer);
+		setContentView(R.layout.fragment_layer);
 
-		mActionBar = mSherlock.getActionBar();
+		mActionBar = getSupportActionBar();
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 	}
 
@@ -85,13 +85,13 @@ public abstract class AbstractMainActivity extends FragmentActivity {
 	 * the interactions between different tabs.
 	 */
 	public class TabListener implements ActionBar.TabListener {
-		private Fragment mFragment;
+		private final Fragment mFragment;
 
 		public TabListener(Fragment fragment) {
             mFragment = fragment;
         }
 
-        public void onTabSelected(Tab tab) { //FragmentTransaction unused*/)
+        public void onTabSelected(Tab tab, FragmentTransaction unused) {
         	final FragmentManager fm = getSupportFragmentManager();
 	        if (fm.getBackStackEntryCount() > 0) {
 		        fm.popBackStack();
@@ -99,11 +99,11 @@ public abstract class AbstractMainActivity extends FragmentActivity {
 		    fm.beginTransaction().replace(R.id.titles, mFragment, null).commit();
 		}
 
-		public void onTabUnselected(Tab tab) { //FragmentTransaction unused)
+		public void onTabUnselected(Tab tab, FragmentTransaction unused) {
 			// do nothing
 		}
 
-		public void onTabReselected(Tab tab) { //FragmentTransaction unused)
+		public void onTabReselected(Tab tab, FragmentTransaction unused) {
 			// do nothing
 		}
 	}

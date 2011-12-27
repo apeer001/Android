@@ -40,8 +40,6 @@ final class NetHttp extends HttpTransport {
             this.mConnection = (HttpURLConnection) new URL(url).openConnection();
             mConnection.setUseCaches(false);
             mConnection.setInstanceFollowRedirects(false);
-            mConnection.setReadTimeout(CONN_TIMEOUT);
-            mConnection.setConnectTimeout(CONN_TIMEOUT);
         }
 
         @Override

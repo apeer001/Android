@@ -18,37 +18,41 @@ package com.itnoles.shared.util;
 
 import android.content.Context;
 
-import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.util.base.HttpTransport;
+import com.itnoles.shared.util.base.ISharedPreferenceSaver;
 import com.itnoles.shared.util.base.IStrictMode;
-import com.itnoles.shared.util.base.SharedPreferenceSaver;
 
 /**
  * Factory class to create the correct instances
  * of a variety of classes with platform specific
  * implementations.
  */
-public class PlatformSpecificImplementationFactory {
+public final class PlatformSpecificImplementationFactory {
+    private PlatformSpecificImplementationFactory() {
+    }
+
     /**
      * Create a new IStrictMode instance.
      * @return IStrictMode or null if it is not Gingerbread
      */
     public static IStrictMode getStrictMode() {
-        return SportsConstants.SUPPORTS_GINGERBREAD ? new GingerbreadStrictMode() : null;
+        return UIUtils.isGingerbread() ? new GingerbreadStrictMode() : null;
     }
 
     /**
-     * Create a new SharedPreferenceSaver
+     * Create a new SharedPreferenceSaver instances
      * @param context Context
      * @return SharedPreferenceSaver
      */
-    public static SharedPreferenceSaver getSharedPreferenceSaver(Context ctx) {
-        return SportsConstants.SUPPORTS_GINGERBREAD
-            ? new GingerbreadSharedPreferenceSaver(ctx)
-            : new FroyoSharedPreferenceSaver(ctx);
+    public static ISharedPreferenceSaver getSharedPreferenceSaver(Context ctx) {
+        return UIUtils.isGingerbread() ? new GingerbreadSharedPreferenceSaver(ctx) : new FroyoSharedPreferenceSaver(ctx);
     }
 
+    /**
+     * Create a new HttpTransport instances
+     * @return HttpTransport
+     */
     public static HttpTransport getTransport() {
-        return SportsConstants.SUPPORTS_GINGERBREAD ? new NetHttp() : new AndroidHttp();
+        return UIUtils.isGingerbread() ? new NetHttp() : new AndroidHttp();
     }
 }

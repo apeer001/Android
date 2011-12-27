@@ -16,14 +16,10 @@
 
 package com.itnoles.shared.util.base;
 
-import android.text.format.DateUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 public abstract class HttpTransport {
-    protected static final int CONN_TIMEOUT = 20 * (int) DateUtils.SECOND_IN_MILLIS;
-
     public abstract LowLevelHttpResponse buildResponse(String url) throws IOException;
 
     /**

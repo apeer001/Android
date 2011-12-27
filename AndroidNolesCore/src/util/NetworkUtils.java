@@ -21,10 +21,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class NetworkUtils {
-    public static boolean isNetworkConnected(Context context) {
-        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	private final ConnectivityManager mManager;
+
+	public NetworkUtils(Context context) {
+		this.mManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	}
+
+    public boolean isNetworkConnected() {
         // Check if we are connected to an active data network.
-        final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        final NetworkInfo activeNetwork = mManager.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 }

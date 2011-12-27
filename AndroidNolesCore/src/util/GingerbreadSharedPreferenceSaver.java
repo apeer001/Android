@@ -25,7 +25,7 @@ public class GingerbreadSharedPreferenceSaver extends FroyoSharedPreferenceSaver
     }
 
     @Override
-    public void savePreferences(Editor editor, boolean backup) {
+    public void savePreferences(Editor editor) {
         editor.apply();
         mBackupManager.dataChanged();
     }
