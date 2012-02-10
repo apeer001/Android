@@ -25,8 +25,6 @@ import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.provider.ScheduleContract.Schedule;
 import com.itnoles.shared.provider.ScheduleContract.Link;
 import com.itnoles.shared.provider.ScheduleContract.Staff;
-import com.itnoles.shared.util.Lists;
-import com.itnoles.shared.util.Maps;
 import com.itnoles.shared.util.ParserUtils;
 import com.itnoles.shared.util.WorksheetEntry;
 
@@ -51,7 +49,7 @@ public class WorksheetsHandler extends XmlHandler {
 
     @Override
     public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException {
-        final HashMap<String, WorksheetEntry> sheets = Maps.newHashMap();
+        final HashMap<String, WorksheetEntry> sheets = new HashMap<String, WorksheetEntry>();
 
         // walk response, collecting all known spreadsheets
         int type;
@@ -68,7 +66,7 @@ public class WorksheetsHandler extends XmlHandler {
         considerUpdate(sheets, SportsConstants.LINK, Link.CONTENT_URI, resolver);
         considerUpdate(sheets, SportsConstants.STAFF, Staff.CONTENT_URI, resolver);
 
-        return Lists.newArrayList();
+        return new ArrayList<ContentProviderOperation>();
     }
 
     private void considerUpdate(HashMap<String, WorksheetEntry> sheets, String sheetName, Uri targetDir, ContentResolver resolver) {

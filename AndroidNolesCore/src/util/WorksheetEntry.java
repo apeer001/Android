@@ -21,8 +21,6 @@ import static org.xmlpull.v1.XmlPullParser.END_TAG;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 import static org.xmlpull.v1.XmlPullParser.TEXT;
 
-import android.text.format.DateUtils;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -45,11 +43,6 @@ public class WorksheetEntry {
 
     public String getListFeed() {
         return mListFeed;
-    }
-
-    @Override
-    public String toString() {
-        return "title=" + mTitle + ", updated=" + mUpdated + " ("+ DateUtils.getRelativeTimeSpanString(mUpdated) + ")";
     }
 
     public static WorksheetEntry fromParser(XmlPullParser parser) throws XmlPullParserException, IOException {

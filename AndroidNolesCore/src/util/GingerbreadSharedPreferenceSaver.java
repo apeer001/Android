@@ -19,7 +19,7 @@ package com.itnoles.shared.util;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
-public class GingerbreadSharedPreferenceSaver extends FroyoSharedPreferenceSaver {
+final class GingerbreadSharedPreferenceSaver extends FroyoSharedPreferenceSaver {
     public GingerbreadSharedPreferenceSaver(Context context) {
         super(context);
     }

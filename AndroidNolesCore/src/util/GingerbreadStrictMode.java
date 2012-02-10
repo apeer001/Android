@@ -20,7 +20,7 @@ import android.os.StrictMode;
 
 import com.itnoles.shared.util.base.IStrictMode;
 
-public class GingerbreadStrictMode implements IStrictMode {
+final class GingerbreadStrictMode implements IStrictMode {
     public void enableStrictMode() {
         StrictMode.enableDefaults();
     }

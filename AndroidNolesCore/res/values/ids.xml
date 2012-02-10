@@ -1,4 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<item type="id" name="settings" />
-    <item type="id" name="headlines_viewholder" />
+	<item type="id" name="settings">false</item>
+	<item type="id" name="content_frame">false</item>
+	<item type="id" name="detail_frame">false</item>
+	<item type="id" name="date">false</item>
+	<item type="id" name="school">false</item>
+	<item type="id" name="time">false</item>
+	<item type="id" name="location">false</item>
+	<item type="id" name="title">false</item>
+	<item type="id" name="description">false</item>
+	<item type="id" name="loading_indicator">false</item>
+	<item type="id" name="empty_loading">false</item>
+	<item type="id" name="menu_share">false</item>
 </resources>

@@ -56,6 +56,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
             + "date TEXT,"
             + "time TEXT,"
             + "school TEXT,"
+            + "location TEXT,"
             + "updated TEXT)");
 
         db.execSQL("CREATE TABLE staff ("

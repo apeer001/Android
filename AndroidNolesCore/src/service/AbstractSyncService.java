@@ -17,18 +17,16 @@
 package com.itnoles.shared.service;
 
 import android.app.IntentService;
+import android.content.ContentResolver;
 
 import com.itnoles.shared.io.RemoteExecutor;
 import com.itnoles.shared.util.NetworkUtils;
-import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
-import com.itnoles.shared.util.base.HttpTransport;
 
 public abstract class AbstractSyncService extends IntentService {
     protected static final String TAG = "SyncService";
 
     protected RemoteExecutor mRemoteExecutor;
     protected NetworkUtils mNetwork;
-    protected HttpTransport mTransport;
 
     public AbstractSyncService() {
        super(TAG);
@@ -37,8 +35,8 @@ public abstract class AbstractSyncService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        mTransport = PlatformSpecificImplementationFactory.getTransport();
-        mRemoteExecutor = new RemoteExecutor(mTransport, getContentResolver());
-        mNetwork = new NetworkUtils(this);
+        final ContentResolver resolver = getContentResolver();
+        this.mRemoteExecutor = new RemoteExecutor(resolver);
+        this.mNetwork = new NetworkUtils(this);
     }
 }

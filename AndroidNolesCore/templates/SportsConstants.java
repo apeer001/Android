@@ -17,26 +17,32 @@
 package com.itnoles.shared;
 
 public final class SportsConstants {
-    private SportsConstants() {
-    }
+    private SportsConstants() {}
 
     /**
      * Worksheet Table name
      */
-    public static final String SCHEDULE = "schedule";
-    public static final String LINK = "link";
-    public static final String STAFF = "staff";
+    public static String SCHEDULE = "schedule";
+    public static String LINK = "link";
+    public static String STAFF = "staff";
 
     // it use Ant to replace this value
-    public static final boolean DEVELOPER_MODE = @DEBUG@;
+    public static boolean DEVELOPER_MODE = @DEBUG@;
 
-    public static final String SP_KEY_NEWS_TITLE = "SP_KEY_NEWS_TITLE";
-    public static final String SP_KEY_NEWS_URL = "SP_KEY_NEWS_URL";
-    public static final String SP_KEY_NEWS_REFRESH = "SP_KEY_NEWS_REFRESH";
+    /**
+     * These values are constants used for shared preferences.
+     * You shouldn't need to modify them.
+     */
+    public static String SP_KEY_NEWS_TITLE = "SP_KEY_NEWS_TITLE";
+    public static String SP_KEY_NEWS_URL = "SP_KEY_NEWS_URL";
+    public static String SP_KEY_NEWS_REFRESH = "SP_KEY_NEWS_REFRESH";
 
     // ATOM Tags
-    public static final String ENTRY = "entry";
+    public static String ENTRY = "entry";
+    public static String UPDATED = "updated";
 
-    public static final String UPDATED = "updated";
-    public static final String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
+    public static String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
+
+    public static boolean SUPPORTS_GINGERBREAD = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD;
+    public static boolean SUPPORTS_HONEYCOMB = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB;
 }

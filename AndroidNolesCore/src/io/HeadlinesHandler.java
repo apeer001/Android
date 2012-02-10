@@ -16,8 +16,9 @@
 
 package com.itnoles.shared.io;
 
+import android.util.Log;
+
 import com.itnoles.shared.SportsConstants;
-import com.itnoles.shared.util.Lists;
 import com.itnoles.shared.util.News;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -27,16 +28,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class HeadlinesHandler {
+    private static final String LOG_TAG = "HeadlinesHandler";
+
     private ArrayList<News> mList;
 
-    public void parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private void parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         News currentNews = null;
         int type = parser.getEventType();
         while (type != XmlPullParser.END_DOCUMENT) {
             String name = null;
             switch(type) {
                 case XmlPullParser.START_DOCUMENT:
-                    mList = Lists.newArrayList();
+                    mList = new ArrayList<News>();
                     break;
                 case XmlPullParser.START_TAG:
                     name = parser.getName();
@@ -57,9 +60,20 @@ public class HeadlinesHandler {
                         mList.add(currentNews);
                         break;
                     }
+                    break;
                 default:
             }
             type = parser.next();
+        }
+    }
+
+    public void parseXML(XmlPullParser parser) {
+        try {
+            parse(parser);
+        } catch (XmlPullParserException e) {
+            Log.w(LOG_TAG, "Problem parsing XML response", e);
+        } catch (IOException e) {
+            Log.w(LOG_TAG, "Problem reading response", e);
         }
     }
 

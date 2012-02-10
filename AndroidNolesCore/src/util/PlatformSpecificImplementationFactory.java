@@ -18,7 +18,7 @@ package com.itnoles.shared.util;
 
 import android.content.Context;
 
-import com.itnoles.shared.util.base.HttpTransport;
+import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.util.base.ISharedPreferenceSaver;
 import com.itnoles.shared.util.base.IStrictMode;
 
@@ -28,15 +28,14 @@ import com.itnoles.shared.util.base.IStrictMode;
  * implementations.
  */
 public final class PlatformSpecificImplementationFactory {
-    private PlatformSpecificImplementationFactory() {
-    }
+    private PlatformSpecificImplementationFactory() {}
 
     /**
      * Create a new IStrictMode instance.
      * @return IStrictMode or null if it is not Gingerbread
      */
     public static IStrictMode getStrictMode() {
-        return UIUtils.isGingerbread() ? new GingerbreadStrictMode() : null;
+        return SportsConstants.SUPPORTS_GINGERBREAD ? new GingerbreadStrictMode() : null;
     }
 
     /**
@@ -45,14 +44,6 @@ public final class PlatformSpecificImplementationFactory {
      * @return SharedPreferenceSaver
      */
     public static ISharedPreferenceSaver getSharedPreferenceSaver(Context ctx) {
-        return UIUtils.isGingerbread() ? new GingerbreadSharedPreferenceSaver(ctx) : new FroyoSharedPreferenceSaver(ctx);
-    }
-
-    /**
-     * Create a new HttpTransport instances
-     * @return HttpTransport
-     */
-    public static HttpTransport getTransport() {
-        return UIUtils.isGingerbread() ? new NetHttp() : new AndroidHttp();
+        return SportsConstants.SUPPORTS_GINGERBREAD ? new GingerbreadSharedPreferenceSaver(ctx) : new FroyoSharedPreferenceSaver(ctx);
     }
 }

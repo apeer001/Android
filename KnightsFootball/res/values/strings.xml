@@ -1,0 +1,23 @@
+<resources>
+	<string name="app_name">Knights Football</string>
+	<string name="backup_manager_key"></string>
+
+	<string-array name="listNames">
+		<item>Latest Football news</item>
+		<item>UCF Sports</item>
+		<item>UCF Pride</item>
+		<item>O\'Leary Blogs</item>
+		<item>Student Paper</item>
+		<item>UCF Today</item>
+		<item>Orlando Sentinel</item>
+	</string-array>
+	<string-array name="listValues">
+		<item>http://www.ucfathletics.com/sports/m-footbl/headline-rss.xml</item>
+		<item>http://ucf.rivals.com/rss2feed.asp?SID=908</item>
+		<item>http://feeds2.feedburner.com/sports/college/goldenknightsnotepad</item>
+		<item>http://olearypsiphi.com/RSS/rss.php</item>
+		<item>http://www.centralfloridafuture.com/se/central-florida-future-rss-1.991045</item>
+		<item>http://today.ucf.edu/feed/</item>
+		<item>http://www.orlandosentinel.com/sports/college/knights/rss2.0.xml</item>
+	</string-array>
+</resources>

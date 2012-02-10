@@ -26,8 +26,7 @@ import com.itnoles.shared.SportsConstants;
 public final class ParserUtils {
     private static Time sTime = new Time();
 
-    private ParserUtils() {
-    }
+    private ParserUtils() {}
 
     /**
      * Parse the given string as a RFC 3339 timestamp, returning the value as

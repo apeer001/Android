@@ -1,0 +1,21 @@
+<resources>
+	<string name="app_name">Noles Football</string>
+	<!--string name="backup_manager_key"></string>-->
+
+	<string-array name="listNames">
+		<item>Latest Football news</item>
+		<item>Warchant</item>
+		<item>Noles Digest</item>
+		<item>Tomahawk Nation</item>
+		<item>Spirit Blog</item>
+		<item>Orlando Sentinel</item>
+	</string-array>
+	<string-array name="listValues">
+		<item>http://www.seminoles.com/sports/m-footbl/headline-rss.xml</item>
+		<item>http://floridastate.rivals.com/rss2feed.asp?SID=1061</item>
+		<item>http://rss.scout.com/rss.aspx?sid=16</item>
+		<item>http://feeds.feedburner.com/sportsblogs/tomahawknation.xml</item>
+		<item>http://www.seminoles.com/blog/atom.xml</item>
+		<item>http://www.orlandosentinel.com/sports/college/seminoles/rss2.0.xml</item>
+	</string-array>
+</resources>

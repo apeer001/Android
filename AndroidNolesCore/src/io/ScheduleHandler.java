@@ -23,7 +23,6 @@ import android.util.Log;
 
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.provider.ScheduleContract.Schedule;
-import com.itnoles.shared.util.Lists;
 import com.itnoles.shared.util.SpreadsheetEntry;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -41,7 +40,7 @@ public class ScheduleHandler extends XmlHandler {
 
     @Override
     public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException {
-        final ArrayList<ContentProviderOperation> batch = Lists.newArrayList();
+        final ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
         // Walk document, parsing any incoming entries
         int type;
@@ -72,6 +71,7 @@ public class ScheduleHandler extends XmlHandler {
                 builder.withValue(Schedule.DATE, title);
                 builder.withValue(Schedule.TIME, entry.get(Schedule.TIME));
                 builder.withValue(Schedule.SCHOOL, entry.get(Schedule.SCHOOL));
+                builder.withValue(Schedule.LOCATION, entry.get(Schedule.LOCATION));
 
                 // Normal schedule details ready, write to provider
                 batch.add(builder.build());

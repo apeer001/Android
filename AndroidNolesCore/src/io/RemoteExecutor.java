@@ -18,22 +18,19 @@ package com.itnoles.shared.io;
 
 import android.content.ContentResolver;
 
-import com.itnoles.shared.util.XMLPullParserUtils;
-import com.itnoles.shared.util.base.HttpTransport;
+import com.itnoles.shared.util.XMLParserWithNetHttp;
 
 import org.xmlpull.v1.XmlPullParser;
 
 public class RemoteExecutor {
-    private final HttpTransport mTransport;
     private final ContentResolver mResolver;
 
-    public RemoteExecutor(HttpTransport transport, ContentResolver resolver) {
-        mTransport = transport;
-        mResolver = resolver;
+    public RemoteExecutor(ContentResolver resolver) {
+        this.mResolver = resolver;
     }
 
     public void executeWithPullParser(String url, final XmlHandler handler) {
-        XMLPullParserUtils.execute(mTransport, url, new XMLPullParserUtils.XMLPullParserManager() {
+        XMLParserWithNetHttp.execute(url, new XMLParserWithNetHttp.XMLPullParserManager() {
             public void onPostExecute(XmlPullParser parser) {
                 handler.parseAndApply(parser, mResolver);
             }

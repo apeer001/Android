@@ -22,11 +22,11 @@ import android.content.SharedPreferences.Editor;
 
 import com.itnoles.shared.util.base.ISharedPreferenceSaver;
 
-public class FroyoSharedPreferenceSaver implements ISharedPreferenceSaver {
+class FroyoSharedPreferenceSaver implements ISharedPreferenceSaver {
     protected BackupManager mBackupManager;
 
     public FroyoSharedPreferenceSaver(Context context) {
-        mBackupManager = new BackupManager(context);
+        this.mBackupManager = new BackupManager(context);
     }
 
     public void savePreferences(Editor editor) {

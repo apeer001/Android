@@ -1,0 +1,16 @@
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:title="@string/app_name">
+	<PreferenceScreen
+		android:title="@string/general">
+		<intent android:action="android.intent.action.MAIN"
+			android:targetPackage="com.itnoles.knightfootball"
+			android:targetClass="com.itnoles.knightfootball.activities.GeneralSettings" />
+	</PreferenceScreen>
+	<PreferenceScreen
+		android:title="@string/about_settings">
+		<intent android:action="android.intent.action.MAIN"
+			android:targetPackage="com.itnoles.shared."
+			android:targetClass="com.itnoles.shared.activities.AboutSettings" />
+	</PreferenceScreen>
+</PreferenceScreen>

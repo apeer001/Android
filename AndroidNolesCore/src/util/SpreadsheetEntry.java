@@ -16,6 +16,7 @@
  /** Modification:
   * Import from Google I/O apps
   * changed package name
+  * add synchronized block
   */
 
 package com.itnoles.shared.util;
@@ -34,13 +35,16 @@ import static org.xmlpull.v1.XmlPullParser.START_TAG;
 import static org.xmlpull.v1.XmlPullParser.TEXT;
 
 public class SpreadsheetEntry extends HashMap<String, String> {
+    public static final long serialVersionUID = 1L;
+
     private static final Pattern CONTENT_PATTERN = Pattern.compile(
             "(?:^|, )([_a-zA-Z0-9]+): (.*?)(?=\\s*$|, [_a-zA-Z0-9]+: )", Pattern.DOTALL);
+    private static final Object LOCK = new Object();
 
     private static Matcher sContentMatcher;
 
     private static Matcher getContentMatcher(CharSequence input) {
-        synchronized(Matcher.class) {
+        synchronized(LOCK) {
             if (sContentMatcher == null) {
                 sContentMatcher = CONTENT_PATTERN.matcher(input);
             } else {

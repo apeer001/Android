@@ -23,7 +23,6 @@ import android.util.Log;
 
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.provider.ScheduleContract.Link;
-import com.itnoles.shared.util.Lists;
 import com.itnoles.shared.util.SpreadsheetEntry;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -41,7 +40,7 @@ public class LinkHandler extends XmlHandler {
 
     @Override
     public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException {
-        final ArrayList<ContentProviderOperation> batch = Lists.newArrayList();
+        final ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
         // Walk document, parsing any incoming entries
         int type;
