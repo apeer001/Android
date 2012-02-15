@@ -19,14 +19,22 @@ package com.itnoles.shared.util;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
-final class GingerbreadSharedPreferenceSaver extends FroyoSharedPreferenceSaver {
-    public GingerbreadSharedPreferenceSaver(Context context) {
-        super(context);
-    }
+/**
+ * Save {@link SharedPreferences} using the asynchronous apply method available
+ * in Gingerbread, and provide the option to notify the BackupManager to
+ * initiate a backup.
+ */
+class GingerbreadSharedPreferenceSaver extends FroyoSharedPreferenceSaver {
+	public GingerbreadSharedPreferenceSaver(Context context) {
+		super(context);
+	}
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void savePreferences(Editor editor) {
-        editor.apply();
-        mBackupManager.dataChanged();
+    	editor.apply();
+    	mBackupManager.dataChanged();
     }
 }

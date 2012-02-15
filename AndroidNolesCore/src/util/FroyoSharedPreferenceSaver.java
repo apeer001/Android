@@ -20,17 +20,24 @@ import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
-import com.itnoles.shared.util.base.ISharedPreferenceSaver;
+/**
+ * Save {@link SharedPreferences} and provide the option to notify
+ * the BackupManager to initiate a backup.
+ */
+class FroyoSharedPreferenceSaver extends LegacySharedPreferenceSaver {
+	protected BackupManager mBackupManager;
 
-class FroyoSharedPreferenceSaver implements ISharedPreferenceSaver {
-    protected BackupManager mBackupManager;
+	public FroyoSharedPreferenceSaver(Context context) {
+		super(context);
+		this.mBackupManager = new BackupManager(context);
+	}
 
-    public FroyoSharedPreferenceSaver(Context context) {
-        this.mBackupManager = new BackupManager(context);
-    }
-
-    public void savePreferences(Editor editor) {
-        editor.commit();
-        mBackupManager.dataChanged();
-    }
+	/**
+     * {@inheritDoc}
+     */
+	@Override
+	public void savePreferences(Editor editor) {
+		editor.commit();
+		mBackupManager.dataChanged();
+	}
 }

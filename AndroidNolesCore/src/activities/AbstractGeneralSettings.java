@@ -24,7 +24,7 @@ import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.itnoles.shared.R;
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
-import com.itnoles.shared.util.base.ISharedPreferenceSaver;
+import com.itnoles.shared.util.base.SharedPreferenceSaver;
 
 public abstract class AbstractGeneralSettings extends SherlockPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 	protected ListPreference mNewsPref;
@@ -60,7 +60,7 @@ public abstract class AbstractGeneralSettings extends SherlockPreferenceActivity
 		    edit.putString(SportsConstants.SP_KEY_NEWS_TITLE, mNewsPref.getEntry().toString());
 		    edit.putString(SportsConstants.SP_KEY_NEWS_URL, mNewsPref.getValue());
 		    edit.putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, true);
-		    final ISharedPreferenceSaver saver = PlatformSpecificImplementationFactory.getSharedPreferenceSaver(this);
+		    final SharedPreferenceSaver saver = PlatformSpecificImplementationFactory.getSharedPreferenceSaver(this);
 		    saver.savePreferences(edit);
 		}
 	}

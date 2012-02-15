@@ -24,29 +24,19 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.itnoles.shared.R;
-import com.itnoles.shared.SportsConstants;
-import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
-import com.itnoles.shared.util.base.IStrictMode;
 
 public abstract class AbstractTabbedActivity extends FragmentActivity {
     protected ActionBar mActionBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-    	if (SportsConstants.DEVELOPER_MODE) {
-            final IStrictMode strictMode = PlatformSpecificImplementationFactory.getStrictMode();
-            if (strictMode != null) {
-                strictMode.enableStrictMode();
-            }
-        }
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.fragment_layer);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_layer);
 
         mActionBar = getSupportActionBar();
-		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-	}
+        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

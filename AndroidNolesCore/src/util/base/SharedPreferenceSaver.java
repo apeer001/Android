@@ -16,18 +16,25 @@
 
 package com.itnoles.shared.util.base;
 
+import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
 /**
- * This Interface definition allows you to create OS version-specific
- * implementations that offer the full SharedPreferences with
- * Google {@link BackupService} functionality available in each
- * platform release.
+ * Abstract base class that can be extended to provide classes that save
+ * {@link SharedPreferences} in the most efficient way possible.
+ * Decendent classes can optionally choose to backup some {@link SharedPreferences}
+ * to the Google {@link BackupService} on platforms where this is available.
  */
-public interface ISharedPreferenceSaver {
+public abstract class SharedPreferenceSaver {
+    protected Context mContext;
+
+    protected SharedPreferenceSaver(Context context) {
+        this.mContext = context;
+    }
+
     /**
      * Save the Shared Preferences modified through the Editor object.
      * @param editor Shared Preferences Editor to commit.
      */
-    void savePreferences(Editor editor);
+    abstract public void savePreferences(Editor editor);
 }

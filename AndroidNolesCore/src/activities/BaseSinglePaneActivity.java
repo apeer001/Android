@@ -22,7 +22,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import com.actionbarsherlock.view.MenuItem;
-//import com.itnoles.shared.R;
 
 public abstract class BaseSinglePaneActivity extends FragmentActivity {
     private Fragment mFragment;
@@ -38,8 +37,6 @@ public abstract class BaseSinglePaneActivity extends FragmentActivity {
             finish();
             return;
         }
-
-        //setContentView(R.layout.fragment_layer);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

@@ -19,8 +19,7 @@ package com.itnoles.shared.util;
 import android.content.Context;
 
 import com.itnoles.shared.SportsConstants;
-import com.itnoles.shared.util.base.ISharedPreferenceSaver;
-import com.itnoles.shared.util.base.IStrictMode;
+import com.itnoles.shared.util.base.SharedPreferenceSaver;
 
 /**
  * Factory class to create the correct instances
@@ -31,19 +30,15 @@ public final class PlatformSpecificImplementationFactory {
     private PlatformSpecificImplementationFactory() {}
 
     /**
-     * Create a new IStrictMode instance.
-     * @return IStrictMode or null if it is not Gingerbread
-     */
-    public static IStrictMode getStrictMode() {
-        return SportsConstants.SUPPORTS_GINGERBREAD ? new GingerbreadStrictMode() : null;
-    }
-
-    /**
      * Create a new SharedPreferenceSaver instances
      * @param context Context
      * @return SharedPreferenceSaver
      */
-    public static ISharedPreferenceSaver getSharedPreferenceSaver(Context ctx) {
-        return SportsConstants.SUPPORTS_GINGERBREAD ? new GingerbreadSharedPreferenceSaver(ctx) : new FroyoSharedPreferenceSaver(ctx);
+    public static SharedPreferenceSaver getSharedPreferenceSaver(Context ctx) {
+        return SportsConstants.SUPPORTS_GINGERBREAD ?
+            new GingerbreadSharedPreferenceSaver(ctx) :
+            SportsConstants.SUPPORTS_FROYO ?
+                new FroyoSharedPreferenceSaver(ctx) : 
+                new LegacySharedPreferenceSaver(ctx);
     }
 }

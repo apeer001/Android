@@ -26,9 +26,6 @@ public final class SportsConstants {
     public static String LINK = "link";
     public static String STAFF = "staff";
 
-    // it use Ant to replace this value
-    public static boolean DEVELOPER_MODE = true;
-
     /**
      * These values are constants used for shared preferences.
      * You shouldn't need to modify them.
@@ -43,6 +40,7 @@ public final class SportsConstants {
 
     public static String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
 
+    public static boolean SUPPORTS_FROYO = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO;
     public static boolean SUPPORTS_GINGERBREAD = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD;
     public static boolean SUPPORTS_HONEYCOMB = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB;
 }

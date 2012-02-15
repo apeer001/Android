@@ -16,7 +16,7 @@
 
 package com.itnoles.shared.fragments;
 
-import android.content.Intent;
+//import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -26,11 +26,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.ShareActionProvider;
-import com.itnoles.shared.R;
+//import com.actionbarsherlock.view.Menu;
+//import com.actionbarsherlock.view.MenuInflater;
+//import com.actionbarsherlock.view.MenuItem;
+//import com.actionbarsherlock.widget.ShareActionProvider;
+//import com.itnoles.shared.R;
 
 /**
  * A fragment that displays a WebView.
@@ -66,7 +66,7 @@ public class WebDetailsFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 	    super.onActivityCreated(savedInstanceState);
 
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
 
 	    mWebView.getSettings().setJavaScriptEnabled(true);
 	    mWebView.getSettings().setBuiltInZoomControls(true);
@@ -125,7 +125,7 @@ public class WebDetailsFragment extends Fragment {
         super.onDestroy();
     }
 
-    @Override
+    /*@Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate menu resource file.
         inflater.inflate(R.menu.webdetail_share, menu);
@@ -138,5 +138,5 @@ public class WebDetailsFragment extends Fragment {
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         actionProvider.setShareIntent(shareIntent);
-    }
+    }*/
 }

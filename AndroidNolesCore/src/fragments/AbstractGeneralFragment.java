@@ -24,7 +24,7 @@ import android.preference.PreferenceFragment;
 import com.itnoles.shared.R;
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
-import com.itnoles.shared.util.base.ISharedPreferenceSaver;
+import com.itnoles.shared.util.base.SharedPreferenceSaver;
 
 /**
  * An abstract preference fragment class for General Settings.
@@ -63,7 +63,7 @@ public abstract class AbstractGeneralFragment extends PreferenceFragment impleme
 		    edit.putString(SportsConstants.SP_KEY_NEWS_TITLE, mNewsPref.getEntry().toString());
 		    edit.putString(SportsConstants.SP_KEY_NEWS_URL, mNewsPref.getValue());
 		    edit.putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, true);
-		    final ISharedPreferenceSaver saver = PlatformSpecificImplementationFactory.getSharedPreferenceSaver(getActivity());
+		    final SharedPreferenceSaver saver = PlatformSpecificImplementationFactory.getSharedPreferenceSaver(getActivity());
 		    saver.savePreferences(edit);
 		}
 	}

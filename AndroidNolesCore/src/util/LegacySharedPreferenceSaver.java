@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-package com.itnoles.shared.util.base;
+package com.itnoles.shared.util;
+
+import android.content.Context;
+import android.content.SharedPreferences.Editor;
+
+import com.itnoles.shared.util.base.SharedPreferenceSaver;
 
 /**
- * This Interface definition allows you to create OS version-specific
- * implementations that offer the full Strict Mode functionality
- * available in each platform release.
+ * Save {@link SharedPreferences} in a way compatible with Android 2.1.
  */
-public interface IStrictMode {
+class LegacySharedPreferenceSaver extends SharedPreferenceSaver {
+
+    public LegacySharedPreferenceSaver(Context context) {
+        super(context);
+    }
+
     /**
-     * Enable {@link StrictMode} using whichever platform-specific flags
-     * you wish.
+     * {@inheritDoc}
      */
-    void enableStrictMode();
+    @Override
+    public void savePreferences(Editor editor) {
+        editor.commit();
+    }
 }
