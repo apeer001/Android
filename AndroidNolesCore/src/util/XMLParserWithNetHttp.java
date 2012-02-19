@@ -33,26 +33,18 @@ import java.net.URL;
 public final class XMLParserWithNetHttp {
 	private static final String LOG_TAG = "NetHttp";
 
-	private final HttpURLConnection mConnection;
+    // 8 KB Buffer Size for BufferdInputStream
+    private static final int BUFFER_SIZE = 8192;
 
-	private XMLParserWithNetHttp(String url) throws IOException {
-        // Disable connection pooling for pre-Gingerbread
-        if (!SportsConstants.SUPPORTS_GINGERBREAD) {
-            System.setProperty("http.keepAlive", "false");
-        }
+	private XMLParserWithNetHttp() {}
 
-		this.mConnection = (HttpURLConnection) new URL(url).openConnection();
-        mConnection.setUseCaches(false);
-        mConnection.setInstanceFollowRedirects(false);
-	}
-
-	private void execute(XMLPullParserManager manager) throws IOException {
-        if (mConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            Log.w(LOG_TAG, "Unexpected server response " + mConnection.getResponseMessage());
+	private static void executeWithConnection(HttpURLConnection connection, XMLPullParserManager manager) throws IOException {
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            Log.w(LOG_TAG, "Unexpected server response " + connection.getResponseMessage());
             return;
         }
 
-        final InputStream input = new BufferedInputStream(mConnection.getInputStream());
+        final InputStream input = new BufferedInputStream(connection.getInputStream(), BUFFER_SIZE);
         try {
 	        final XmlPullParser parser = Xml.newPullParser();
             parser.setInput(input, null);
@@ -64,15 +56,22 @@ public final class XMLParserWithNetHttp {
                 input.close();
             }
             if (!SportsConstants.SUPPORTS_GINGERBREAD) {
-                mConnection.disconnect();
+                connection.disconnect();
             }
         }
     }
 
     public static void execute(String url, XMLPullParserManager manager) {
+        // Disable connection pooling for pre-Gingerbread
+        if (!SportsConstants.SUPPORTS_GINGERBREAD) {
+            System.setProperty("http.keepAlive", "false");
+        }
+
         try {
-            final XMLParserWithNetHttp http = new XMLParserWithNetHttp(url);
-            http.execute(manager);
+            final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(false);
+            executeWithConnection(connection, manager);
         } catch (IOException e) {
             Log.w(LOG_TAG, "Problem reading remote responses", e);
         }

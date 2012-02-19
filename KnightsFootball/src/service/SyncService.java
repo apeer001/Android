@@ -17,7 +17,6 @@
 package com.itnoles.knightfootball.service;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
 import com.itnoles.knightfootball.receiver.ConnectivityChangedReceiver;
 import com.itnoles.shared.service.AbstractSyncService;
@@ -31,15 +30,11 @@ public class SyncService extends AbstractSyncService {
     protected void onHandleIntent(Intent intent) {
     	// Check to see if we are connected to a data or wifi network.
         if (mNetwork.isNetworkConnected()) {
-           try {
-                mRemoteExecutor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(mRemoteExecutor));
-            } finally {
-                mTransport.shutdown();
-            }
+            mRemoteExecutor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(mRemoteExecutor));
         } else {
             // Enable the Connectivity Changed Receiver to listen for connection to a network
             final PackageManagerWrapper wrapper = new PackageManagerWrapper(this);
-            wrapper.setComponentEnabledSetting(ConnectivityChangedReceiver.class, PackageManager.COMPONENT_ENABLED_STATE_ENABLED);
+            wrapper.setComponentEnabledSetting(ConnectivityChangedReceiver.class);
         }
     }
 }

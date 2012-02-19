@@ -36,5 +36,5 @@ public abstract class SharedPreferenceSaver {
      * Save the Shared Preferences modified through the Editor object.
      * @param editor Shared Preferences Editor to commit.
      */
-    abstract public void savePreferences(Editor editor);
+    public abstract void savePreferences(Editor editor);
 }

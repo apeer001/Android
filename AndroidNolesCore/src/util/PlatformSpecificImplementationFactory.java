@@ -35,10 +35,10 @@ public final class PlatformSpecificImplementationFactory {
      * @return SharedPreferenceSaver
      */
     public static SharedPreferenceSaver getSharedPreferenceSaver(Context ctx) {
-        return SportsConstants.SUPPORTS_GINGERBREAD ?
-            new GingerbreadSharedPreferenceSaver(ctx) :
-            SportsConstants.SUPPORTS_FROYO ?
-                new FroyoSharedPreferenceSaver(ctx) : 
-                new LegacySharedPreferenceSaver(ctx);
+        return SportsConstants.SUPPORTS_GINGERBREAD
+            ? new GingerbreadSharedPreferenceSaver(ctx)
+            : SportsConstants.SUPPORTS_FROYO
+                ? new FroyoSharedPreferenceSaver(ctx)
+                : new LegacySharedPreferenceSaver(ctx);
     }
 }
