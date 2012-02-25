@@ -16,15 +16,17 @@
 
 package com.itnoles.shared.util;
 
-import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
-import static org.xmlpull.v1.XmlPullParser.END_TAG;
-import static org.xmlpull.v1.XmlPullParser.START_TAG;
-import static org.xmlpull.v1.XmlPullParser.TEXT;
+import android.text.format.DateUtils;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+
+import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
+import static org.xmlpull.v1.XmlPullParser.END_TAG;
+import static org.xmlpull.v1.XmlPullParser.START_TAG;
+import static org.xmlpull.v1.XmlPullParser.TEXT;
 
 public class WorksheetEntry {
     private static final String REL_LISTFEED = "http://schemas.google.com/spreadsheets/2006#listfeed";
@@ -43,6 +45,11 @@ public class WorksheetEntry {
 
     public String getListFeed() {
         return mListFeed;
+    }
+
+    @Override
+    public String toString() {
+        return "title=" + mTitle + ", updated=" + mUpdated + " (" + DateUtils.getRelativeTimeSpanString(mUpdated) + ")";
     }
 
     public static WorksheetEntry fromParser(XmlPullParser parser) throws XmlPullParserException, IOException {

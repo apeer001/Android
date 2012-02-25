@@ -17,20 +17,23 @@
 package com.itnoles.shared.activities;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.itnoles.shared.R;
 
-public abstract class AbstractTabbedActivity extends FragmentActivity {
+public abstract class AbstractTabbedActivity extends SherlockFragmentActivity {
+    private static final String LOG_TAG = "TabbedActivity";
+
     protected ActionBar mActionBar;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_layer);
 
@@ -63,9 +66,9 @@ public abstract class AbstractTabbedActivity extends FragmentActivity {
      * the interactions between different tabs.
      */
     public class TabListener implements ActionBar.TabListener {
-        private final Fragment mFragment;
+        private final SherlockListFragment mFragment;
 
-        public TabListener(Fragment fragment) {
+        public TabListener(SherlockListFragment fragment) {
             this.mFragment = fragment;
         }
 

@@ -18,19 +18,19 @@ package com.itnoles.shared.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.itnoles.shared.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ContentAwareFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class ContentAwareFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	private SimpleCursorAdapter mAdapter;
 
 	@Override

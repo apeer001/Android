@@ -18,7 +18,6 @@ package com.itnoles.shared.fragments;
 
 //import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockFragment;
 //import com.actionbarsherlock.view.Menu;
 //import com.actionbarsherlock.view.MenuInflater;
 //import com.actionbarsherlock.view.MenuItem;
@@ -37,13 +37,13 @@ import android.widget.Toast;
  *
  * The WebView is automically paused or resumed when the Fragment is paused or resumed.
  */
-public class WebDetailsFragment extends Fragment {
+public class WebDetailsFragment extends SherlockFragment {
     private WebView mWebView;
 
 	public static WebDetailsFragment newInstance(String urlString) {
 	    final WebDetailsFragment f = new WebDetailsFragment();
 
-		// Supply url and index input as an argument.
+		// Supply url input as an argument.
 		final Bundle args = new Bundle();
 		args.putString("url", urlString);
 		f.setArguments(args);
@@ -76,24 +76,6 @@ public class WebDetailsFragment extends Fragment {
 	 	    }
 	    });
 	    mWebView.loadUrl(getArguments().getString("url"));
-    }
-
-    /**
-     * Called when the fragment is visible to the user and actively running. Resumes the WebView.
-     */
-    @Override
-    public void onResume() {
-        mWebView.onResume();
-        super.onResume();
-    }
-
-    /**
-     * Called when the fragment is no longer resumed. Pauses the WebView.
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-        mWebView.onPause();
     }
 
     /**

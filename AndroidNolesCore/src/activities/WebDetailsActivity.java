@@ -17,15 +17,20 @@
 
 package com.itnoles.shared.activities;
 
-import android.support.v4.app.Fragment;
+import android.os.Bundle;
 
 import com.itnoles.shared.fragments.WebDetailsFragment;
 
 public class WebDetailsActivity extends BaseSinglePaneActivity {
-	@Override
-	protected Fragment onCreatePane() {
-		final WebDetailsFragment details = new WebDetailsFragment();
-		details.setArguments(getIntent().getExtras());
-		return details;
-	}
+	// Called when the activity is first created.
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            final WebDetailsFragment details = new WebDetailsFragment();
+            details.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
+        }
+    }
 }

@@ -19,16 +19,16 @@ package com.itnoles.shared.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.itnoles.shared.R;
 import com.itnoles.shared.activities.ScheduleActivity;
 import com.itnoles.shared.activities.StaffActivity;
 
-public class TeamFragment extends ListFragment {
+public class TeamFragment extends SherlockListFragment {
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
 
@@ -64,7 +64,7 @@ public class TeamFragment extends ListFragment {
         }
     }
 
-    private void replaceFragmentOrStartActivity(ListFragment fragment, Class clzz) {
+    private void replaceFragmentOrStartActivity(SherlockListFragment fragment, Class clzz) {
         if (mDualPane) {
             final int position = getSelectedItemPosition();
             if (mShownCheckPosition != position) {

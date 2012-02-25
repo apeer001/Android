@@ -36,25 +36,23 @@ public final class XMLParserWithNetHttp {
     // 8 KB Buffer Size for BufferdInputStream
     private static final int BUFFER_SIZE = 8192;
 
-    private final HttpURLConnection mConnection;
-
-    private XMLParserWithNetHttp(String url) throws IOException {
+    private XMLParserWithNetHttp() {
         // Disable connection pooling for pre-Gingerbread
         if (!SportsConstants.SUPPORTS_GINGERBREAD) {
             System.setProperty("http.keepAlive", "false");
         }
-
-        HttpURLConnection.setFollowRedirects(false);
-        mConnection = (HttpURLConnection) new URL(url).openConnection();
     }
 
-	private void executeWithConnection(XMLPullParserManager manager) throws IOException {
-        if (mConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            Log.w(LOG_TAG, "Unexpected server response " + mConnection.getResponseMessage());
+	private void executeWithConnection(String url, XMLPullParserManager manager) throws IOException {
+        HttpURLConnection.setFollowRedirects(false);
+        final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+
+        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            Log.w(LOG_TAG, "Unexpected server response " + connection.getResponseMessage());
             return;
         }
 
-        final InputStream input = new BufferedInputStream(mConnection.getInputStream(), BUFFER_SIZE);
+        final InputStream input = new BufferedInputStream(connection.getInputStream(), BUFFER_SIZE);
         try {
             final XmlPullParser parser = Xml.newPullParser();
             parser.setInput(input, null);
@@ -66,15 +64,15 @@ public final class XMLParserWithNetHttp {
                 input.close();
             }
             if (!SportsConstants.SUPPORTS_GINGERBREAD) {
-                mConnection.disconnect();
+                connection.disconnect();
             }
         }
     }
 
     public static void execute(String url, XMLPullParserManager manager) {
+        final XMLParserWithNetHttp http = new XMLParserWithNetHttp();
         try {
-            final XMLParserWithNetHttp http = new XMLParserWithNetHttp(url);
-            http.executeWithConnection(manager);
+            http.executeWithConnection(url, manager);
         } catch (IOException e) {
             Log.w(LOG_TAG, "Problem reading remote responses", e);
         }

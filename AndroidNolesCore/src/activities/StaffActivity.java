@@ -17,13 +17,19 @@
 
 package com.itnoles.shared.activities;
 
-import android.support.v4.app.Fragment;
+import android.os.Bundle;
 
 import com.itnoles.shared.fragments.StaffFragment;
 
 public class StaffActivity extends BaseSinglePaneActivity {
+	// Called when the activity is first created.
 	@Override
-	protected Fragment onCreatePane() {
-		return new StaffFragment();
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		if (savedInstanceState == null) {
+            final StaffFragment staff = new StaffFragment();
+            getSupportFragmentManager().beginTransaction().add(android.R.id.content, staff).commit();
+        }
 	}
 }

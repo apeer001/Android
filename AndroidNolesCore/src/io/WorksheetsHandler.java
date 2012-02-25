@@ -44,7 +44,7 @@ public class WorksheetsHandler extends XmlHandler {
     private final RemoteExecutor mExecutor;
 
     public WorksheetsHandler(RemoteExecutor executor) {
-        mExecutor = executor;
+        this.mExecutor = executor;
     }
 
     @Override

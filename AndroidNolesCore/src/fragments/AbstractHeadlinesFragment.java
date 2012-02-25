@@ -22,12 +22,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.itnoles.shared.R;
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.activities.WebDetailsActivity;
@@ -42,7 +42,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 import java.util.List;
 
-public abstract class AbstractHeadlinesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
+public abstract class AbstractHeadlinesFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
     private static final int HEADLINE_LOADER = 0x0;
 
     protected static SharedPreferences sSharedPrefs;
@@ -86,9 +86,23 @@ public abstract class AbstractHeadlinesFragment extends ListFragment implements 
             sSharedPrefs.edit().putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, false).commit();
         }
 
-        // Set the actionbar's subtitle
         final String title = sSharedPrefs.getString(SportsConstants.SP_KEY_NEWS_TITLE, "Latest Football news");
-        getActivity().getSupportActionBar().setSubtitle(title);
+        setActionBarSubtitle(title);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        setActionBarSubtitle(null);
+    }
+
+    /**
+     * Set the actionbar's subtitle
+     * @param subtitle text to be displayed for subtitle
+     */
+    private void setActionBarSubtitle(String subtitle) {
+        getSherlockActivity().getSupportActionBar().setSubtitle(subtitle);
     }
 
     @Override

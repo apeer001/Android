@@ -16,34 +16,33 @@
 
 package com.itnoles.shared.activities;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 
+//import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.itnoles.shared.R;
 
-public abstract class BaseSinglePaneActivity extends FragmentActivity {
-    private Fragment mFragment;
+public abstract class BaseSinglePaneActivity extends SherlockFragmentActivity {
+    //private SherlockListFragment mFragment;
 
     // Called when the activity is first created.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // If the screen is now in landscape mode, we can show the
-            // dialog in-line with the list so we don't need this activity.
+        // If we are in two-pane layout mode, this activity is no longer necessary
+        if (getResources().getBoolean(R.bool.has_two_panes)) {
             finish();
             return;
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if (savedInstanceState == null) {
+        /*if (savedInstanceState == null) {
             mFragment = onCreatePane();
             getSupportFragmentManager().beginTransaction().add(android.R.id.content, mFragment).commit();
-        }
+        }*/
     }
 
     @Override
@@ -58,5 +57,5 @@ public abstract class BaseSinglePaneActivity extends FragmentActivity {
      * Called in <code>onCreate</code> when the fragment constituting this activity is needed.
      * The returned fragment's arguments may be set to the intent used to invoke this activity.
      */
-    protected abstract Fragment onCreatePane();
+    //protected abstract SherlockListFragment onCreatePane();
 }
