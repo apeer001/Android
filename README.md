@@ -4,7 +4,7 @@
 <h2>Are you going to develop this further?</h2>
 <p>Yes, I will continue to improve this library.</p>
 
-<h2>Project dependency<h2>
+<h2>Project dependency</h2>
 <ul>
    <li>ActionBarSherlock - https://github.com/JakeWharton/ActionBarSherlock</li>
 </ul>
