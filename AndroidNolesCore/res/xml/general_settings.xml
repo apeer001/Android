@@ -1,0 +1,10 @@
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:title="@string/general">
+	<ListPreference
+		android:title="@string/listPref_title"
+		android:summary="@string/listPref_summary"
+		android:key="news"
+		android:defaultValue="false"
+		android:dialogTitle="@string/listPref_dialogTitle" />
+</PreferenceScreen>

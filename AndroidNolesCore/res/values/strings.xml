@@ -1,0 +1,20 @@
+<resources>
+	<string name="loading">Loading…</string>
+	<!--<string name="share">Share</string>-->
+
+	<!-- Settings -->
+	<string name="general">General</string>
+	<string name="settings">Settings</string>
+	<string name="about_settings">About App</string>
+	<string name="app_version">Application Version</string>
+	<string name="author_name">Author Name</string>
+	<string name="author_email">Author Email</string>
+	<string name="author_website">Author Website</string>
+	<string name="listPref_title">Headlines</string>
+	<string name="listPref_dialogTitle">News Source</string>
+	<string name="listPref_summary">change the news source</string>
+
+	<!-- Team -->
+	<string name="schedules">Schedules</string>
+	<string name="staff">Coaches and Staff</string>
+</resources>
