@@ -17,6 +17,7 @@
 package com.itnoles.shared.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -72,15 +73,16 @@ public abstract class AbstractTabbedActivity extends SherlockFragmentActivity {
             this.mFragment = fragment;
         }
 
-        public void onTabSelected(Tab tab) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, mFragment, null).commit();
+        public void onTabSelected(Tab tab, FragmentTransaction ft) {
+            //getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, mFragment, null).commit();
+            ft.replace(R.id.content_frame, mFragment, null);
         }
 
-        public void onTabUnselected(Tab tab) {
+        public void onTabUnselected(Tab tab, FragmentTransaction ft) {
             // do nothing
         }
 
-        public void onTabReselected(Tab tab) {
+        public void onTabReselected(Tab tab, FragmentTransaction ft) {
             // do nothing
         }
     }

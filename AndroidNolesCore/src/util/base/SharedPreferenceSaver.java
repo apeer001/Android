@@ -16,7 +16,6 @@
 
 package com.itnoles.shared.util.base;
 
-import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
 /**
@@ -26,12 +25,6 @@ import android.content.SharedPreferences.Editor;
  * to the Google {@link BackupService} on platforms where this is available.
  */
 public abstract class SharedPreferenceSaver {
-    protected Context mContext;
-
-    protected SharedPreferenceSaver(Context context) {
-        this.mContext = context;
-    }
-
     /**
      * Save the Shared Preferences modified through the Editor object.
      * @param editor Shared Preferences Editor to commit.

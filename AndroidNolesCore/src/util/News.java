@@ -50,7 +50,7 @@ public class News {
     }
 
     private void setPublished(String date) {
-    	final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    	final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
     	try {
     		mPublished = s.parse(date);
     	} catch (ParseException e) {
@@ -68,7 +68,7 @@ public class News {
 
 	public String getPubDate() {
 		if (mPublished != null) {
-			final SimpleDateFormat s = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.US);
+			final SimpleDateFormat s = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.getDefault());
 			return s.format(mPublished);
 		}
 		return mPubDate;

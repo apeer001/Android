@@ -38,12 +38,12 @@ public final class XMLParserWithNetHttp {
 
     private XMLParserWithNetHttp() {
         // Disable connection pooling for pre-Gingerbread
-        if (!SportsConstants.SUPPORTS_GINGERBREAD) {
+        /*if (!SportsConstants.SUPPORTS_GINGERBREAD) {
             System.setProperty("http.keepAlive", "false");
-        }
+        }*/
     }
 
-	private void executeWithConnection(String url, XMLPullParserManager manager) throws IOException {
+	private static void executeWithConnection(String url, XMLPullParserManager manager) throws IOException {
         HttpURLConnection.setFollowRedirects(false);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
@@ -70,9 +70,8 @@ public final class XMLParserWithNetHttp {
     }
 
     public static void execute(String url, XMLPullParserManager manager) {
-        final XMLParserWithNetHttp http = new XMLParserWithNetHttp();
         try {
-            http.executeWithConnection(url, manager);
+            executeWithConnection(url, manager);
         } catch (IOException e) {
             Log.w(LOG_TAG, "Problem reading remote responses", e);
         }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:gravity="center"
-    android:id="@id/loading_indicator"
-    android:padding="30.0dip"
+	android:id="@id/loading_indicator"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:padding="30.0dip">
     <ProgressBar
 	    android:id="@id/empty_loading"
 	    android:layout_width="wrap_content"

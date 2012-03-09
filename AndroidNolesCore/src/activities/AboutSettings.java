@@ -17,13 +17,13 @@
 package com.itnoles.shared.activities;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.itnoles.shared.R;
-import com.itnoles.shared.util.PackageManagerWrapper;
 
 public class AboutSettings extends SherlockPreferenceActivity {
 	@Override
@@ -34,8 +34,11 @@ public class AboutSettings extends SherlockPreferenceActivity {
 		addPreferencesFromResource(R.xml.about_settings);
 
 		final Preference appVersion = findPreference("app_version");
-		final PackageManagerWrapper wrapper = new PackageManagerWrapper(this);
-		appVersion.setSummary(wrapper.getPackageInfo().versionName);
+    	try {
+    		appVersion.setSummary(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+    	} catch (PackageManager.NameNotFoundException e) {
+    		appVersion.setSummary("");
+    	}
 	}
 
 	@Override

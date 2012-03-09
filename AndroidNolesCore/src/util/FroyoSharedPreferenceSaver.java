@@ -28,7 +28,6 @@ class FroyoSharedPreferenceSaver extends LegacySharedPreferenceSaver {
 	protected BackupManager mBackupManager;
 
 	public FroyoSharedPreferenceSaver(Context context) {
-		super(context);
 		this.mBackupManager = new BackupManager(context);
 	}
 

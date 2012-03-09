@@ -39,6 +39,6 @@ public final class PlatformSpecificImplementationFactory {
             ? new GingerbreadSharedPreferenceSaver(ctx)
             : SportsConstants.SUPPORTS_FROYO
                 ? new FroyoSharedPreferenceSaver(ctx)
-                : new LegacySharedPreferenceSaver(ctx);
+                : new LegacySharedPreferenceSaver();
     }
 }

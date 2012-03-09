@@ -18,23 +18,21 @@ package com.itnoles.knightfootball.service;
 
 import android.content.Intent;
 
-import com.itnoles.knightfootball.receiver.ConnectivityChangedReceiver;
 import com.itnoles.shared.service.AbstractSyncService;
 import com.itnoles.shared.io.WorksheetsHandler;
-import com.itnoles.shared.util.PackageManagerWrapper;
 
 public class SyncService extends AbstractSyncService {
     private static final String WORKSHEET_URL = "https://spreadsheets.google.com/feeds/worksheets/0AvRfIfyMiQAGdFowOThSZGs5OXpQMnpvdEJSc29TWHc/public/basic";
 
     @Override
     protected void onHandleIntent(Intent intent) {
-    	// Check to see if we are connected to a data or wifi network.
-        if (mNetwork.isNetworkConnected()) {
-            mRemoteExecutor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(mRemoteExecutor));
-        } else {
-            // Enable the Connectivity Changed Receiver to listen for connection to a network
-            final PackageManagerWrapper wrapper = new PackageManagerWrapper(this);
-            wrapper.setComponentEnabledSetting(ConnectivityChangedReceiver.class);
+        /**
+         * Check to see if we are connected to a data or wifi network.
+         * if false, return early or execute XML
+         */
+        if (!mNetwork.isNetworkConnected()) {
+            return;
         }
+        mRemoteExecutor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(mRemoteExecutor));
     }
 }

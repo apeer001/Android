@@ -17,13 +17,13 @@
 package com.itnoles.shared.fragments;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 
 import com.itnoles.shared.R;
-import com.itnoles.shared.util.PackageManagerWrapper;
 
 public class AboutFragment extends PreferenceFragment {
 	@Override
@@ -34,8 +34,12 @@ public class AboutFragment extends PreferenceFragment {
 		addPreferencesFromResource(R.xml.about_settings);
 
 		final Preference appVersion = findPreference("app_version");
-		final PackageManagerWrapper wrapper = new PackageManagerWrapper(getActivity());
-		appVersion.setSummary(wrapper.getPackageInfo().versionName);
+		try {
+			final PackageManager pm = getActivity().getPackageManager();
+    		appVersion.setSummary(pm.getPackageInfo(getActivity().getPackageName(), 0).versionName);
+    	} catch (PackageManager.NameNotFoundException e) {
+    		appVersion.setSummary("");
+    	}
 	}
 
 	@Override

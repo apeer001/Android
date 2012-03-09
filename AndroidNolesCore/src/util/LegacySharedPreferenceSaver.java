@@ -16,7 +16,6 @@
 
 package com.itnoles.shared.util;
 
-import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
 import com.itnoles.shared.util.base.SharedPreferenceSaver;
@@ -25,11 +24,6 @@ import com.itnoles.shared.util.base.SharedPreferenceSaver;
  * Save {@link SharedPreferences} in a way compatible with Android 2.1.
  */
 class LegacySharedPreferenceSaver extends SharedPreferenceSaver {
-
-    public LegacySharedPreferenceSaver(Context context) {
-        super(context);
-    }
-
     /**
      * {@inheritDoc}
      */
