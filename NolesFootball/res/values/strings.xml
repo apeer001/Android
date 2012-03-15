@@ -3,7 +3,7 @@
 	<!--string name="backup_manager_key"></string>-->
 
 	<string-array name="listNames">
-		<item>Latest Football news</item>
+		<item>Top Athletics Stories</item>
 		<item>Warchant</item>
 		<item>Noles Digest</item>
 		<item>Tomahawk Nation</item>
@@ -11,7 +11,7 @@
 		<item>Orlando Sentinel</item>
 	</string-array>
 	<string-array name="listValues">
-		<item>http://www.seminoles.com/sports/m-footbl/headline-rss.xml</item>
+		<item>http://www.seminoles.com/headline-rss.xml</item>
 		<item>http://floridastate.rivals.com/rss2feed.asp?SID=1061</item>
 		<item>http://rss.scout.com/rss.aspx?sid=16</item>
 		<item>http://feeds.feedburner.com/sportsblogs/tomahawknation.xml</item>

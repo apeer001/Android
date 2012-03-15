@@ -22,7 +22,8 @@ import android.provider.BaseColumns;
 import com.itnoles.shared.SportsConstants;
 
 public final class ScheduleContract {
-    private ScheduleContract() {}
+    private ScheduleContract() {
+    }
 
     private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + SportsConstants.CONTENT_AUTHORITY);
 
@@ -33,7 +34,8 @@ public final class ScheduleContract {
         public static final String SCHOOL = "school";
         public static final String LOCATION = "location";
 
-        private Schedule() {}
+        private Schedule() {
+        }
 
         public static Uri buildScheduleUri(String scheduleId) {
             return CONTENT_URI.buildUpon().appendPath(scheduleId).build();
@@ -45,7 +47,8 @@ public final class ScheduleContract {
         public static final String NAME = "name";
         public static final String URL = "url";
 
-        private Link() {}
+        private Link() {
+        }
 
         public static Uri buildLinkUri(String linkId) {
             return CONTENT_URI.buildUpon().appendPath(linkId).build();
@@ -57,7 +60,8 @@ public final class ScheduleContract {
         public static final String NAME = "name";
         public static final String POSITIONS = "positions";
 
-        private Staff() {}
+        private Staff() {
+        }
 
         public static Uri buildStaffUri(String staffId) {
             return CONTENT_URI.buildUpon().appendPath(staffId).build();

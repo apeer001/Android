@@ -18,7 +18,6 @@ package com.itnoles.shared.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
@@ -29,8 +28,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.itnoles.shared.R;
 
 public abstract class AbstractTabbedActivity extends SherlockFragmentActivity {
-    private static final String LOG_TAG = "TabbedActivity";
-
     protected ActionBar mActionBar;
 
     @Override
@@ -74,7 +71,6 @@ public abstract class AbstractTabbedActivity extends SherlockFragmentActivity {
         }
 
         public void onTabSelected(Tab tab, FragmentTransaction ft) {
-            //getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, mFragment, null).commit();
             ft.replace(R.id.content_frame, mFragment, null);
         }
 

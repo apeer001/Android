@@ -44,7 +44,7 @@ public class SpreadsheetEntry extends HashMap<String, String> {
     private static Matcher sContentMatcher;
 
     private static Matcher getContentMatcher(CharSequence input) {
-        synchronized(LOCK) {
+        synchronized (LOCK) {
             if (sContentMatcher == null) {
                 sContentMatcher = CONTENT_PATTERN.matcher(input);
             } else {

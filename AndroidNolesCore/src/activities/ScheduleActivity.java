@@ -22,14 +22,14 @@ import android.os.Bundle;
 import com.itnoles.shared.fragments.ScheduleFragment;
 
 public class ScheduleActivity extends BaseSinglePaneActivity {
-	// Called when the activity is first created.
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    // Called when the activity is first created.
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
             final ScheduleFragment schedule = new ScheduleFragment();
             getSupportFragmentManager().beginTransaction().add(android.R.id.content, schedule).commit();
         }
-	}
+    }
 }

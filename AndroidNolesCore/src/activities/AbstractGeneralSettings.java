@@ -27,41 +27,43 @@ import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
 import com.itnoles.shared.util.base.SharedPreferenceSaver;
 
 public abstract class AbstractGeneralSettings extends SherlockPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-	protected ListPreference mNewsPref;
+    protected ListPreference mNewsPref;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// Load the XML preferences file
-		addPreferencesFromResource(R.xml.general_settings);
+        // Load the XML preferences file
+        addPreferencesFromResource(R.xml.general_settings);
 
-		mNewsPref = (ListPreference) findPreference("news");
-	}
+        mNewsPref = (ListPreference) findPreference("news");
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		// Set up a listener whenever a key changes
-		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		// Unregister the listener whenever a key changes
-		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	}
+        // Set up a listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
 
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if ("news".equals(key)) {
-		    final SharedPreferences.Editor edit = sharedPreferences.edit();
-		    edit.putString(SportsConstants.SP_KEY_NEWS_TITLE, mNewsPref.getEntry().toString());
-		    edit.putString(SportsConstants.SP_KEY_NEWS_URL, mNewsPref.getValue());
-		    edit.putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, true);
-		    final SharedPreferenceSaver saver = PlatformSpecificImplementationFactory.getSharedPreferenceSaver(this);
-		    saver.savePreferences(edit);
-		}
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Unregister the listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if ("news".equals(key)) {
+            final SharedPreferences.Editor edit = sharedPreferences.edit();
+            edit.putString(SportsConstants.SP_KEY_NEWS_TITLE, mNewsPref.getEntry().toString());
+            edit.putString(SportsConstants.SP_KEY_NEWS_URL, mNewsPref.getValue());
+            edit.putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, true);
+            final SharedPreferenceSaver saver = PlatformSpecificImplementationFactory.getSharedPreferenceSaver(this);
+            saver.savePreferences(edit);
+        }
+    }
 }

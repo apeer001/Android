@@ -40,42 +40,42 @@ import com.actionbarsherlock.app.SherlockFragment;
 public class WebDetailsFragment extends SherlockFragment {
     private WebView mWebView;
 
-	public static WebDetailsFragment newInstance(String urlString) {
-	    final WebDetailsFragment f = new WebDetailsFragment();
+    public static WebDetailsFragment newInstance(String urlString) {
+        final WebDetailsFragment f = new WebDetailsFragment();
 
-		// Supply url input as an argument.
-		final Bundle args = new Bundle();
-		args.putString("url", urlString);
-		f.setArguments(args);
-		return f;
-	}
+        // Supply url input as an argument.
+        final Bundle args = new Bundle();
+        args.putString("url", urlString);
+        f.setArguments(args);
+        return f;
+    }
 
-	/**
+    /**
      * Called to instantiate the view. Creates and returns the WebView.
      */
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		if (mWebView != null) {
-			mWebView.destroy();
-		}
-	    mWebView = new WebView(getActivity());
-	    return mWebView;
-	}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (mWebView != null) {
+            mWebView.destroy();
+        }
+        mWebView = new WebView(getActivity());
+        return mWebView;
+    }
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-	    super.onActivityCreated(savedInstanceState);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         //setHasOptionsMenu(true);
 
-	    mWebView.getSettings().setJavaScriptEnabled(true);
-	    mWebView.getSettings().setBuiltInZoomControls(true);
-	    mWebView.setWebViewClient(new WebViewClient() {
-	        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-	 	 	    Toast.makeText(getActivity(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
-	 	    }
-	    });
-	    mWebView.loadUrl(getArguments().getString("url"));
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setBuiltInZoomControls(true);
+        mWebView.setWebViewClient(new WebViewClient() {
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                Toast.makeText(getActivity(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
+            }
+        });
+        mWebView.loadUrl(getArguments().getString("url"));
     }
 
     /**
@@ -86,10 +86,10 @@ public class WebDetailsFragment extends SherlockFragment {
         super.onLowMemory();
 
         if (mWebView != null) {
-        	/**
-        	 * Free memory on WebView
-        	 */
-        	mWebView.freeMemory();
+            /**
+             * Free memory on WebView
+             */
+            mWebView.freeMemory();
         }
     }
 
@@ -100,9 +100,8 @@ public class WebDetailsFragment extends SherlockFragment {
     @Override
     public void onDestroy() {
         if (mWebView != null) {
-        	mWebView.freeMemory();
+            mWebView.freeMemory();
             mWebView.destroy();
-            mWebView = null;
         }
         super.onDestroy();
     }

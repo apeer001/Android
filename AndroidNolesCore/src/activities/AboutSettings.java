@@ -17,7 +17,7 @@
 package com.itnoles.shared.activities;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
@@ -26,32 +26,32 @@ import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.itnoles.shared.R;
 
 public class AboutSettings extends SherlockPreferenceActivity {
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// Load the XML preferences file
-		addPreferencesFromResource(R.xml.about_settings);
+        // Load the XML preferences file
+        addPreferencesFromResource(R.xml.about_settings);
 
-		final Preference appVersion = findPreference("app_version");
-    	try {
-    		appVersion.setSummary(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
-    	} catch (PackageManager.NameNotFoundException e) {
-    		appVersion.setSummary("");
-    	}
-	}
+        final Preference appVersion = findPreference("app_version");
+        try {
+            appVersion.setSummary(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+        } catch (NameNotFoundException e) {
+            appVersion.setSummary("");
+        }
+    }
 
-	@Override
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-		final String key = preference.getKey();
-		if ("author_email".equals(key)) {
-		    final Intent i = new Intent(Intent.ACTION_SEND);
-		    i.setType("message/rfc822");
-		    i.putExtra(Intent.EXTRA_EMAIL, new String[] {preference.getSummary().toString()});
-		    i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
-		    startActivity(Intent.createChooser(i, "Select email application."));
-		}
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+        final String key = preference.getKey();
+        if ("author_email".equals(key)) {
+            final Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("message/rfc822");
+            i.putExtra(Intent.EXTRA_EMAIL, new String[] {preference.getSummary().toString()});
+            i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
+            startActivity(Intent.createChooser(i, "Select email application."));
+        }
 
-		return super.onPreferenceTreeClick(preferenceScreen, preference);
-	}
+        return super.onPreferenceTreeClick(preferenceScreen, preference);
+    }
 }

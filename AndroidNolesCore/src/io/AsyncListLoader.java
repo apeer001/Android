@@ -8,7 +8,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -22,10 +22,11 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.support.v4.content.AsyncTaskLoader;
 
-public abstract class AsyncListLoader<T> extends AsyncTaskLoader<T> {
-    final InterestingConfigChanges mLastConfig = new InterestingConfigChanges();
+import java.util.List;
 
-    T mList;
+public abstract class AsyncListLoader<T> extends AsyncTaskLoader<List<T>> {
+    private final InterestingConfigChanges mLastConfig = new InterestingConfigChanges();
+    private List<T> mList;
 
     public AsyncListLoader(Context context) {
         super(context);
@@ -37,7 +38,7 @@ public abstract class AsyncListLoader<T> extends AsyncTaskLoader<T> {
      * here just adds a little more logic.
      */
     @Override
-    public void deliverResult(T list) {
+    public void deliverResult(List<T> list) {
         mList = list;
 
         if (isStarted()) {
@@ -52,7 +53,7 @@ public abstract class AsyncListLoader<T> extends AsyncTaskLoader<T> {
      */
     @Override
     protected void onStartLoading() {
-        if (mList != null) {
+        if (!mList.isEmpty()) {
             // If we currently have a result available, deliver it
             // immediately.
             deliverResult(mList);
@@ -61,7 +62,7 @@ public abstract class AsyncListLoader<T> extends AsyncTaskLoader<T> {
         // Has something interesting in the configuration changed since we
         // last built the news list?
         final boolean configChange = mLastConfig.applyNewConfig(getContext().getResources());
-        if (mList == null || configChange) {
+        if (mList.isEmpty() || configChange) {
             // If the data has changed since the last time it was loaded
             // or is not currently available, start a load.
             forceLoad();
@@ -87,8 +88,8 @@ public abstract class AsyncListLoader<T> extends AsyncTaskLoader<T> {
         // Ensure the loader is stopped
         onStopLoading();
 
-        if (mList != null) {
-            mList = null;
+        if (!mList.isEmpty()) {
+            mList.clear();
         }
     }
 
@@ -96,15 +97,15 @@ public abstract class AsyncListLoader<T> extends AsyncTaskLoader<T> {
      * Helper for determining if the configuration has changed in an interesting
      * way so we need to rebuild the news list.
      */
-    static class InterestingConfigChanges {
-        final Configuration mLastConfiguration = new Configuration();
-        int mLastDensity;
+    private static class InterestingConfigChanges {
+        private final Configuration mLastConfiguration = new Configuration();
+        private int mLastDensity;
 
-        boolean applyNewConfig(Resources res) {
+        private boolean applyNewConfig(Resources res) {
             final int configChanges = mLastConfiguration.updateFrom(res.getConfiguration());
             final boolean densityChanged = mLastDensity != res.getDisplayMetrics().densityDpi;
-            if (densityChanged || (configChanges&(ActivityInfo.CONFIG_LOCALE
-                |ActivityInfo.CONFIG_UI_MODE|ActivityInfo.CONFIG_SCREEN_LAYOUT)) != 0) {
+            if (densityChanged || (configChanges & (ActivityInfo.CONFIG_LOCALE
+                | ActivityInfo.CONFIG_UI_MODE | ActivityInfo.CONFIG_SCREEN_LAYOUT)) != 0) {
                 mLastDensity = res.getDisplayMetrics().densityDpi;
                 return true;
             }

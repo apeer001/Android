@@ -27,7 +27,8 @@ import com.itnoles.shared.util.base.SharedPreferenceSaver;
  * implementations.
  */
 public final class PlatformSpecificImplementationFactory {
-    private PlatformSpecificImplementationFactory() {}
+    private PlatformSpecificImplementationFactory() {
+    }
 
     /**
      * Create a new SharedPreferenceSaver instances
