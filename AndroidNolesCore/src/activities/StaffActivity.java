@@ -22,14 +22,14 @@ import android.os.Bundle;
 import com.itnoles.shared.fragments.StaffFragment;
 
 public class StaffActivity extends BaseSinglePaneActivity {
-	// Called when the activity is first created.
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    // Called when the activity is first created.
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
             final StaffFragment staff = new StaffFragment();
             getSupportFragmentManager().beginTransaction().add(android.R.id.content, staff).commit();
         }
-	}
+    }
 }

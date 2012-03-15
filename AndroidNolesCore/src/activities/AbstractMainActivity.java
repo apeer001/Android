@@ -25,20 +25,22 @@ import com.actionbarsherlock.view.Menu;
 import com.itnoles.shared.R;
 
 public abstract class AbstractMainActivity extends SherlockFragmentActivity {
-	@Override
+    private static final int POST_DELAY = 1000;
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-    	super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-    	setContentView(R.layout.page_loading_indicator);
+        setContentView(R.layout.page_loading_indicator);
 
-    	final View progressFrame = findViewById(R.id.loading_indicator);
-    	progressFrame.postDelayed(new Runnable() {
-    		public void run() {
-    			progressFrame.setVisibility(View.GONE);
+        final View progressFrame = findViewById(R.id.loading_indicator);
+        progressFrame.postDelayed(new Runnable() {
+            public void run() {
+                progressFrame.setVisibility(View.GONE);
                 final Intent intent = new Intent(AbstractMainActivity.this, getTabbedActivity());
-    			startActivity(intent);
-    		}
-    	}, 350);
+                startActivity(intent);
+            }
+        }, POST_DELAY);
     }
 
     @Override

@@ -31,24 +31,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public final class XMLParserWithNetHttp {
-	private static final String LOG_TAG = "NetHttp";
+    private static final String LOG_TAG = "NetHttp";
 
-    // 8 KB Buffer Size for BufferdInputStream
+    // 8 KB Buffer Size for BufferedInputStream
     private static final int BUFFER_SIZE = 8192;
 
     private XMLParserWithNetHttp() {
-        // Disable connection pooling for pre-Gingerbread
-        /*if (!SportsConstants.SUPPORTS_GINGERBREAD) {
-            System.setProperty("http.keepAlive", "false");
-        }*/
     }
 
-	private static void executeWithConnection(String url, XMLPullParserManager manager) throws IOException {
+    private static void executeWithConnection(String url, XMLPullParserManager manager) throws IOException {
         HttpURLConnection.setFollowRedirects(false);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            Log.w(LOG_TAG, "Unexpected server response " + connection.getResponseMessage());
+            Log.w(LOG_TAG, "Unexpected server response message " + connection.getResponseMessage()
+                + " with response code" + connection.getResponseCode());
             return;
         }
 
@@ -57,7 +54,7 @@ public final class XMLParserWithNetHttp {
             final XmlPullParser parser = Xml.newPullParser();
             parser.setInput(input, null);
             manager.onPostExecute(parser);
-        } catch(XmlPullParserException e) {
+        } catch (XmlPullParserException e) {
             Log.w(LOG_TAG, "Malformed response", e);
         } finally {
             if (input != null) {
@@ -78,6 +75,6 @@ public final class XMLParserWithNetHttp {
     }
 
     public interface XMLPullParserManager {
-		void onPostExecute(XmlPullParser parser);
-	}
+        void onPostExecute(XmlPullParser parser);
+    }
 }

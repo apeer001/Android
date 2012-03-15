@@ -20,20 +20,18 @@ import android.app.Application;
 import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 
 public class SportsApplication extends Application {
-	private static final String LOG_TAG = "SportsApplication";
+    private static final String LOG_TAG = "SportsApplication";
 
-	@Override
-	public void onCreate() {
-		if (isDebugMode()) {
-			try {
-				final Class<?> strictMode = Class.forName("android.os.StrictMode");
-				final Method enableDefaults = strictMode.getMethod("enableDefaults");
-				enableDefaults.invoke(null);
+    @Override
+    public void onCreate() {
+        if (isDebugMode()) {
+            try {
+                final Class<?> strictMode = Class.forName("android.os.StrictMode");
+                final Method enableDefaults = strictMode.getMethod("enableDefaults");
+                enableDefaults.invoke(null);
             } catch (Exception e) {
                 //The version of Android we're on doesn't have android.os.StrictMode
                 //so ignore this exception
@@ -46,40 +44,16 @@ public class SportsApplication extends Application {
         if (!SportsConstants.SUPPORTS_GINGERBREAD) {
             System.setProperty("http.keepAlive", "false");
         }
+    }
 
-        //enable the http response cache in a thread to avoid a strict mode violation
-        new Thread() {
-        	@Override
-        	public void run() {
-        		enableHttpResponseCache();
-        	}
-        }.start();
-	}
+    public boolean isDebugMode() {
+        // check if android:debuggable is set to true
+        if (getApplicationInfo() == null) {
+            // getApplicationInfo() returns null in unit tests
+            return true;
+        }
 
-	private void enableHttpResponseCache() {
-		final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
-		final File httpCacheDir = new File(getCacheDir(), "http");
-		try {
-			Class.forName("android.net.http.HttpResponseCache")
-			     .getMethod("install", File.class, long.class)
-			     .invoke(null, httpCacheDir, httpCacheSize);
-		} catch (Exception httpResponseCacheNotAvailable) {
-			try{
-				com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
-			} catch(IOException e) {
-				Log.e(LOG_TAG, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache");
-			}
-		}
-	}
-
-	public boolean isDebugMode() {
-	    // check if android:debuggable is set to true
-	    if (getApplicationInfo() == null) {
-	        // getApplicationInfo() returns null in unit tests
-	        return true;
-	    }
-
-		final int applicationFlags = getApplicationInfo().flags;
-		return (applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+        final int applicationFlags = getApplicationInfo().flags;
+        return (applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
     }
 }

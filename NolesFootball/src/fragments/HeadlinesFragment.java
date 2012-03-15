@@ -22,6 +22,6 @@ import com.itnoles.shared.fragments.AbstractHeadlinesFragment;
 public class HeadlinesFragment extends AbstractHeadlinesFragment {
     @Override
     protected String getNewsURL() {
-        return sSharedPrefs.getString(SportsConstants.SP_KEY_NEWS_URL, "http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
+        return mPrefs.getString(SportsConstants.SP_KEY_NEWS_URL, "http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
     }
 }

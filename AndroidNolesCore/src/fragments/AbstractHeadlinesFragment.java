@@ -45,19 +45,19 @@ import java.util.List;
 public abstract class AbstractHeadlinesFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
     private static final int HEADLINE_LOADER = 0x0;
 
-    protected static SharedPreferences sSharedPrefs;
-
     // This is the Adapter being used to display the list's data.
     private NewsListAdapter mAdapter;
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
+
+    protected SharedPreferences mPrefs;
 
     @Override
     public void onActivityCreated(Bundle savedState) {
         super.onActivityCreated(savedState);
 
         // Load Shared Preference Manager
-        sSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new NewsListAdapter(getActivity());
@@ -81,12 +81,12 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         super.onResume();
 
         // Restart the Loaders for shared prefences changes when SP_KEY_NEWS_REFRESH is true
-        if (sSharedPrefs.getBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, false)) {
+        if (mPrefs.getBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, false)) {
             getLoaderManager().restartLoader(HEADLINE_LOADER, null, this);
-            sSharedPrefs.edit().putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, false).commit();
+            mPrefs.edit().putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, false).commit();
         }
 
-        final String title = sSharedPrefs.getString(SportsConstants.SP_KEY_NEWS_TITLE, "Latest Football news");
+        final String title = mPrefs.getString(SportsConstants.SP_KEY_NEWS_TITLE, "Top Athletics Stories");
         setActionBarSubtitle(title);
     }
 
@@ -109,7 +109,6 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
     public void onListItemClick(ListView l, View v, int position, long id) {
         final News news = (News) getListAdapter().getItem(position);
         final String urlString = news.getLink();
-
         if (mDualPane) {
             if (mShownCheckPosition != position) {
                 // If we are not currently showing a fragment for the new
@@ -154,12 +153,12 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
     /**
      * A custom Loader that loads all of the headlines.
      */
-    static class NewsListLoader extends AsyncListLoader<List<News>> {
-        String mURL;
+    static class NewsListLoader extends AsyncListLoader<News> {
+        private final String mURL;
 
         public NewsListLoader(Context context, String url) {
             super(context);
-            mURL = url;
+            this.mURL = url;
         }
 
         /**

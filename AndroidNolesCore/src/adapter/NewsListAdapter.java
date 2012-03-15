@@ -64,7 +64,7 @@ public class NewsListAdapter extends ArrayAdapter<News> {
             holder.mDate = (TextView) convertView.findViewById(R.id.date);
             holder.mDesc = (TextView) convertView.findViewById(R.id.description);
             convertView.setTag(holder);
-	    } else {
+        } else {
             holder = (ViewHolder) convertView.getTag();
         }
 

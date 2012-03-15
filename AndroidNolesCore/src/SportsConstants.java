@@ -17,7 +17,8 @@
 package com.itnoles.shared;
 
 public final class SportsConstants {
-    private SportsConstants() {}
+    private SportsConstants() {
+    }
 
     /**
      * Worksheet Table name

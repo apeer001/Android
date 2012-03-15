@@ -22,7 +22,7 @@ import android.os.Bundle;
 import com.itnoles.shared.fragments.WebDetailsFragment;
 
 public class WebDetailsActivity extends BaseSinglePaneActivity {
-	// Called when the activity is first created.
+    // Called when the activity is first created.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

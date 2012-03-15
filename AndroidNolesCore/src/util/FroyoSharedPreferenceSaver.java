@@ -25,18 +25,19 @@ import android.content.SharedPreferences.Editor;
  * the BackupManager to initiate a backup.
  */
 class FroyoSharedPreferenceSaver extends LegacySharedPreferenceSaver {
-	protected BackupManager mBackupManager;
+    protected BackupManager mBackupManager;
 
-	public FroyoSharedPreferenceSaver(Context context) {
-		this.mBackupManager = new BackupManager(context);
-	}
+    public FroyoSharedPreferenceSaver(Context context) {
+        super();
+        this.mBackupManager = new BackupManager(context);
+    }
 
-	/**
+    /**
      * {@inheritDoc}
      */
-	@Override
-	public void savePreferences(Editor editor) {
-		editor.commit();
-		mBackupManager.dataChanged();
-	}
+    @Override
+    public void savePreferences(Editor editor) {
+        editor.commit();
+        mBackupManager.dataChanged();
+    }
 }

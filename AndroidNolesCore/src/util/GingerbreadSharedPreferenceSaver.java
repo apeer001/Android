@@ -25,16 +25,16 @@ import android.content.SharedPreferences.Editor;
  * initiate a backup.
  */
 class GingerbreadSharedPreferenceSaver extends FroyoSharedPreferenceSaver {
-	public GingerbreadSharedPreferenceSaver(Context context) {
-		super(context);
-	}
+    public GingerbreadSharedPreferenceSaver(Context context) {
+        super(context);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void savePreferences(Editor editor) {
-    	editor.apply();
-    	mBackupManager.dataChanged();
+        editor.apply();
+        mBackupManager.dataChanged();
     }
 }

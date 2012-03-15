@@ -29,52 +29,60 @@ import java.util.Locale;
 public class News {
     private static final String LOG_TAG = "News";
 
-	private String mTitle;
-	private String mLink;
-	private String mPubDate;
-	private String mDesc;
-	private Date mPublished;
+    private String mTitle;
+    private String mLink;
+    private String mPubDate;
+    private String mDesc;
+    private Date mPublished;
 
-	public void setValue(String key, String value) {
-	    if ("title".equals(key)) {
-	        mTitle = value;
-	    } else if ("pubDate".equals(key)) {
-	        mPubDate = value;
-	    } else if ("published".equals(key)) {
-	    	setPublished(value);
-	    } else if ("description".equals(key) || "content".equals(key)) {
-	        mDesc = value;
-	    } else if ("link".equals(key)) {
-	    	mLink = value;
-	    }
+    private final ThreadLocal<SimpleDateFormat> threadDate = new ThreadLocal<SimpleDateFormat>();
+    private SimpleDateFormat getDateFormat(String format) {
+        SimpleDateFormat sdf = threadDate.get();
+        if (sdf == null) {
+            sdf = new SimpleDateFormat(format, Locale.US);
+            threadDate.set(sdf);
+        }
+        return sdf;
+    }
+
+    public void setValue(String key, String value) {
+        if ("title".equals(key)) {
+            mTitle = value;
+        } else if ("pubDate".equals(key)) {
+            mPubDate = value;
+        } else if ("published".equals(key)) {
+            setPublished(value);
+        } else if ("description".equals(key) || "content".equals(key)) {
+            mDesc = value;
+        } else if ("link".equals(key)) {
+            mLink = value;
+        }
     }
 
     private void setPublished(String date) {
-    	final SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
-    	try {
-    		mPublished = s.parse(date);
-    	} catch (ParseException e) {
-    		Log.w(LOG_TAG, "Fail to parse published date", e);
-    	}
+        try {
+            mPublished = getDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(date);
+        } catch (ParseException e) {
+            Log.w(LOG_TAG, "Fail to parse published date", e);
+        }
     }
 
     public String getTitle() {
         return mTitle;
     }
 
-	public String getLink() {
-		return mLink;
-	}
+    public String getLink() {
+        return mLink;
+    }
 
-	public String getPubDate() {
-		if (mPublished != null) {
-			final SimpleDateFormat s = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.getDefault());
-			return s.format(mPublished);
-		}
-		return mPubDate;
-	}
+    public String getPubDate() {
+        if (mPublished != null) {
+            return getDateFormat("E, dd MMM yyyy HH:mm:ss z").format(mPublished);
+        }
+        return mPubDate;
+    }
 
-	public String getDesc() {
-		return mDesc;
-	}
+    public String getDesc() {
+        return mDesc;
+    }
 }

@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ContentAwareFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-	private SimpleCursorAdapter mAdapter;
+    private SimpleCursorAdapter mAdapter;
 
-	@Override
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -44,7 +44,7 @@ public abstract class ContentAwareFragment extends SherlockListFragment implemen
     }
 
     protected String[] getNewProjectionList(String[] listProjection) {
-    	final List<String> projectionList = new ArrayList<String>();
+        final List<String> projectionList = new ArrayList<String>();
         projectionList.add("_id");
         for (String projection : listProjection) {
             projectionList.add(projection);
@@ -52,16 +52,16 @@ public abstract class ContentAwareFragment extends SherlockListFragment implemen
         return projectionList.toArray(new String[projectionList.size()]);
     }
 
-	protected void setCursorAdapter(int layout, String[] from, int[] to) {
-		mAdapter = new SimpleCursorAdapter(getActivity(), layout, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-		setListAdapter(mAdapter);
-	}
+    protected void setCursorAdapter(int layout, String[] from, int[] to) {
+        mAdapter = new SimpleCursorAdapter(getActivity(), layout, null, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        setListAdapter(mAdapter);
+    }
 
     protected Cursor getCursorFromLoader() {
         return mAdapter.getCursor();
     }
 
-	@Override
+    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mAdapter.swapCursor(cursor);
     }
