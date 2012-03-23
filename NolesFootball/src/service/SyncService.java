@@ -30,7 +30,7 @@ public class SyncService extends AbstractSyncService {
          * Check to see if we are connected to a data or wifi network.
          * if false, return early or execute XML
          */
-    	if (!mNetwork.isNetworkConnected()) {
+        if (!mNetwork.isNetworkConnected()) {
             return;
         }
         mRemoteExecutor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(mRemoteExecutor));

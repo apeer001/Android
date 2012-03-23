@@ -22,46 +22,39 @@ import android.provider.BaseColumns;
 import com.itnoles.shared.SportsConstants;
 
 public final class ScheduleContract {
+    public static final String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
+
+    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+
     private ScheduleContract() {
     }
 
-    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + SportsConstants.CONTENT_AUTHORITY);
-
-    public static final class Schedule implements BaseColumns {
+    public static class Schedule implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(SportsConstants.SCHEDULE).build();
         public static final String DATE = "date";
         public static final String TIME = "time";
         public static final String SCHOOL = "school";
         public static final String LOCATION = "location";
 
-        private Schedule() {
-        }
-
         public static Uri buildScheduleUri(String scheduleId) {
             return CONTENT_URI.buildUpon().appendPath(scheduleId).build();
         }
     }
 
-    public static final class Link implements BaseColumns {
+    public static class Link implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(SportsConstants.LINK).build();
         public static final String NAME = "name";
         public static final String URL = "url";
-
-        private Link() {
-        }
 
         public static Uri buildLinkUri(String linkId) {
             return CONTENT_URI.buildUpon().appendPath(linkId).build();
         }
     }
 
-    public static final class Staff implements BaseColumns {
+    public static class Staff implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(SportsConstants.STAFF).build();
         public static final String NAME = "name";
         public static final String POSITIONS = "positions";
-
-        private Staff() {
-        }
 
         public static Uri buildStaffUri(String staffId) {
             return CONTENT_URI.buildUpon().appendPath(staffId).build();

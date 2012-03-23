@@ -53,7 +53,7 @@ public abstract class AsyncListLoader<T> extends AsyncTaskLoader<List<T>> {
      */
     @Override
     protected void onStartLoading() {
-        if (!mList.isEmpty()) {
+        if (mList != null) {
             // If we currently have a result available, deliver it
             // immediately.
             deliverResult(mList);
@@ -62,7 +62,7 @@ public abstract class AsyncListLoader<T> extends AsyncTaskLoader<List<T>> {
         // Has something interesting in the configuration changed since we
         // last built the news list?
         final boolean configChange = mLastConfig.applyNewConfig(getContext().getResources());
-        if (mList.isEmpty() || configChange) {
+        if (mList == null || configChange) {
             // If the data has changed since the last time it was loaded
             // or is not currently available, start a load.
             forceLoad();

@@ -35,13 +35,6 @@ public final class SportsConstants {
     public static String SP_KEY_NEWS_URL = "SP_KEY_NEWS_URL";
     public static String SP_KEY_NEWS_REFRESH = "SP_KEY_NEWS_REFRESH";
 
-    // ATOM Tags
-    public static String ENTRY = "entry";
-    public static String UPDATED = "updated";
-
-    public static String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
-
-    public static boolean SUPPORTS_FROYO = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO;
     public static boolean SUPPORTS_GINGERBREAD = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD;
     public static boolean SUPPORTS_HONEYCOMB = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB;
 }

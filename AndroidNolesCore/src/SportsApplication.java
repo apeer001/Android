@@ -17,7 +17,6 @@
 package com.itnoles.shared;
 
 import android.app.Application;
-import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
 import java.lang.reflect.Method;
@@ -27,7 +26,7 @@ public class SportsApplication extends Application {
 
     @Override
     public void onCreate() {
-        if (isDebugMode()) {
+        if (BuildConfig.DEBUG) {
             try {
                 final Class<?> strictMode = Class.forName("android.os.StrictMode");
                 final Method enableDefaults = strictMode.getMethod("enableDefaults");
@@ -44,16 +43,5 @@ public class SportsApplication extends Application {
         if (!SportsConstants.SUPPORTS_GINGERBREAD) {
             System.setProperty("http.keepAlive", "false");
         }
-    }
-
-    public boolean isDebugMode() {
-        // check if android:debuggable is set to true
-        if (getApplicationInfo() == null) {
-            // getApplicationInfo() returns null in unit tests
-            return true;
-        }
-
-        final int applicationFlags = getApplicationInfo().flags;
-        return (applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
     }
 }

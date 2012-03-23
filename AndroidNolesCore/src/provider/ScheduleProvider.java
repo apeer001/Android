@@ -54,14 +54,14 @@ public class ScheduleProvider extends ContentProvider {
     private static final UriMatcher URIMATCHER;
     static {
         URIMATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URIMATCHER.addURI(SportsConstants.CONTENT_AUTHORITY, "schedule", SCHEDULE);
-        URIMATCHER.addURI(SportsConstants.CONTENT_AUTHORITY, "schedule/*", SCHEDULE_ID);
+        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "schedule", SCHEDULE);
+        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "schedule/*", SCHEDULE_ID);
 
-        URIMATCHER.addURI(SportsConstants.CONTENT_AUTHORITY, "link", LINK);
-        URIMATCHER.addURI(SportsConstants.CONTENT_AUTHORITY, "link/*", LINK_ID);
+        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "link", LINK);
+        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "link/*", LINK_ID);
 
-        URIMATCHER.addURI(SportsConstants.CONTENT_AUTHORITY, "staff", STAFF);
-        URIMATCHER.addURI(SportsConstants.CONTENT_AUTHORITY, "staff/*", STAFF_ID);
+        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "staff", STAFF);
+        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "staff/*", STAFF_ID);
     }
 
     @Override
