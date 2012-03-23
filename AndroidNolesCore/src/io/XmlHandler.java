@@ -22,7 +22,7 @@ import android.content.OperationApplicationException;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.itnoles.shared.SportsConstants;
+import com.itnoles.shared.provider.ScheduleContract;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -41,7 +41,7 @@ public abstract class XmlHandler {
     public void parseAndApply(XmlPullParser parser, ContentResolver resolver) {
         try {
             final ArrayList<ContentProviderOperation> batch = parse(parser, resolver);
-            resolver.applyBatch(SportsConstants.CONTENT_AUTHORITY, batch);
+            resolver.applyBatch(ScheduleContract.CONTENT_AUTHORITY, batch);
         } catch (XmlPullParserException e) {
             Log.w(LOG_TAG, "Problem parsing XML response", e);
         } catch (IOException e) {

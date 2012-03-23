@@ -35,12 +35,12 @@ public class News {
     private String mDesc;
     private Date mPublished;
 
-    private final ThreadLocal<SimpleDateFormat> threadDate = new ThreadLocal<SimpleDateFormat>();
+    private final ThreadLocal<SimpleDateFormat> mThreadDate = new ThreadLocal<SimpleDateFormat>();
     private SimpleDateFormat getDateFormat(String format) {
-        SimpleDateFormat sdf = threadDate.get();
+        SimpleDateFormat sdf = mThreadDate.get();
         if (sdf == null) {
             sdf = new SimpleDateFormat(format, Locale.US);
-            threadDate.set(sdf);
+            mThreadDate.set(sdf);
         }
         return sdf;
     }

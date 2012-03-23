@@ -43,7 +43,7 @@ public class HeadlinesHandler {
                     break;
                 case XmlPullParser.START_TAG:
                     name = parser.getName();
-                    if ("item".equals(name) || SportsConstants.ENTRY.equals(name)) {
+                    if ("item".equals(name) || "entry".equals(name)) {
                         currentNews = new News();
                     } else if (currentNews != null) {
                         if (SportsConstants.LINK.equals(name) && parser.getAttributeCount() > 0) {
@@ -56,7 +56,7 @@ public class HeadlinesHandler {
                     break;
                 case XmlPullParser.END_TAG:
                     name = parser.getName();
-                    if ("item".equals(name) || SportsConstants.ENTRY.equals(name) && currentNews != null) {
+                    if ("item".equals(name) || "entry".equals(name) && currentNews != null) {
                         mList.add(currentNews);
                         break;
                     }

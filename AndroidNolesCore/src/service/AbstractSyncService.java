@@ -36,7 +36,7 @@ public abstract class AbstractSyncService extends IntentService {
     public void onCreate() {
         super.onCreate();
         final ContentResolver resolver = getContentResolver();
-        this.mRemoteExecutor = new RemoteExecutor(resolver);
-        this.mNetwork = new NetworkUtils(this);
+        mRemoteExecutor = new RemoteExecutor(resolver);
+        mNetwork = new NetworkUtils(this);
     }
 }

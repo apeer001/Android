@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.itnoles.shared.util.ParserUtils.AtomTags.ENTRY;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
@@ -55,7 +56,7 @@ public class WorksheetsHandler extends XmlHandler {
         // walk response, collecting all known spreadsheets
         int type;
         while ((type = parser.next()) != END_DOCUMENT) {
-            if (type == START_TAG && SportsConstants.ENTRY.equals(parser.getName())) {
+            if (type == START_TAG && ENTRY.equals(parser.getName())) {
                 final WorksheetEntry entry = WorksheetEntry.fromParser(parser);
                 Log.d(TAG, "found worksheet " + entry.toString());
                 sheets.put(entry.getTitle(), entry);
