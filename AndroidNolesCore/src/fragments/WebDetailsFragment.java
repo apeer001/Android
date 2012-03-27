@@ -16,7 +16,7 @@
 
 package com.itnoles.shared.fragments;
 
-//import android.content.Intent;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,11 +26,11 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
-//import com.actionbarsherlock.view.Menu;
-//import com.actionbarsherlock.view.MenuInflater;
-//import com.actionbarsherlock.view.MenuItem;
-//import com.actionbarsherlock.widget.ShareActionProvider;
-//import com.itnoles.shared.R;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.ShareActionProvider;
+import com.itnoles.shared.R;
 
 /**
  * A fragment that displays a WebView.
@@ -106,7 +106,7 @@ public class WebDetailsFragment extends SherlockFragment {
         super.onDestroy();
     }
 
-    /*@Override
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate menu resource file.
         inflater.inflate(R.menu.webdetail_share, menu);
@@ -119,5 +119,5 @@ public class WebDetailsFragment extends SherlockFragment {
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         actionProvider.setShareIntent(shareIntent);
-    }*/
+    }
 }

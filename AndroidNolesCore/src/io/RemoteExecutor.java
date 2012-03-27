@@ -17,23 +17,40 @@
 package com.itnoles.shared.io;
 
 import android.content.ContentResolver;
+import android.util.Log;
+import android.util.Xml;
 
-import com.itnoles.shared.util.XMLParserWithNetHttp;
+import com.itnoles.shared.util.NetHttp;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 public class RemoteExecutor {
+    private static final String LOG_TAG = "RemoteExecutor";
+
     private final ContentResolver mResolver;
 
     public RemoteExecutor(ContentResolver resolver) {
         this.mResolver = resolver;
     }
 
-    public void executeWithPullParser(String url, final XmlHandler handler) {
-        XMLParserWithNetHttp.execute(url, new XMLParserWithNetHttp.XMLPullParserManager() {
-            public void onPostExecute(XmlPullParser parser) {
-                handler.parseAndApply(parser, mResolver);
+    public void executeWithPullParser(String url, XmlHandler handler) {
+        NetHttp http = null;
+        try {
+            http = new NetHttp(url);
+            final XmlPullParser parser = Xml.newPullParser();
+            parser.setInput(http.getInputStream(), null);
+            handler.parseAndApply(parser, mResolver);
+        } catch (XmlPullParserException e) {
+            Log.w(LOG_TAG, "Problem parsing XML response", e);
+        } catch (IOException e) {
+            Log.w(LOG_TAG, "Problem reading response", e);
+        } finally {
+            if (http != null) {
+                http.close();
             }
-        });
+        }
     }
 }
