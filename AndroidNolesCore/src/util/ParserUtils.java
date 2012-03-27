@@ -21,8 +21,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.format.Time;
 
-import com.itnoles.shared.SportsConstants;
-
 public final class ParserUtils {
     private static Time sTime = new Time();
 

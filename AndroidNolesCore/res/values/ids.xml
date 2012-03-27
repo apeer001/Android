@@ -20,5 +20,5 @@
 	<item type="id" name="loading_indicator" />
 	<item type="id" name="empty_loading">false</item>
 
-	<!--<item type="id" name="menu_share">false</item>-->
+	<item type="id" name="menu_share">false</item>
 </resources>

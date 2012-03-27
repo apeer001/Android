@@ -18,6 +18,7 @@ package com.itnoles.shared.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
@@ -25,15 +26,38 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.itnoles.shared.BuildConfig;
 import com.itnoles.shared.R;
 
+//import java.io.File;
+import java.lang.reflect.Method;
+
 public abstract class AbstractTabbedActivity extends SherlockFragmentActivity {
+    private static final String LOG_TAG = "TabbedActivity";
+
     protected ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG) {
+            try {
+                final Class<?> strictMode = Class.forName("android.os.StrictMode");
+                final Method enableDefaults = strictMode.getMethod("enableDefaults");
+                enableDefaults.invoke(null);
+            } catch (Exception e) {
+                //The version of Android we're on doesn't have android.os.StrictMode
+                //so ignore this exception
+                Log.d(LOG_TAG, "Strict mode not available");
+            }
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_layer);
+
+        /*new Thread(new Runnable() {
+            public void run() {
+                enableHttpResponseCache();
+            }
+        }).start();*/
 
         mActionBar = getSupportActionBar();
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -54,6 +78,19 @@ public abstract class AbstractTabbedActivity extends SherlockFragmentActivity {
     }
 
     protected abstract void showSetting();
+
+    //XXX: It seems there is a problem for this in httpurlconnection on 2nd times.
+    /*private void enableHttpResponseCache() {
+        try {
+            final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
+            final File httpCacheDir = new File(getCacheDir(), "http");
+            Class.forName("android.net.http.HttpResponseCache")
+                 .getMethod("install", File.class, long.class)
+                 .invoke(null, httpCacheDir, httpCacheSize);
+        } catch (Exception httpResponseCacheNotAvailable) {
+            Log.d(LOG_TAG, "HTTP response cache is unavailable.");
+        }
+    }*/
 
     /**
      * A TabListener receives event callbacks from the action bar as tabs

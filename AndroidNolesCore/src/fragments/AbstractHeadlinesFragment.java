@@ -16,7 +16,6 @@
 
 package com.itnoles.shared.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -32,13 +31,8 @@ import com.itnoles.shared.R;
 import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.activities.WebDetailsActivity;
 import com.itnoles.shared.adapter.NewsListAdapter;
-import com.itnoles.shared.io.AsyncListLoader;
-import com.itnoles.shared.io.HeadlinesHandler;
-import com.itnoles.shared.util.NetworkUtils;
+import com.itnoles.shared.io.NewsListLoader;
 import com.itnoles.shared.util.News;
-import com.itnoles.shared.util.XMLParserWithNetHttp;
-
-import org.xmlpull.v1.XmlPullParser;
 
 import java.util.List;
 
@@ -149,35 +143,4 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
     }
 
     protected abstract String getNewsURL();
-
-    /**
-     * A custom Loader that loads all of the headlines.
-     */
-    static class NewsListLoader extends AsyncListLoader<News> {
-        private final String mURL;
-
-        public NewsListLoader(Context context, String url) {
-            super(context);
-            this.mURL = url;
-        }
-
-        /**
-         * This is where the bulk of our work is done. This function is
-         * called in a background thread and should generate a new set of
-         * data to be published by the loader.
-         */
-        @Override
-        public List<News> loadInBackground() {
-            if (!NetworkUtils.isNetworkConnected(getContext())) {
-                return null;
-            }
-            final HeadlinesHandler handler = new HeadlinesHandler();
-            XMLParserWithNetHttp.execute(mURL, new XMLParserWithNetHttp.XMLPullParserManager() {
-                public void onPostExecute(XmlPullParser parser) {
-                    handler.parseXML(parser);
-                }
-            });
-            return handler.getNews();
-        }
-    }
 }
