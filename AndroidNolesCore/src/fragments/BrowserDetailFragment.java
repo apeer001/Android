@@ -21,9 +21,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
@@ -37,11 +38,11 @@ import com.itnoles.shared.R;
  *
  * The WebView is automically paused or resumed when the Fragment is paused or resumed.
  */
-public class WebDetailsFragment extends SherlockFragment {
+public class BrowserDetailFragment extends SherlockFragment {
     private WebView mWebView;
 
-    public static WebDetailsFragment newInstance(String urlString) {
-        final WebDetailsFragment f = new WebDetailsFragment();
+    public static BrowserDetailFragment newInstance(String urlString) {
+        final BrowserDetailFragment f = new BrowserDetailFragment();
 
         // Supply url input as an argument.
         final Bundle args = new Bundle();
@@ -55,26 +56,36 @@ public class WebDetailsFragment extends SherlockFragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (mWebView != null) {
-            mWebView.destroy();
-        }
-        mWebView = new WebView(getActivity());
-        return mWebView;
+        return inflater.inflate(R.layout.browser_fragment, null);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
 
+        mWebView = (WebView) getView().findViewById(R.id.webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setSupportZoom(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
-        mWebView.setWebViewClient(new WebViewClient() {
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                Toast.makeText(getActivity(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
+
+        mWebView.setWebChromeClient(new WebChromeClient() {
+            public void onProgressChanged(WebView view, int newProgress) {
+                final ProgressBar progress = (ProgressBar) getView().findViewById(R.id.empty_loading);
+                progress.setProgress(newProgress);
+                progress.setVisibility(View.VISIBLE);
+                if (newProgress == 100) {
+                    progress.setVisibility(View.GONE);
+                }
             }
         });
+
+        mWebView.setWebViewClient(new WebViewClient() {
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            }
+        });
+
         mWebView.loadUrl(getArguments().getString("url"));
     }
 
@@ -98,12 +109,12 @@ public class WebDetailsFragment extends SherlockFragment {
      * Free memory and destroy the internal state of the WebView.
      */
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         if (mWebView != null) {
             mWebView.freeMemory();
             mWebView.destroy();
         }
-        super.onDestroy();
+        super.onDestroyView();
     }
 
     @Override

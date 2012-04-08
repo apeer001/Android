@@ -22,9 +22,7 @@ import android.preference.ListPreference;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.itnoles.shared.R;
-import com.itnoles.shared.SportsConstants;
-import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
-import com.itnoles.shared.util.base.SharedPreferenceSaver;
+import com.itnoles.shared.SharedPreferencesHelper;
 
 public abstract class AbstractGeneralSettings extends SherlockPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     protected ListPreference mNewsPref;
@@ -58,12 +56,8 @@ public abstract class AbstractGeneralSettings extends SherlockPreferenceActivity
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if ("news".equals(key)) {
-            final SharedPreferences.Editor edit = sharedPreferences.edit();
-            edit.putString(SportsConstants.SP_KEY_NEWS_TITLE, mNewsPref.getEntry().toString());
-            edit.putString(SportsConstants.SP_KEY_NEWS_URL, mNewsPref.getValue());
-            edit.putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, true);
-            final SharedPreferenceSaver saver = PlatformSpecificImplementationFactory.getSharedPreferenceSaver(this);
-            saver.savePreferences(edit);
+            final SharedPreferencesHelper helper = new SharedPreferencesHelper(sharedPreferences);
+            helper.onNewsPrefChanged(this, mNewsPref);
         }
     }
 }

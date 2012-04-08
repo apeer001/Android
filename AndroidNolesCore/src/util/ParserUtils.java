@@ -21,6 +21,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.format.Time;
 
+import com.itnoles.shared.SportsConstants;
+
 public final class ParserUtils {
     private static Time sTime = new Time();
 
@@ -41,7 +43,7 @@ public final class ParserUtils {
      * {@link Uri}. Expects the {@link Uri} to reference a single item.
      */
     public static long queryItemUpdated(Uri uri, ContentResolver resolver) {
-        final String[] projection = {AtomTags.UPDATED};
+        final String[] projection = {SportsConstants.UPDATED};
         final Cursor cursor = resolver.query(uri, projection, null, null, null);
         try {
             if (cursor.moveToFirst()) {
@@ -59,7 +61,7 @@ public final class ParserUtils {
      * reference a directory of several items.
      */
     public static long queryDirUpdated(Uri uri, ContentResolver resolver) {
-        final String[] projection = {"MAX(" + AtomTags.UPDATED + ")"};
+        final String[] projection = {"MAX(" + SportsConstants.UPDATED + ")"};
         final Cursor cursor = resolver.query(uri, projection, null, null, null);
         try {
             cursor.moveToFirst();
@@ -67,11 +69,5 @@ public final class ParserUtils {
         } finally {
             cursor.close();
         }
-    }
-
-    /** XML tag constants used by the Atom standard. */
-    public interface AtomTags {
-        String ENTRY = "entry";
-        String UPDATED = "updated";
     }
 }

@@ -16,6 +16,7 @@
 
 package com.itnoles.shared.fragments;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.preference.PreferenceScreen;
 
 import com.itnoles.shared.R;
 
+@TargetApi(11)
 public class AboutFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {

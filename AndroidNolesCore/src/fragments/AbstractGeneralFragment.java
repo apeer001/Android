@@ -16,19 +16,19 @@
 
 package com.itnoles.shared.fragments;
 
+import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
 
 import com.itnoles.shared.R;
-import com.itnoles.shared.SportsConstants;
-import com.itnoles.shared.util.PlatformSpecificImplementationFactory;
-import com.itnoles.shared.util.base.SharedPreferenceSaver;
+import com.itnoles.shared.SharedPreferencesHelper;
 
 /**
  * An abstract preference fragment class for General Settings.
  */
+@TargetApi(11)
 public abstract class AbstractGeneralFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     protected ListPreference mNewsPref;
 
@@ -61,12 +61,8 @@ public abstract class AbstractGeneralFragment extends PreferenceFragment impleme
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if ("news".equals(key)) {
-            final SharedPreferences.Editor edit = sharedPreferences.edit();
-            edit.putString(SportsConstants.SP_KEY_NEWS_TITLE, mNewsPref.getEntry().toString());
-            edit.putString(SportsConstants.SP_KEY_NEWS_URL, mNewsPref.getValue());
-            edit.putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, true);
-            final SharedPreferenceSaver saver = PlatformSpecificImplementationFactory.getSharedPreferenceSaver(getActivity());
-            saver.savePreferences(edit);
+            final SharedPreferencesHelper helper = new SharedPreferencesHelper(sharedPreferences);
+            helper.onNewsPrefChanged(getActivity(), mNewsPref);
         }
     }
 }

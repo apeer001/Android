@@ -21,8 +21,8 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.util.Log;
 
+import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.provider.ScheduleContract.Staff;
-import com.itnoles.shared.util.ParserUtils.AtomTags;
 import com.itnoles.shared.util.SpreadsheetEntry;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -45,7 +45,7 @@ public class StaffHandler extends XmlHandler {
         // Walk document, parsing any incoming entries
         int type;
         while ((type = parser.next()) != END_DOCUMENT) {
-            if (type == START_TAG && AtomTags.ENTRY.equals(parser.getName())) {
+            if (type == START_TAG && SportsConstants.ENTRY.equals(parser.getName())) {
                 // Process single spreadsheet row at a time
                 final SpreadsheetEntry entry = SpreadsheetEntry.fromParser(parser);
                 final String title = entry.get("title");
@@ -67,7 +67,7 @@ public class StaffHandler extends XmlHandler {
                 batch.add(ContentProviderOperation.newDelete(staffUri).build());
 
                 final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(Staff.CONTENT_URI);
-                builder.withValue(AtomTags.UPDATED, serverUpdated);
+                builder.withValue(SportsConstants.UPDATED, serverUpdated);
                 builder.withValue(Staff.NAME, title);
                 builder.withValue(Staff.POSITIONS, entry.get(Staff.POSITIONS));
 

@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2011 Jonathan Steele
  *
@@ -15,22 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.shared.activities;
+package com.itnoles.knightfootball;
 
 import android.os.Bundle;
 
-import com.itnoles.shared.fragments.WebDetailsFragment;
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
-public class WebDetailsActivity extends BaseSinglePaneActivity {
-    // Called when the activity is first created.
+public class LegacySettingsActivity extends SherlockPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            final WebDetailsFragment details = new WebDetailsFragment();
-            details.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
-        }
+        // Load the XML preferences file
+        addPreferencesFromResource(R.xml.preferences);
     }
 }

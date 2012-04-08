@@ -14,18 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.nolesfootball.activities;
+package com.itnoles.nolesfootball;
 
 import android.os.Bundle;
 
-import com.itnoles.nolesfootball.R;
 import com.itnoles.shared.activities.AbstractGeneralSettings;
 
 public class GeneralSettings extends AbstractGeneralSettings {
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		mNewsPref.setEntries(R.array.listNames);
-		mNewsPref.setEntryValues(R.array.listValues);
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mNewsPref.setEntries(R.array.listNames);
+        mNewsPref.setEntryValues(R.array.listValues);
+    }
 }

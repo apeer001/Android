@@ -42,17 +42,17 @@ public final class NetHttp {
 
         HttpURLConnection.setFollowRedirects(false);
         this.mConnection = (HttpURLConnection) new URL(url).openConnection();
+        //this.mConnection.setUseCaches(true);
     }
 
     /**
      * Get InputStream with buffered from HttpURLConnection.
-     * @return if responseCode is not OK, null else inputstream
+     * @return new BufferedInputStream
      */
     public InputStream getInputStream() throws IOException {
         if (mConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
             Log.w(LOG_TAG, "Unexpected server response message " + mConnection.getResponseMessage()
                 + " with response code" + mConnection.getResponseCode());
-            return null;
         }
         return new BufferedInputStream(mConnection.getInputStream(), BUFFER_SIZE);
     }

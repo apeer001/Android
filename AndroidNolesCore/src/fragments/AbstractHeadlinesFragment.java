@@ -16,10 +16,10 @@
 
 package com.itnoles.shared.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -28,8 +28,8 @@ import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.itnoles.shared.R;
-import com.itnoles.shared.SportsConstants;
-import com.itnoles.shared.activities.WebDetailsActivity;
+import com.itnoles.shared.SharedPreferencesHelper;
+import com.itnoles.shared.activities.BrowserDetailActivity;
 import com.itnoles.shared.adapter.NewsListAdapter;
 import com.itnoles.shared.io.NewsListLoader;
 import com.itnoles.shared.util.News;
@@ -44,14 +44,16 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
 
-    protected SharedPreferences mPrefs;
+    protected SharedPreferencesHelper mPrefsHelper;
 
     @Override
     public void onActivityCreated(Bundle savedState) {
         super.onActivityCreated(savedState);
 
-        // Load Shared Preference Manager
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        // Load Shared Preference Manager with helper
+        final String packagePrefs = getActivity().getPackageName() + "_preferences";
+        final SharedPreferences prefs = getActivity().getSharedPreferences(packagePrefs, Context.MODE_PRIVATE);
+        mPrefsHelper = new SharedPreferencesHelper(prefs);
 
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new NewsListAdapter(getActivity());
@@ -65,6 +67,9 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         }
         mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
 
+        // Start out with a progress indicator.
+        setListShown(false);
+
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(HEADLINE_LOADER, null, this);
@@ -75,13 +80,12 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         super.onResume();
 
         // Restart the Loaders for shared prefences changes when SP_KEY_NEWS_REFRESH is true
-        if (mPrefs.getBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, false)) {
+        if (mPrefsHelper.getNewsFresh()) {
             getLoaderManager().restartLoader(HEADLINE_LOADER, null, this);
-            mPrefs.edit().putBoolean(SportsConstants.SP_KEY_NEWS_REFRESH, false).commit();
+            mPrefsHelper.setNewsRefreshToFalse();
         }
 
-        final String title = mPrefs.getString(SportsConstants.SP_KEY_NEWS_TITLE, "Top Athletics Stories");
-        setActionBarSubtitle(title);
+        setActionBarSubtitle(mPrefsHelper.getNewsTitle());
     }
 
     @Override
@@ -107,7 +111,7 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
             if (mShownCheckPosition != position) {
                 // If we are not currently showing a fragment for the new
                 // position, we need to create and install a new one.
-                final WebDetailsFragment df = WebDetailsFragment.newInstance(urlString);
+                final BrowserDetailFragment df = BrowserDetailFragment.newInstance(urlString);
 
                 // Execute a transaction, replacing any existing fragment
                 // with this one inside the frame.
@@ -118,7 +122,7 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
                 mShownCheckPosition = position;
             }
         } else {
-            final Intent intent = new Intent(getActivity(), WebDetailsActivity.class);
+            final Intent intent = new Intent(getActivity(), BrowserDetailActivity.class);
             intent.putExtra("url", urlString);
             startActivity(intent);
         }
@@ -134,6 +138,13 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
     public void onLoadFinished(Loader<List<News>> loader, List<News> data) {
         // Set the new data in the adapter.
         mAdapter.setData(data);
+
+        // The list should now be shown.
+        if (isResumed()) {
+            setListShown(true);
+        } else {
+            setListShownNoAnimation(true);
+        }
     }
 
     @Override

@@ -14,16 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.nolesfootball.activities;
+package com.itnoles.nolesfootball;
 
+import android.annotation.TargetApi;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-import com.itnoles.nolesfootball.R;
 import com.itnoles.shared.fragments.AbstractGeneralFragment;
 
 import java.util.List;
 
+@TargetApi(11)
 public class ModernSettingsActivity extends PreferenceActivity {
 	/**
 	 * Populate the activity with the top-level headers.

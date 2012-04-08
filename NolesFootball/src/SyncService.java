@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.nolesfootball.service;
+package com.itnoles.nolesfootball;
 
 import android.content.Intent;
 
-import com.itnoles.shared.service.AbstractSyncService;
 import com.itnoles.shared.io.WorksheetsHandler;
+import com.itnoles.shared.service.AbstractSyncService;
 
 public class SyncService extends AbstractSyncService {
     private static final String WORKSHEET_URL = "https://spreadsheets.google.com/feeds/worksheets/0AvRfIfyMiQAGdDI4dEkwZW9XcDdqUHVOcXpzU0FqcWc/public/basic";

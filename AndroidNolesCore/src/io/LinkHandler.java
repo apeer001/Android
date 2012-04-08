@@ -21,8 +21,8 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.util.Log;
 
+import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.provider.ScheduleContract.Link;
-import com.itnoles.shared.util.ParserUtils.AtomTags;
 import com.itnoles.shared.util.SpreadsheetEntry;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -45,7 +45,7 @@ public class LinkHandler extends XmlHandler {
         // Walk document, parsing any incoming entries
         int type;
         while ((type = parser.next()) != END_DOCUMENT) {
-            if (type == START_TAG && AtomTags.ENTRY.equals(parser.getName())) {
+            if (type == START_TAG && SportsConstants.ENTRY.equals(parser.getName())) {
                 // Process single spreadsheet row at a time
                 final SpreadsheetEntry entry = SpreadsheetEntry.fromParser(parser);
                 final String title = entry.get("title");
@@ -67,7 +67,7 @@ public class LinkHandler extends XmlHandler {
                 batch.add(ContentProviderOperation.newDelete(linkUri).build());
 
                 final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(Link.CONTENT_URI);
-                builder.withValue(AtomTags.UPDATED, serverUpdated);
+                builder.withValue(SportsConstants.UPDATED, serverUpdated);
                 builder.withValue(Link.NAME, title);
                 builder.withValue(Link.URL, entry.get("link"));
 

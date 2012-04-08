@@ -88,7 +88,7 @@ public abstract class AsyncListLoader<T> extends AsyncTaskLoader<List<T>> {
         // Ensure the loader is stopped
         onStopLoading();
 
-        if (!mList.isEmpty()) {
+        if (mList == null) {
             mList.clear();
         }
     }

@@ -14,13 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.knightfootball.activities;
+package com.itnoles.nolesfootball;
 
-import com.itnoles.shared.activities.AbstractMainActivity;
+import android.os.Bundle;
 
-public class MainActivity extends AbstractMainActivity {
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+
+public class LegacySettingsActivity extends SherlockPreferenceActivity {
     @Override
-    protected Class getTabbedActivity() {
-        return TabbedActivity.class;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Load the XML preferences file
+        addPreferencesFromResource(R.xml.preferences);
     }
 }
