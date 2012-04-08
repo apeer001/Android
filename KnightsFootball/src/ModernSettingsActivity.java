@@ -16,6 +16,7 @@
 
 package com.itnoles.knightfootball.activities;
 
+import android.annotation.TargetApi;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
@@ -24,6 +25,7 @@ import com.itnoles.shared.fragments.AbstractGeneralFragment;
 
 import java.util.List;
 
+@TargetApi(11)
 public class ModernSettingsActivity extends PreferenceActivity {
 	/**
 	 * Populate the activity with the top-level headers.

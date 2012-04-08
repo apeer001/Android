@@ -28,7 +28,7 @@ public class SportsBackupAgent extends BackupAgentHelper {
     public void onCreate() {
         final String packagePrefs = getPackageName() + "_preferences";
         final SharedPreferencesBackupHelper helper = new SharedPreferencesBackupHelper(this, packagePrefs);
-        addHelper(SportsConstants.SP_KEY_NEWS_TITLE, helper);
-        addHelper(SportsConstants.SP_KEY_NEWS_URL, helper);
+        addHelper(SharedPreferencesHelper.SP_KEY_NEWS_TITLE, helper);
+        addHelper(SharedPreferencesHelper.SP_KEY_NEWS_URL, helper);
     }
 }

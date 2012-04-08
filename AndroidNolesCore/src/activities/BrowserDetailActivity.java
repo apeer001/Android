@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2011 Jonathan Steele
  *
@@ -14,14 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.nolesfootball.fragments;
+package com.itnoles.shared.activities;
 
-import com.itnoles.shared.SportsConstants;
-import com.itnoles.shared.fragments.AbstractHeadlinesFragment;
+import android.os.Bundle;
 
-public class HeadlinesFragment extends AbstractHeadlinesFragment {
+import com.itnoles.shared.fragments.BrowserDetailFragment;
+
+public class BrowserDetailActivity extends BaseSinglePaneActivity {
+    // Called when the activity is first created.
     @Override
-    protected String getNewsURL() {
-        return mPrefs.getString(SportsConstants.SP_KEY_NEWS_URL, "http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            final BrowserDetailFragment details = new BrowserDetailFragment();
+            details.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
+        }
     }
 }

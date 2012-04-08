@@ -14,19 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.knightfootball.activities;
+package com.itnoles.nolesfootball;
 
-import android.os.Bundle;
+import com.itnoles.shared.fragments.AbstractHeadlinesFragment;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.itnoles.knightfootball.R;
-
-public class LegacySettingsActivity extends SherlockPreferenceActivity {
+public class HeadlinesFragment extends AbstractHeadlinesFragment {
     @Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		// Load the XML preferences file
-		addPreferencesFromResource(R.xml.preferences);
-	}
+    protected String getNewsURL() {
+        return mPrefsHelper.getNewsURL("http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
+    }
 }

@@ -34,7 +34,7 @@ import java.util.List;
 public class NewsListLoader extends AsyncListLoader<News> {
     private static final String LOG_TAG = "NewsListLoader";
 
-	private final String mURL;
+    private final String mURL;
 
     public NewsListLoader(Context context, String url) {
         super(context);

@@ -16,31 +16,52 @@
 
 package com.itnoles.shared.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.itnoles.shared.BuildConfig;
 import com.itnoles.shared.R;
 
+//import java.io.File;
+import java.lang.reflect.Method;
+
 public abstract class AbstractMainActivity extends SherlockFragmentActivity {
-    private static final int POST_DELAY = 1000;
+    private static final String LOG_TAG = "TabbedActivity";
+
+    protected ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.page_loading_indicator);
-
-        final View progressFrame = findViewById(R.id.loading_indicator);
-        progressFrame.postDelayed(new Runnable() {
-            public void run() {
-                progressFrame.setVisibility(View.GONE);
-                final Intent intent = new Intent(AbstractMainActivity.this, getTabbedActivity());
-                startActivity(intent);
+        if (BuildConfig.DEBUG) {
+            try {
+                final Class<?> strictMode = Class.forName("android.os.StrictMode");
+                final Method enableDefaults = strictMode.getMethod("enableDefaults");
+                enableDefaults.invoke(null);
+            } catch (Exception e) {
+                //The version of Android we're on doesn't have android.os.StrictMode
+                //so ignore this exception
+                Log.d(LOG_TAG, "Strict mode not available");
             }
-        }, POST_DELAY);
+        }
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_layer);
+
+        /*new Thread(new Runnable() {
+            public void run() {
+                enableHttpResponseCache();
+            }
+        }).start();*/
+
+        mActionBar = getSupportActionBar();
+        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
     }
 
     @Override
@@ -49,5 +70,59 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    protected abstract Class getTabbedActivity();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.settings) {
+            showSetting();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    protected abstract void showSetting();
+
+    //XXX: It seems there is a problem for this in httpurlconnection on 2nd times.
+    /*private void enableHttpResponseCache() {
+        try {
+            final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
+            final File httpCacheDir = new File(getCacheDir(), "http");
+            Class.forName("android.net.http.HttpResponseCache")
+                 .getMethod("install", File.class, long.class)
+                 .invoke(null, httpCacheDir, httpCacheSize);
+        } catch (Exception httpResponseCacheNotAvailable) {
+            Log.d(LOG_TAG, "HTTP response cache is unavailable.");
+        }
+    }*/
+
+    /**
+     * A TabListener receives event callbacks from the action bar as tabs
+     * are deselected, selected, and reselected. A FragmentTransaction
+     * is provided to each of these callbacks; if any operations are added
+     * to it, it will be committed at the end of the full tab switch operation.
+     * This lets tab switches be atomic without the app needing to track
+     * the interactions between different tabs.
+     */
+    public static class TabListener<T extends Fragment> implements ActionBar.TabListener {
+        private final SherlockFragmentActivity mActivity;
+        private final String mTag;
+        private final Class<T> mClass;
+
+        public TabListener(SherlockFragmentActivity activity, String tag, Class<T> clz) {
+            this.mActivity = activity;
+            this.mTag = tag;
+            this.mClass = clz;
+        }
+
+        public void onTabSelected(Tab tab, FragmentTransaction ft) {
+            final Fragment fragment = Fragment.instantiate(mActivity, mClass.getName(), null);
+            ft.replace(R.id.content_frame, fragment, mTag);
+        }
+
+        public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+            // do nothing
+        }
+
+        public void onTabReselected(Tab tab, FragmentTransaction ft) {
+            // do nothing
+        }
+    }
 }

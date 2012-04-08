@@ -14,18 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.knightfootball.activities;
+package com.itnoles.knightfootball;
 
-import android.os.Bundle;
+import com.itnoles.shared.fragments.AbstractHeadlinesFragment;
 
-import com.itnoles.knightfootball.R;
-import com.itnoles.shared.activities.AbstractGeneralSettings;
-
-public class GeneralSettings extends AbstractGeneralSettings {
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		mNewsPref.setEntries(R.array.listNames);
-		mNewsPref.setEntryValues(R.array.listValues);
-	}
+public class HeadlinesFragment extends AbstractHeadlinesFragment {
+    @Override
+    protected String getNewsURL() {
+        return mPrefsHelper.getNewsURL("http://www.ucfathletics.com/sports/m-footbl/headline-rss.xml");
+    }
 }
