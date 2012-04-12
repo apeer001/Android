@@ -19,10 +19,11 @@ package com.itnoles.shared.provider;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.itnoles.shared.SportsConstants;
-
 public final class ScheduleContract {
     public static final String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
+    public static final String SCHEDULE = "schedule";
+    public static final String LINK = "link";
+    public static final String STAFF = "staff";
 
     private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
@@ -30,7 +31,7 @@ public final class ScheduleContract {
     }
 
     public static class Schedule implements BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(SportsConstants.SCHEDULE).build();
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(SCHEDULE).build();
         public static final String DATE = "date";
         public static final String TIME = "time";
         public static final String SCHOOL = "school";
@@ -42,7 +43,7 @@ public final class ScheduleContract {
     }
 
     public static class Link implements BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(SportsConstants.LINK).build();
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(LINK).build();
         public static final String NAME = "name";
         public static final String URL = "url";
 
@@ -52,7 +53,7 @@ public final class ScheduleContract {
     }
 
     public static class Staff implements BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(SportsConstants.STAFF).build();
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(STAFF).build();
         public static final String NAME = "name";
         public static final String POSITIONS = "positions";
 

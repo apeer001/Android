@@ -20,13 +20,10 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".LegacySettingsActivity" android:label="@string/settings" />
-		<activity android:name=".GeneralSettings" />
+		<activity android:name=".SettingsActivity" android:label="@string/settings" />
 		<activity android:name="com.itnoles.shared.activities.BrowserDetailActivity" />
-		<activity android:name="com.itnoles.shared.activities.AboutSettings" />
 		<activity android:name="com.itnoles.shared.activities.ScheduleActivity" android:label="@string/schedules" />
 		<activity android:name="com.itnoles.shared.activities.StaffActivity" android:label="@string/staff" />
-		<activity android:name=".ModernSettingsActivity" android:label="@string/settings" />
 
 		<service android:name=".SyncService" />
 

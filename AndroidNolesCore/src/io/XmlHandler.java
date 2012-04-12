@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 public abstract class XmlHandler {
     private static final String LOG_TAG = "XmlHandler";
+    static final String ENTRY = "entry";
 
     /**
      * Parse the given {@link XmlPullParser}, turning into a series of

@@ -1,0 +1,36 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	 <PreferenceCategory
+	 	android:title="@string/general">
+
+	<ListPreference
+		android:title="@string/listPref_title"
+		android:key="news"
+		android:dialogTitle="@string/listPref_dialogTitle" />
+	</PreferenceCategory>
+
+	<PreferenceCategory
+		android:title="@string/about_settings">
+		<!-- App Version Number -->
+		<Preference
+			android:key="app_version"
+			style="?android:preferenceInformationStyle"
+			android:title="@string/app_version" />
+		<!-- Author Info -->
+		<Preference
+			android:key="author_name"
+			style="?android:preferenceInformationStyle"
+			android:title="@string/author_name"
+			android:summary="Jonathan Steele" />
+		<Preference
+			android:key="author_email"
+			style="?android:preferenceInformationStyle"
+			android:title="@string/author_email"
+			android:summary="xfsunoles@gmail.com"
+			android:enabled="true" />
+		<Preference
+			android:key="author_website"
+			style="?android:preferenceInformationStyle"
+			android:title="@string/author_website"
+			android:summary="N/A" />
+	</PreferenceCategory>
+</PreferenceScreen>

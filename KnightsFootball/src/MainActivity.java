@@ -17,7 +17,6 @@
 package com.itnoles.knightfootball;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
 import com.itnoles.shared.activities.AbstractMainActivity;
@@ -25,31 +24,27 @@ import com.itnoles.shared.fragments.LinkFragment;
 import com.itnoles.shared.fragments.TeamFragment;
 
 public class MainActivity extends AbstractMainActivity {
-    private static boolean SUPPORTS_HONEYCOMB = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
-
     // Called when the activity is first created.
     @Override
     public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		mActionBar.addTab(mActionBar.newTab().setText("Headlines")
+        mActionBar.addTab(mActionBar.newTab().setText("Headlines")
                   .setTabListener(new TabListener<HeadlinesFragment>(this, "headlines", HeadlinesFragment.class)));
 
-		mActionBar.addTab(mActionBar.newTab().setText("Team")
+        mActionBar.addTab(mActionBar.newTab().setText("Team")
                   .setTabListener(new TabListener<TeamFragment>(this, "team", TeamFragment.class)));
 
-		final LinkFragment link = new LinkFragment();
-		mActionBar.addTab(mActionBar.newTab().setText("Link")
+        mActionBar.addTab(mActionBar.newTab().setText("Link")
                   .setTabListener(new TabListener<LinkFragment>(this, "link", LinkFragment.class)));
 
         final Intent syncIntent = new Intent(this, SyncService.class);
-        startService(syncIntent);   
+        startService(syncIntent);
     }
 
     @Override
     protected void showSetting() {
-        final Class preferenceClass = SUPPORTS_HONEYCOMB ? ModernSettingActivity.class : LegacySettingsActivity.class;
-        final Intent intent = new Intent(this, preferenceClass);
+        final Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 }

@@ -19,6 +19,8 @@ package com.itnoles.shared;
 import android.app.backup.BackupAgentHelper;
 import android.app.backup.SharedPreferencesBackupHelper;
 
+import com.itnoles.shared.util.SharedPreferencesHelper;
+
 /**
  * A class that specifies which of the shared preferences you want to backup
  * to the Google Backup Service.
@@ -28,7 +30,6 @@ public class SportsBackupAgent extends BackupAgentHelper {
     public void onCreate() {
         final String packagePrefs = getPackageName() + "_preferences";
         final SharedPreferencesBackupHelper helper = new SharedPreferencesBackupHelper(this, packagePrefs);
-        addHelper(SharedPreferencesHelper.SP_KEY_NEWS_TITLE, helper);
         addHelper(SharedPreferencesHelper.SP_KEY_NEWS_URL, helper);
     }
 }

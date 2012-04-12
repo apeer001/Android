@@ -27,7 +27,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import com.itnoles.shared.SportsConstants;
 import com.itnoles.shared.provider.ScheduleContract.Schedule;
 import com.itnoles.shared.provider.ScheduleContract.Link;
 import com.itnoles.shared.provider.ScheduleContract.Staff;
@@ -108,17 +107,17 @@ public class ScheduleProvider extends ContentProvider {
         final int match = URIMATCHER.match(uri);
         switch (match) {
             case SCHEDULE:
-                final long schID = db.insertOrThrow(SportsConstants.SCHEDULE, null, values);
+                final long schID = db.insertOrThrow(ScheduleContract.SCHEDULE, null, values);
                 final Uri schUri = Schedule.buildScheduleUri(Long.toString(schID));
                 getContext().getContentResolver().notifyChange(schUri, null);
                 return schUri;
             case LINK:
-                final long lnkID = db.insertOrThrow(SportsConstants.LINK, null, values);
+                final long lnkID = db.insertOrThrow(ScheduleContract.LINK, null, values);
                 final Uri lnkUri = Link.buildLinkUri(Long.toString(lnkID));
                 getContext().getContentResolver().notifyChange(lnkUri, null);
                 return lnkUri;
             case STAFF:
-                final long staffID = db.insertOrThrow(SportsConstants.STAFF, null, values);
+                final long staffID = db.insertOrThrow(ScheduleContract.STAFF, null, values);
                 final Uri staffUri = Staff.buildStaffUri(Long.toString(staffID));
                 getContext().getContentResolver().notifyChange(staffUri, null);
                 return staffUri;
@@ -179,17 +178,17 @@ public class ScheduleProvider extends ContentProvider {
         final int match = URIMATCHER.match(uri);
         switch(match) {
             case SCHEDULE:
-                return builder.table(SportsConstants.SCHEDULE);
+                return builder.table(ScheduleContract.SCHEDULE);
             case SCHEDULE_ID:
-                return builder.table(SportsConstants.SCHEDULE).where(Schedule.DATE + "='" + uri.getPathSegments().get(1) + "'");
+                return builder.table(ScheduleContract.SCHEDULE).where(Schedule.DATE + "='" + uri.getPathSegments().get(1) + "'");
             case LINK:
-                return builder.table(SportsConstants.LINK);
+                return builder.table(ScheduleContract.LINK);
             case LINK_ID:
-                return builder.table(SportsConstants.LINK).where(Link.NAME + "='" + uri.getPathSegments().get(1) + "'");
+                return builder.table(ScheduleContract.LINK).where(Link.NAME + "='" + uri.getPathSegments().get(1) + "'");
             case STAFF:
-                return builder.table(SportsConstants.STAFF);
+                return builder.table(ScheduleContract.STAFF);
             case STAFF_ID:
-                return builder.table(SportsConstants.STAFF).where(Staff.NAME + "='" + uri.getPathSegments().get(1) + "'");
+                return builder.table(ScheduleContract.STAFF).where(Staff.NAME + "='" + uri.getPathSegments().get(1) + "'");
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

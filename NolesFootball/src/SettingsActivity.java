@@ -18,13 +18,21 @@ package com.itnoles.nolesfootball;
 
 import android.os.Bundle;
 
-import com.itnoles.shared.activities.AbstractGeneralSettings;
+import com.itnoles.shared.activities.AbstractSettingsActivity;
 
-public class GeneralSettings extends AbstractGeneralSettings {
+import static com.itnoles.shared.util.SharedPreferencesHelper.SP_KEY_NEWS_URL;
+
+public class SettingsActivity extends AbstractSettingsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mNewsPref.setEntries(R.array.listNames);
         mNewsPref.setEntryValues(R.array.listValues);
+
+        final String getValueArray = getResources().getStringArray(R.array.listValues)[0];
+        final String getNewsURL = mNewsPref.getSharedPreferences().getString(SP_KEY_NEWS_URL, getValueArray);
+        mNewsPref.setValueIndex(mNewsPref.findIndexOfValue(getNewsURL));
+
+        mNewsPref.setSummary(mNewsPref.getEntry());
     }
 }

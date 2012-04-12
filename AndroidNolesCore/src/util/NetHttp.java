@@ -16,10 +16,6 @@
 
 package com.itnoles.shared.util;
 
-import android.util.Log;
-
-import com.itnoles.shared.SportsConstants;
-
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.IOException;
@@ -27,8 +23,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public final class NetHttp {
-    private static final String LOG_TAG = "NetHttp";
-
     // 8 KB Buffer Size for BufferedInputStream
     private static final int BUFFER_SIZE = 8192;
 
@@ -36,13 +30,12 @@ public final class NetHttp {
 
     public NetHttp(String url) throws IOException {
         // Disable connection pooling for pre-Gingerbread
-        if (!SportsConstants.SUPPORTS_GINGERBREAD) {
+        if (!Utils.isGingerbread()) {
             System.setProperty("http.keepAlive", "false");
         }
 
         HttpURLConnection.setFollowRedirects(false);
         this.mConnection = (HttpURLConnection) new URL(url).openConnection();
-        //this.mConnection.setUseCaches(true);
     }
 
     /**
@@ -50,15 +43,11 @@ public final class NetHttp {
      * @return new BufferedInputStream
      */
     public InputStream getInputStream() throws IOException {
-        if (mConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            Log.w(LOG_TAG, "Unexpected server response message " + mConnection.getResponseMessage()
-                + " with response code" + mConnection.getResponseCode());
-        }
         return new BufferedInputStream(mConnection.getInputStream(), BUFFER_SIZE);
     }
 
     public void close() {
-        if (!SportsConstants.SUPPORTS_GINGERBREAD) {
+        if (!Utils.isGingerbread()) {
             mConnection.disconnect();
         }
     }

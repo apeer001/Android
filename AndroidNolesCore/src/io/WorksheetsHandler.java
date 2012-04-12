@@ -21,12 +21,11 @@ import android.content.ContentProviderOperation;
 import android.net.Uri;
 import android.util.Log;
 
-import com.itnoles.shared.SportsConstants;
+import com.itnoles.shared.provider.ScheduleContract;
 import com.itnoles.shared.provider.ScheduleContract.Schedule;
 import com.itnoles.shared.provider.ScheduleContract.Link;
 import com.itnoles.shared.provider.ScheduleContract.Staff;
-import com.itnoles.shared.util.ParserUtils;
-import com.itnoles.shared.util.WorksheetEntry;
+import com.itnoles.shared.util.Utils;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -55,7 +54,7 @@ public class WorksheetsHandler extends XmlHandler {
         // walk response, collecting all known spreadsheets
         int type;
         while ((type = parser.next()) != END_DOCUMENT) {
-            if (type == START_TAG && SportsConstants.ENTRY.equals(parser.getName())) {
+            if (type == START_TAG && ENTRY.equals(parser.getName())) {
                 final WorksheetEntry entry = WorksheetEntry.fromParser(parser);
                 Log.d(TAG, "found worksheet " + entry.toString());
                 sheets.put(entry.getTitle(), entry);
@@ -63,9 +62,9 @@ public class WorksheetsHandler extends XmlHandler {
         }
 
         // consider updating each spreadsheet based on update timestamp
-        considerUpdate(sheets, SportsConstants.SCHEDULE, Schedule.CONTENT_URI, resolver);
-        considerUpdate(sheets, SportsConstants.LINK, Link.CONTENT_URI, resolver);
-        considerUpdate(sheets, SportsConstants.STAFF, Staff.CONTENT_URI, resolver);
+        considerUpdate(sheets, ScheduleContract.SCHEDULE, Schedule.CONTENT_URI, resolver);
+        considerUpdate(sheets, ScheduleContract.LINK, Link.CONTENT_URI, resolver);
+        considerUpdate(sheets, ScheduleContract.STAFF, Staff.CONTENT_URI, resolver);
 
         return new ArrayList<ContentProviderOperation>();
     }
@@ -77,7 +76,7 @@ public class WorksheetsHandler extends XmlHandler {
             return;
         }
 
-        final long localUpdated = ParserUtils.queryDirUpdated(targetDir, resolver);
+        final long localUpdated = Utils.queryDirUpdated(targetDir, resolver);
         final long serverUpdated = entry.getUpdated();
         Log.d(TAG, "considerUpdate() for " + entry.getTitle() + " found localUpdated=" + localUpdated + ", server=" + serverUpdated);
         if (localUpdated >= serverUpdated) {
@@ -93,11 +92,11 @@ public class WorksheetsHandler extends XmlHandler {
 
     private XmlHandler createRemoteHandler(WorksheetEntry entry) {
         final String title = entry.getTitle();
-        if (SportsConstants.SCHEDULE.equals(title)) {
+        if (ScheduleContract.SCHEDULE.equals(title)) {
             return new ScheduleHandler();
-        } else if (SportsConstants.LINK.equals(title)) {
+        } else if (ScheduleContract.LINK.equals(title)) {
             return new LinkHandler();
-        } else if (SportsConstants.STAFF.equals(title)) {
+        } else if (ScheduleContract.STAFF.equals(title)) {
             return new StaffHandler();
         }
         return null;

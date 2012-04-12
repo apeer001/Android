@@ -23,16 +23,19 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.itnoles.shared.R;
-import com.itnoles.shared.SharedPreferencesHelper;
 import com.itnoles.shared.activities.BrowserDetailActivity;
-import com.itnoles.shared.adapter.NewsListAdapter;
 import com.itnoles.shared.io.NewsListLoader;
 import com.itnoles.shared.util.News;
+import com.itnoles.shared.util.SharedPreferencesHelper;
 
 import java.util.List;
 
@@ -84,23 +87,6 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
             getLoaderManager().restartLoader(HEADLINE_LOADER, null, this);
             mPrefsHelper.setNewsRefreshToFalse();
         }
-
-        setActionBarSubtitle(mPrefsHelper.getNewsTitle());
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        setActionBarSubtitle(null);
-    }
-
-    /**
-     * Set the actionbar's subtitle
-     * @param subtitle text to be displayed for subtitle
-     */
-    private void setActionBarSubtitle(String subtitle) {
-        getSherlockActivity().getSupportActionBar().setSubtitle(subtitle);
     }
 
     @Override
@@ -154,4 +140,59 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
     }
 
     protected abstract String getNewsURL();
+
+    static class NewsListAdapter extends ArrayAdapter<News> {
+        private final LayoutInflater mLayoutInflater;
+
+        public NewsListAdapter(Context context) {
+            super(context, 0);
+            this.mLayoutInflater = LayoutInflater.from(context);
+        }
+
+        public void setData(List<News> data) {
+            clear();
+            if (data != null) {
+                for (News news : data) {
+                    add(news);
+                }
+            }
+        }
+
+        /**
+         * Populate new items in the list.
+         */
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // A ViewHolder keeps references to children views to avoid
+            // unneccessary calls to findViewById() on each row.
+            ViewHolder holder;
+
+            if (convertView == null) {
+                convertView = mLayoutInflater.inflate(R.layout.headlines_item, null);
+
+                // Creates a ViewHolder and store references to the three
+                // children views we want to bind data to.
+                holder = new ViewHolder();
+                holder.mTitle = (TextView) convertView.findViewById(R.id.title);
+                holder.mDate = (TextView) convertView.findViewById(R.id.date);
+                holder.mDesc = (TextView) convertView.findViewById(R.id.description);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            final News news = getItem(position);
+            holder.mTitle.setText(news.getTitle());
+            holder.mDate.setText(news.getPubDate());
+            holder.mDesc.setText(news.getDesc());
+
+            return convertView;
+        }
+
+        static class ViewHolder {
+            TextView mTitle;
+            TextView mDate;
+            TextView mDesc;
+        }
+    }
 }
