@@ -17,39 +17,28 @@
 package com.itnoles.shared.activities;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.itnoles.shared.BuildConfig;
 import com.itnoles.shared.R;
+import com.itnoles.shared.util.Utils;
 
 //import java.io.File;
-import java.lang.reflect.Method;
 
 public abstract class AbstractMainActivity extends SherlockFragmentActivity {
-    private static final String LOG_TAG = "TabbedActivity";
-
     protected ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) {
-            try {
-                final Class<?> strictMode = Class.forName("android.os.StrictMode");
-                final Method enableDefaults = strictMode.getMethod("enableDefaults");
-                enableDefaults.invoke(null);
-            } catch (Exception e) {
-                //The version of Android we're on doesn't have android.os.StrictMode
-                //so ignore this exception
-                Log.d(LOG_TAG, "Strict mode not available");
-            }
+        if (BuildConfig.DEBUG && Utils.isGingerbread()) {
+            StrictMode.enableDefaults();
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_layer);
@@ -89,7 +78,6 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
                  .getMethod("install", File.class, long.class)
                  .invoke(null, httpCacheDir, httpCacheSize);
         } catch (Exception httpResponseCacheNotAvailable) {
-            Log.d(LOG_TAG, "HTTP response cache is unavailable.");
         }
     }*/
 

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.itnoles.shared.util;
+package com.itnoles.shared.io;
 
 import android.text.format.DateUtils;
+
+import com.itnoles.shared.util.Utils;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -75,7 +77,7 @@ public class WorksheetEntry {
                 if ("title".equals(tag)) {
                     entry.mTitle = text;
                 } else if ("updated".equals(tag)) {
-                    entry.mUpdated = ParserUtils.parseTime(text);
+                    entry.mUpdated = Utils.parseTime(text);
                 }
             }
         }

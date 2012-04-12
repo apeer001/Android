@@ -17,7 +17,6 @@
 package com.itnoles.nolesfootball;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
 import com.itnoles.shared.activities.AbstractMainActivity;
@@ -25,12 +24,10 @@ import com.itnoles.shared.fragments.LinkFragment;
 import com.itnoles.shared.fragments.TeamFragment;
 
 public class MainActivity extends AbstractMainActivity {
-    private static boolean SUPPORTS_HONEYCOMB = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
-
     // Called when the activity is first created.
     @Override
     public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
         mActionBar.addTab(mActionBar.newTab().setText("Headlines")
                   .setTabListener(new TabListener<HeadlinesFragment>(this, "headlines", HeadlinesFragment.class)));
@@ -47,8 +44,7 @@ public class MainActivity extends AbstractMainActivity {
 
     @Override
     protected void showSetting() {
-        final Class preferenceClass = SUPPORTS_HONEYCOMB ? ModernSettingsActivity.class : LegacySettingsActivity.class;
-    	final Intent intent = new Intent(this, preferenceClass);
-    	startActivity(intent);
+        final Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }

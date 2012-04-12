@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- /** Modification:
-  * Import from Google I/O apps
-  * changed package name
-  * add synchronized block
-  */
 
-package com.itnoles.shared.util;
+package com.itnoles.shared.io;
+
+import com.itnoles.shared.util.Utils;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -74,7 +71,7 @@ public class SpreadsheetEntry extends HashMap<String, String> {
             } else if (type == TEXT) {
                 if ("updated".equals(tag)) {
                     final String text = parser.getText();
-                    entry.mUpdated = ParserUtils.parseTime(text);
+                    entry.mUpdated = Utils.parseTime(text);
                 } else if ("title".equals(tag)) {
                     final String text = parser.getText();
                     entry.put("title", text);

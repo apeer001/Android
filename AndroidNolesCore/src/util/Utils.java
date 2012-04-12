@@ -19,14 +19,24 @@ package com.itnoles.shared.util;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.text.format.Time;
 
-import com.itnoles.shared.SportsConstants;
+/**
+ * General helpers method
+ */
+public final class Utils {
+    public static final String UPDATED = "updated";
 
-public final class ParserUtils {
     private static Time sTime = new Time();
 
-    private ParserUtils() {
+    private Utils() {
+    }
+
+    public static boolean isGingerbread() {
+        // Can use static final constants like HONEYCOMB, declared in later versions
+        // of the OS since they are inlined at compile time. This is guaranteed behavior.
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
     }
 
     /**
@@ -43,7 +53,7 @@ public final class ParserUtils {
      * {@link Uri}. Expects the {@link Uri} to reference a single item.
      */
     public static long queryItemUpdated(Uri uri, ContentResolver resolver) {
-        final String[] projection = {SportsConstants.UPDATED};
+        final String[] projection = {UPDATED};
         final Cursor cursor = resolver.query(uri, projection, null, null, null);
         try {
             if (cursor.moveToFirst()) {
@@ -61,7 +71,7 @@ public final class ParserUtils {
      * reference a directory of several items.
      */
     public static long queryDirUpdated(Uri uri, ContentResolver resolver) {
-        final String[] projection = {"MAX(" + SportsConstants.UPDATED + ")"};
+        final String[] projection = {"MAX(" + UPDATED + ")"};
         final Cursor cursor = resolver.query(uri, projection, null, null, null);
         try {
             cursor.moveToFirst();

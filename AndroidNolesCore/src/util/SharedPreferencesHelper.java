@@ -14,16 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.shared;
+package com.itnoles.shared.util;
 
-import android.app.backup.BackupManager;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.ListPreference;
 
 public class SharedPreferencesHelper {
     // App Preferences
-    public static final String SP_KEY_NEWS_TITLE = "SP_KEY_NEWS_TITLE";
     public static final String SP_KEY_NEWS_URL = "SP_KEY_NEWS_URL";
     private static final String SP_KEY_NEWS_REFRESH = "SP_KEY_NEWS_REFRESH";
 
@@ -33,15 +30,11 @@ public class SharedPreferencesHelper {
         this.mPrefs = prefs;
     }
 
-    public void onNewsPrefChanged(Context context, ListPreference newsPref) {
+    public void onNewsPrefChanged(ListPreference newsPref) {
         final SharedPreferences.Editor edit = mPrefs.edit();
-        edit.putString(SP_KEY_NEWS_TITLE, newsPref.getEntry().toString());
         edit.putString(SP_KEY_NEWS_URL, newsPref.getValue());
         edit.putBoolean(SP_KEY_NEWS_REFRESH, true);
         applyorcommit(edit);
-
-        final BackupManager backupManager = new BackupManager(context);
-        backupManager.dataChanged();
     }
 
     public void setNewsRefreshToFalse() {
@@ -54,16 +47,12 @@ public class SharedPreferencesHelper {
         return mPrefs.getBoolean(SP_KEY_NEWS_REFRESH, false);
     }
 
-    public String getNewsTitle() {
-        return mPrefs.getString(SP_KEY_NEWS_TITLE, "Top Athletics Stories");
-    }
-
     public String getNewsURL(String url) {
         return mPrefs.getString(SP_KEY_NEWS_URL, url);
     }
 
     private void applyorcommit(SharedPreferences.Editor edit) {
-        if (SportsConstants.SUPPORTS_GINGERBREAD) {
+        if (Utils.isGingerbread()) {
             edit.apply();
         } else {
             edit.commit();

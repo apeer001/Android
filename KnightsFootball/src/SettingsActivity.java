@@ -18,14 +18,19 @@ package com.itnoles.knightfootball;
 
 import android.os.Bundle;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.itnoles.shared.activities.AbstractSettingsActivity;
 
-public class LegacySettingsActivity extends SherlockPreferenceActivity {
+public class SettingsActivity extends AbstractSettingsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mNewsPref.setEntries(R.array.listNames);
+        mNewsPref.setEntryValues(R.array.listValues);
 
-        // Load the XML preferences file
-        addPreferencesFromResource(R.xml.preferences);
+        final String getValueArray = getResources().getStringArray(R.array.listValues)[0];
+        final String getNewsURL = mNewsPref.getSharedPreferences().getString(SP_KEY_NEWS_URL, getValueArray);
+        mNewsPref.setValueIndex(mNewsPref.findIndexOfValue(getNewsURL));
+
+        mNewsPref.setSummary(mNewsPref.getEntry());
     }
 }
