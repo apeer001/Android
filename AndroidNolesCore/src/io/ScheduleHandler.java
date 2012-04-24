@@ -21,7 +21,8 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.util.Log;
 
-import com.itnoles.shared.provider.ScheduleContract.Schedule;
+import com.itnoles.shared.provider.ScheduleProvider;
+import com.itnoles.shared.util.SpreadsheetEntry;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -29,13 +30,16 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.itnoles.shared.util.Utils.UPDATED;
-import static com.itnoles.shared.util.Utils.queryItemUpdated;
+import static com.itnoles.shared.util.ParserUtils.queryItemUpdated;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
 public class ScheduleHandler extends XmlHandler {
     private static final String TAG = "ScheduleHandler";
+
+    public ScheduleHandler() {
+        super(ScheduleProvider.CONTENT_AUTHORITY);
+    }
 
     @Override
     public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException {
@@ -47,15 +51,13 @@ public class ScheduleHandler extends XmlHandler {
             if (type == START_TAG && ENTRY.equals(parser.getName())) {
                 // Process single spreadsheet row at a time
                 final SpreadsheetEntry entry = SpreadsheetEntry.fromParser(parser);
-                final String title = entry.get("title");
-                final Uri scheduleUri = Schedule.buildScheduleUri(title);
+                final Uri scheduleUri = Uri.withAppendedPath(ScheduleProvider.SCHEDULE_CONTENT_URI, Uri.encode(entry.get("title")));
 
                 // Check for existing details, only update when changed
                 final long localUpdated = queryItemUpdated(scheduleUri, resolver);
                 final long serverUpdated = entry.getUpdated();
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "found schedule " + entry.toString());
-                    Log.v(TAG, "found localUpdated=" + localUpdated + ", server=" + serverUpdated);
+                    Log.v(TAG, "found schedule localUpdated=" + localUpdated + ", server=" + serverUpdated);
                 }
                 if (localUpdated >= serverUpdated) {
                     continue;
@@ -65,12 +67,12 @@ public class ScheduleHandler extends XmlHandler {
                 // incoming details as authoritative.
                 batch.add(ContentProviderOperation.newDelete(scheduleUri).build());
 
-                final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(Schedule.CONTENT_URI);
-                builder.withValue(UPDATED, serverUpdated);
-                builder.withValue(Schedule.DATE, title);
-                builder.withValue(Schedule.TIME, entry.get(Schedule.TIME));
-                builder.withValue(Schedule.SCHOOL, entry.get(Schedule.SCHOOL));
-                builder.withValue(Schedule.LOCATION, entry.get(Schedule.LOCATION));
+                final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(ScheduleProvider.SCHEDULE_CONTENT_URI);
+                builder.withValue(ScheduleProvider.UPDATED, serverUpdated);
+                builder.withValue(ScheduleProvider.DATE, entry.get("title"));
+                builder.withValue(ScheduleProvider.TIME, entry.get(ScheduleProvider.TIME));
+                builder.withValue(ScheduleProvider.SCHOOL, entry.get(ScheduleProvider.SCHOOL));
+                builder.withValue(ScheduleProvider.LOCATION, entry.get(ScheduleProvider.LOCATION));
 
                 // Normal schedule details ready, write to provider
                 batch.add(builder.build());

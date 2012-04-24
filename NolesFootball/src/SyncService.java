@@ -17,6 +17,7 @@
 package com.itnoles.nolesfootball;
 
 import android.content.Intent;
+import android.net.NetworkInfo;
 
 import com.itnoles.shared.io.WorksheetsHandler;
 import com.itnoles.shared.service.AbstractSyncService;
@@ -30,7 +31,8 @@ public class SyncService extends AbstractSyncService {
          * Check to see if we are connected to a data or wifi network.
          * if false, return early or execute XML
          */
-        if (!mNetwork.isNetworkConnected()) {
+        final NetworkInfo activeNetwork = mManager.getActiveNetworkInfo();
+        if (!(activeNetwork != null && activeNetwork.isConnectedOrConnecting())) {
             return;
         }
         mRemoteExecutor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(mRemoteExecutor));

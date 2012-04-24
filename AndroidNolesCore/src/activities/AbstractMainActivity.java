@@ -16,41 +16,50 @@
 
 package com.itnoles.shared.activities;
 
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.itnoles.shared.BuildConfig;
 import com.itnoles.shared.R;
-import com.itnoles.shared.util.Utils;
 
-//import java.io.File;
+import java.util.ArrayList;
 
 public abstract class AbstractMainActivity extends SherlockFragmentActivity {
-    protected ActionBar mActionBar;
+    private static final boolean SUPPORTS_GINGERBREAD = Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
+    private boolean mDayMode;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG && Utils.isGingerbread()) {
+    public void onCreate(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG && SUPPORTS_GINGERBREAD) {
             StrictMode.enableDefaults();
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_layer);
 
-        /*new Thread(new Runnable() {
-            public void run() {
-                enableHttpResponseCache();
-            }
-        }).start();*/
+        this.mDayMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("day_preference", false);
+        if (mDayMode) {
+            this.setTheme(R.style.Theme_Sherlock_Light);
+        }
+        setContentView(R.layout.main);
+    }
 
-        mActionBar = getSupportActionBar();
-        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+    @Override
+    public void onResume() {
+        final boolean bool1 = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("day_preference", false);
+        if (bool1 != mDayMode) {
+            this.recreate();
+        }
+        super.onResume();
     }
 
     @Override
@@ -59,58 +68,69 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.settings) {
-            showSetting();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    protected abstract void showSetting();
-
-    //XXX: It seems there is a problem for this in httpurlconnection on 2nd times.
-    /*private void enableHttpResponseCache() {
-        try {
-            final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
-            final File httpCacheDir = new File(getCacheDir(), "http");
-            Class.forName("android.net.http.HttpResponseCache")
-                 .getMethod("install", File.class, long.class)
-                 .invoke(null, httpCacheDir, httpCacheSize);
-        } catch (Exception httpResponseCacheNotAvailable) {
-        }
-    }*/
-
     /**
-     * A TabListener receives event callbacks from the action bar as tabs
-     * are deselected, selected, and reselected. A FragmentTransaction
-     * is provided to each of these callbacks; if any operations are added
-     * to it, it will be committed at the end of the full tab switch operation.
-     * This lets tab switches be atomic without the app needing to track
-     * the interactions between different tabs.
+     * This is a helper class that implements the management of tabs and all
+     * details of connecting a ViewPager with associated ActionBar. It relies on a
+     * trick. This is not sufficient for switching between pages. It listens to
+     * changes in tabs, and takes care of switch to the correct paged in the
+     * ViewPager whenever the selected tab changes.
      */
-    public static class TabListener<T extends Fragment> implements ActionBar.TabListener {
-        private final SherlockFragmentActivity mActivity;
-        private final String mTag;
-        private final Class<T> mClass;
+    public static class TabsAdapter extends FragmentPagerAdapter implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
+        private final Context mContext;
+        private final ActionBar mActionBar;
+        private final ViewPager mViewPager;
+        private final ArrayList<String> mTabs = new ArrayList<String>();
 
-        public TabListener(SherlockFragmentActivity activity, String tag, Class<T> clz) {
-            this.mActivity = activity;
-            this.mTag = tag;
-            this.mClass = clz;
+        public TabsAdapter(SherlockFragmentActivity activity, ViewPager pager) {
+            super(activity.getSupportFragmentManager());
+            this.mContext = activity;
+            this.mActionBar = activity.getSupportActionBar();
+            this.mViewPager = pager;
+            mViewPager.setAdapter(this);
+            mViewPager.setOnPageChangeListener(this);
         }
 
+        public void addTab(Tab tab, Class<?> clss) {
+            tab.setTabListener(this);
+            mTabs.add(clss.getName());
+            mActionBar.addTab(tab);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return mTabs.size();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return Fragment.instantiate(mContext, mTabs.get(position), null);
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            mActionBar.setSelectedNavigationItem(position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+        }
+
+        @Override
         public void onTabSelected(Tab tab, FragmentTransaction ft) {
-            final Fragment fragment = Fragment.instantiate(mActivity, mClass.getName(), null);
-            ft.replace(R.id.content_frame, fragment, mTag);
+            mViewPager.setCurrentItem(tab.getPosition());
         }
 
+        @Override
         public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-            // do nothing
         }
 
+        @Override
         public void onTabReselected(Tab tab, FragmentTransaction ft) {
-            // do nothing
         }
     }
 }

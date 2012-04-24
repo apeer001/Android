@@ -21,7 +21,8 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.util.Log;
 
-import com.itnoles.shared.provider.ScheduleContract.Staff;
+import com.itnoles.shared.provider.ScheduleProvider;
+import com.itnoles.shared.util.SpreadsheetEntry;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -29,13 +30,16 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.itnoles.shared.util.Utils.UPDATED;
-import static com.itnoles.shared.util.Utils.queryItemUpdated;
+import static com.itnoles.shared.util.ParserUtils.queryItemUpdated;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
 public class StaffHandler extends XmlHandler {
     private static final String TAG = "StaffHandler";
+
+    public StaffHandler() {
+        super(ScheduleProvider.CONTENT_AUTHORITY);
+    }
 
     @Override
     public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException {
@@ -47,15 +51,13 @@ public class StaffHandler extends XmlHandler {
             if (type == START_TAG && ENTRY.equals(parser.getName())) {
                 // Process single spreadsheet row at a time
                 final SpreadsheetEntry entry = SpreadsheetEntry.fromParser(parser);
-                final String title = entry.get("title");
-                final Uri staffUri = Staff.buildStaffUri(title);
+                final Uri staffUri = Uri.withAppendedPath(ScheduleProvider.STAFF_CONTENT_URI, Uri.encode(entry.get("title")));
 
                 // Check for existing details, only update when changed
                 final long localUpdated = queryItemUpdated(staffUri, resolver);
                 final long serverUpdated = entry.getUpdated();
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "found staff " + entry.toString());
-                    Log.v(TAG, "found localUpdated=" + localUpdated + ", server=" + serverUpdated);
+                    Log.v(TAG, "found staff localUpdated=" + localUpdated + ", server=" + serverUpdated);
                 }
                 if (localUpdated >= serverUpdated) {
                     continue;
@@ -65,10 +67,10 @@ public class StaffHandler extends XmlHandler {
                 // incoming details as authoritative.
                 batch.add(ContentProviderOperation.newDelete(staffUri).build());
 
-                final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(Staff.CONTENT_URI);
-                builder.withValue(UPDATED, serverUpdated);
-                builder.withValue(Staff.NAME, title);
-                builder.withValue(Staff.POSITIONS, entry.get(Staff.POSITIONS));
+                final ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(ScheduleProvider.STAFF_CONTENT_URI);
+                builder.withValue(ScheduleProvider.UPDATED, serverUpdated);
+                builder.withValue(ScheduleProvider.NAME, entry.get("title"));
+                builder.withValue(ScheduleProvider.POSITIONS, entry.get(ScheduleProvider.POSITIONS));
 
                 // Normal staff details ready, write to provider
                 batch.add(builder.build());

@@ -16,11 +16,15 @@
 
 package com.itnoles.nolesfootball;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import com.itnoles.shared.fragments.AbstractHeadlinesFragment;
 
 public class HeadlinesFragment extends AbstractHeadlinesFragment {
     @Override
     protected String getNewsURL() {
-        return mPrefsHelper.getNewsURL("http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return prefs.getString("newsurl_preference", "http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
     }
 }

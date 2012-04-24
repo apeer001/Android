@@ -27,7 +27,6 @@ import android.preference.PreferenceScreen;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.itnoles.shared.R;
-import com.itnoles.shared.util.SharedPreferencesHelper;
 
 public abstract class AbstractSettingsActivity extends SherlockPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     protected ListPreference mNewsPref;
@@ -75,18 +74,15 @@ public abstract class AbstractSettingsActivity extends SherlockPreferenceActivit
             i.putExtra(Intent.EXTRA_SUBJECT, "App Feedback");
             startActivity(Intent.createChooser(i, "Select email application."));
         }
-
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if ("news".equals(key)) {
+        if ("newsurl_preference".equals(key)) {
             mNewsPref.setSummary(mNewsPref.getEntry());
-            final SharedPreferencesHelper helper = new SharedPreferencesHelper(sharedPreferences);
-            helper.onNewsPrefChanged(mNewsPref);
-            final BackupManager backupManager = new BackupManager(this);
-            backupManager.dataChanged();
         }
+        final BackupManager backupManager = new BackupManager(this);
+        backupManager.dataChanged();
     }
 }

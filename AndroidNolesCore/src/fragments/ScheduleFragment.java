@@ -18,26 +18,43 @@ package com.itnoles.shared.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.itnoles.shared.R;
-import com.itnoles.shared.provider.ScheduleContract.Schedule;
+import com.itnoles.shared.provider.ScheduleProvider;
 
-public class ScheduleFragment extends ContentAwareFragment {
+public class ScheduleFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int SCHEDULE_LOADER = 0x01;
-    private static final String[] PROJECTION = {Schedule.DATE, Schedule.TIME, Schedule.SCHOOL, Schedule.LOCATION};
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        final String[] projection = {ScheduleProvider.DATE, ScheduleProvider.TIME, ScheduleProvider.SCHOOL, ScheduleProvider.LOCATION};
+        setListAdapter(new SimpleCursorAdapter(getActivity(), R.layout.schedule_item, null, projection,
+            new int[] {R.id.date, R.id.time, R.id.school, R.id.location}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
+
         getLoaderManager().initLoader(SCHEDULE_LOADER, null, this);
-        setCursorAdapter(R.layout.schedule_item, PROJECTION, new int[] {R.id.date, R.id.time, R.id.school, R.id.location});
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        final String[] newProjection = getNewProjectionList(PROJECTION);
-        return new CursorLoader(getActivity(), Schedule.CONTENT_URI, newProjection, null, null, null);
+        final String[] projection = {"_id", ScheduleProvider.DATE, ScheduleProvider.TIME, ScheduleProvider.SCHOOL, ScheduleProvider.LOCATION};
+        return new CursorLoader(getActivity(), ScheduleProvider.SCHEDULE_CONTENT_URI, projection, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        ((SimpleCursorAdapter) getListAdapter()).swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        ((SimpleCursorAdapter) getListAdapter()).swapCursor(null);
     }
 }

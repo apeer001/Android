@@ -19,24 +19,15 @@ package com.itnoles.shared.util;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.text.format.Time;
 
 /**
- * General helpers method
+ * Various utility methods used by {@link XmlHandler} implementations.
  */
-public final class Utils {
-    public static final String UPDATED = "updated";
-
+public final class ParserUtils {
     private static Time sTime = new Time();
 
-    private Utils() {
-    }
-
-    public static boolean isGingerbread() {
-        // Can use static final constants like HONEYCOMB, declared in later versions
-        // of the OS since they are inlined at compile time. This is guaranteed behavior.
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
+    private ParserUtils() {
     }
 
     /**
@@ -49,11 +40,11 @@ public final class Utils {
     }
 
     /**
-     * Query and return the {@link SportsConstants#UPDATED} time for the requested
+     * Query and return the updated time for the requested
      * {@link Uri}. Expects the {@link Uri} to reference a single item.
      */
     public static long queryItemUpdated(Uri uri, ContentResolver resolver) {
-        final String[] projection = {UPDATED};
+        final String[] projection = {"updated"};
         final Cursor cursor = resolver.query(uri, projection, null, null, null);
         try {
             if (cursor.moveToFirst()) {
@@ -66,12 +57,12 @@ public final class Utils {
     }
 
     /**
-     * Query and return the newest {@link SportsConstants#UPDATED} time for all
+     * Query and return the newest updated time for all
      * entries under the requested {@link Uri}. Expects the {@link Uri} to
      * reference a directory of several items.
      */
     public static long queryDirUpdated(Uri uri, ContentResolver resolver) {
-        final String[] projection = {"MAX(" + UPDATED + ")"};
+        final String[] projection = {"MAX(updated)"};
         final Cursor cursor = resolver.query(uri, projection, null, null, null);
         try {
             cursor.moveToFirst();

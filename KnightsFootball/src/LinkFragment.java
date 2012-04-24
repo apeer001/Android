@@ -14,41 +14,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.shared.fragments;
+package com.itnoles.knightfootball;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.itnoles.shared.provider.ScheduleContract.Link;
+import com.actionbarsherlock.app.SherlockListFragment;
 
-public class LinkFragment extends ContentAwareFragment {
-    private static final int LINK_LOADER = 0x02;
-
+public class LinkFragment extends SherlockListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final String[] projection = {Link.NAME};
-        getLoaderManager().initLoader(LINK_LOADER, null, this);
-        setCursorAdapter(android.R.layout.simple_list_item_1, projection, new int[] {android.R.id.text1});
-    }
+        setListAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.linkNames, android.R.id.text1));
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        final String[] projection = {"_id", Link.NAME, Link.URL, };
-        return new CursorLoader(getActivity(), Link.CONTENT_URI, projection, null, null, null);
+        final View detailsFrame = getActivity().findViewById(R.id.detail_frame);
+        if (detailsFrame != null) {
+            detailsFrame.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        final Cursor cursor = getCursorFromLoader();
-        cursor.moveToPosition(position);
-        final String urlString = cursor.getString(cursor.getColumnIndex(Link.URL));
+        final String urlString = getResources().getStringArray(R.array.linkValues)[position];
         final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlString));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

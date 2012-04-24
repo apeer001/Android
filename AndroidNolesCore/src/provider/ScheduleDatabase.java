@@ -65,13 +65,6 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
             + "name TEXT,"
             + "positions TEXT,"
             + "updated TEXT)");
-
-        db.execSQL("CREATE TABLE link ("
-            + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + "link_id TEXT,"
-            + "name TEXT,"
-            + "url TEXT,"
-            + "updated TEXT)");
     }
 
     @Override
@@ -82,7 +75,6 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
             // Kills the table and existing data
             db.execSQL("DROP TABLE IF EXISTS schedule");
             db.execSQL("DROP TABLE IF EXISTS staff");
-            db.execSQL("DROP TABLE IF EXISTS link");
 
             // Recreates the database with a new version
             onCreate(db);

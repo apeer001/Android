@@ -18,25 +18,42 @@ package com.itnoles.shared.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 
-import com.itnoles.shared.provider.ScheduleContract.Staff;
+import com.actionbarsherlock.app.SherlockListFragment;
+import com.itnoles.shared.provider.ScheduleProvider;
 
-public class StaffFragment extends ContentAwareFragment {
+public class StaffFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor>  {
     private static final int STAFF_LOADER = 0x03;
-    private static final String[] PROJECTION = {Staff.NAME, Staff.POSITIONS};
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        final String[] projection = {ScheduleProvider.NAME, ScheduleProvider.POSITIONS};
+        setListAdapter(new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_2, null, projection,
+            new int[] {android.R.id.text1, android.R.id.text2}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
+
         getLoaderManager().initLoader(STAFF_LOADER, null, this);
-        setCursorAdapter(android.R.layout.simple_list_item_2, PROJECTION, new int[] {android.R.id.text1, android.R.id.text2});
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        final String[] newProjection = getNewProjectionList(PROJECTION);
-        return new CursorLoader(getActivity(), Staff.CONTENT_URI, newProjection, null, null, null);
+        final String[] projection = {"_id", ScheduleProvider.NAME, ScheduleProvider.POSITIONS};
+        return new CursorLoader(getActivity(), ScheduleProvider.STAFF_CONTENT_URI, projection, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        ((SimpleCursorAdapter) getListAdapter()).swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        ((SimpleCursorAdapter) getListAdapter()).swapCursor(null);
     }
 }

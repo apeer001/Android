@@ -17,21 +17,24 @@
 package com.itnoles.shared.io;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 import android.util.Xml;
 
-import com.itnoles.shared.util.NetHttp;
-import com.itnoles.shared.util.NetworkUtils;
+import com.itnoles.shared.util.HttpUtils;
 import com.itnoles.shared.util.News;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +42,14 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
     private static final String LOG_TAG = "NewsListLoader";
 
     private final String mURL;
-    private final InterestingConfigChanges mLastConfig = new InterestingConfigChanges();
+    private final HttpClient mHttpClient;
 
     private List<News> mList;
 
     public NewsListLoader(Context context, String url) {
         super(context);
         this.mURL = url;
+        this.mHttpClient = HttpUtils.getHttpClient(context);
     }
 
     /**
@@ -75,14 +79,50 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
             deliverResult(mList);
         }
 
-        // Has something interesting in the configuration changed since we
-        // last built the news list?
-        final boolean configChange = mLastConfig.applyNewConfig(getContext().getResources());
-        if (mList == null || configChange) {
+        if (mList == null) {
             // If the data has changed since the last time it was loaded
             // or is not currently available, start a load.
             forceLoad();
         }
+    }
+
+    /**
+     * This is where the bulk of our work is done. This function is
+     * called in a background thread and should generate a new set of
+     * data to be published by the loader.
+     */
+    @Override
+    public List<News> loadInBackground() {
+        final ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (!(activeNetwork != null && activeNetwork.isConnectedOrConnecting())) {
+            return null;
+        }
+
+        final HttpGet request = new HttpGet(mURL);
+        try {
+            final HttpResponse response = mHttpClient.execute(request);
+            final int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != HttpStatus.SC_OK) {
+                Log.w(LOG_TAG, "Unexpected server response " + response.getStatusLine() + " for " + request.getRequestLine());
+                return null;
+            }
+            final InputStream input = response.getEntity().getContent();
+            try {
+                final XmlPullParser parser = Xml.newPullParser();
+                parser.setInput(input, null);
+                return parse(parser);
+            } catch (XmlPullParserException e) {
+                Log.w(LOG_TAG, "Malformed response for " + request.getRequestLine(), e);
+            } finally {
+                if (input != null) {
+                    input.close();
+                }
+            }
+        } catch (IOException e) {
+            Log.w("Problem reading remote response for " + request.getRequestLine(), e);
+        }
+        return null;
     }
 
     /**
@@ -104,13 +144,13 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
         // Ensure the loader is stopped
         onStopLoading();
 
-        if (mList == null) {
+        if (mList != null) {
             mList.clear();
         }
     }
 
-    private ArrayList<News> parse(XmlPullParser parser) throws XmlPullParserException, IOException {
-        final ArrayList<News> results = new ArrayList<News>();
+    private List<News> parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+        final List<News> results = new ArrayList<News>();
 
         // The News that is currently being parsed
         News currentNews = null;
@@ -139,53 +179,5 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
             eventType = parser.next();
         }
         return results;
-    }
-
-    /**
-     * This is where the bulk of our work is done. This function is
-     * called in a background thread and should generate a new set of
-     * data to be published by the loader.
-     */
-    @Override
-    public List<News> loadInBackground() {
-        if (!NetworkUtils.isNetworkConnected(getContext())) {
-            return null;
-        }
-        NetHttp http = null;
-        try {
-            http = new NetHttp(mURL);
-            final XmlPullParser parser = Xml.newPullParser();
-            parser.setInput(http.getInputStream(), null);
-            return parse(parser);
-        } catch (XmlPullParserException e) {
-            Log.w(LOG_TAG, "Problem parsing XML response", e);
-        } catch (IOException e) {
-            Log.w(LOG_TAG, "Problem reading response", e);
-        } finally {
-            if (http != null) {
-                http.close();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Helper for determining if the configuration has changed in an interesting
-     * way so we need to rebuild the news list.
-     */
-    private static class InterestingConfigChanges {
-        private final Configuration mLastConfiguration = new Configuration();
-        private int mLastDensity;
-
-        private boolean applyNewConfig(Resources res) {
-            final int configChanges = mLastConfiguration.updateFrom(res.getConfiguration());
-            final boolean densityChanged = mLastDensity != res.getDisplayMetrics().densityDpi;
-            if (densityChanged || (configChanges & (ActivityInfo.CONFIG_LOCALE
-                | ActivityInfo.CONFIG_UI_MODE | ActivityInfo.CONFIG_SCREEN_LAYOUT)) != 0) {
-                mLastDensity = res.getDisplayMetrics().densityDpi;
-                return true;
-            }
-            return false;
-        }
     }
 }

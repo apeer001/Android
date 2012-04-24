@@ -38,7 +38,7 @@ public class TeamFragment extends SherlockListFragment {
 
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
-        final View detailsFrame = getActivity().findViewById(R.id.detail_frame);
+        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
         if (detailsFrame != null && detailsFrame.getVisibility() != View.VISIBLE) {
             detailsFrame.setVisibility(View.VISIBLE);
         }
@@ -71,7 +71,7 @@ public class TeamFragment extends SherlockListFragment {
                 // Execute a transaction, replacing any existing fragment
                 // with this one inside the frame.
                 getFragmentManager().beginTransaction()
-                    .replace(R.id.detail_frame, fragment)
+                    .replace(R.id.fragment_details, fragment)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
                 mShownCheckPosition = position;
