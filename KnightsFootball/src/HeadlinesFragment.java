@@ -16,11 +16,17 @@
 
 package com.itnoles.knightfootball;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import com.itnoles.shared.fragments.AbstractHeadlinesFragment;
+
+import static com.itnoles.shared.SportsConstants.SP_KEY_NEWS_URL;
 
 public class HeadlinesFragment extends AbstractHeadlinesFragment {
     @Override
     protected String getNewsURL() {
-        return mPrefsHelper.getNewsURL("http://www.ucfathletics.com/sports/m-footbl/headline-rss.xml");
+    	final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return prefs.getString(SP_KEY_NEWS_URL, "http://www.ucfathletics.com/sports/m-footbl/headline-rss.xml");
     }
 }

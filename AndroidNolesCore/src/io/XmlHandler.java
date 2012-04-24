@@ -22,8 +22,6 @@ import android.content.OperationApplicationException;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.itnoles.shared.provider.ScheduleContract;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -34,6 +32,12 @@ public abstract class XmlHandler {
     private static final String LOG_TAG = "XmlHandler";
     static final String ENTRY = "entry";
 
+    private final String mAuthority;
+
+    public XmlHandler(String authority) {
+        this.mAuthority = authority;
+    }
+
     /**
      * Parse the given {@link XmlPullParser}, turning into a series of
      * {@link ContentProviderOperation} that are immediately applied using the
@@ -42,7 +46,7 @@ public abstract class XmlHandler {
     public void parseAndApply(XmlPullParser parser, ContentResolver resolver) {
         try {
             final ArrayList<ContentProviderOperation> batch = parse(parser, resolver);
-            resolver.applyBatch(ScheduleContract.CONTENT_AUTHORITY, batch);
+            resolver.applyBatch(mAuthority, batch);
         } catch (XmlPullParserException e) {
             Log.w(LOG_TAG, "Problem parsing XML response", e);
         } catch (IOException e) {

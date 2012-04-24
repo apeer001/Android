@@ -1,21 +1,25 @@
 <resources>
-	<string name="app_name">Noles Football</string>
-	<!--string name="backup_manager_key"></string>-->
+    <string name="app_name">Noles Football</string>
+    <!--string name="backup_manager_key"></string>-->
 
-	<string-array name="listNames">
-		<item>Top Athletics Stories</item>
-		<item>Warchant</item>
-		<item>Noles Digest</item>
-		<item>Tomahawk Nation</item>
-		<item>Spirit Blog</item>
-		<item>Orlando Sentinel</item>
-	</string-array>
-	<string-array name="listValues">
-		<item>http://www.seminoles.com/headline-rss.xml</item>
-		<item>http://floridastate.rivals.com/rss2feed.asp?SID=1061</item>
-		<item>http://rss.scout.com/rss.aspx?sid=16</item>
-		<item>http://feeds.feedburner.com/sportsblogs/tomahawknation.xml</item>
-		<item>http://www.seminoles.com/blog/atom.xml</item>
-		<item>http://www.orlandosentinel.com/sports/college/seminoles/rss2.0.xml</item>
-	</string-array>
+    <string-array name="linkNames">
+        <item>Tickets</item>
+        <item>Upcoming Events and Promo</item>
+        <item>Alumni Tracker</item>
+        <item>Seminoles Booster</item>
+        <item>Radio Affiliate</item>
+        <item>Traditions</item>
+        <item>Team Ranking</item>
+        <item>Seminoles Podcast</item>
+    </string-array>
+    <string-array name="linkValues">
+        <item>http://www.seminoles.com/tickets/fsu-tickets.html</item>
+        <item>http://www.seminoles.com/genrel/nole-zone.html</item>
+        <item>http://www.cbssports.com/collegefootball/alumni-tracker/school/5219</item>
+        <item>http://seminole-boosters.fsu.edu/Community/Page.aspx?pid=520&amp;srcid=223</item>
+        <item>http://www.seminoles.com/multimedia/broadcast.htm</item>
+        <item>http://www.seminoles.com/trads/fsu-trads.html</item>
+        <item>http://www.seminoles.com/genrel/rankings.html</item>
+        <item>http://www.seminoles.com/podcasts/fsu-podcasts.html</item>
+    </string-array>
 </resources>

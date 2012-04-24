@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Google Inc.
+ * Copyright 2011 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.itnoles.shared.io;
-
-import android.text.format.DateUtils;
-
-import com.itnoles.shared.util.Utils;
+package com.itnoles.shared.util;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import android.text.format.DateUtils;
 
 import java.io.IOException;
 
@@ -64,7 +62,7 @@ public class WorksheetEntry {
             if (type == START_TAG) {
                 tag = parser.getName();
                 if ("link".equals(tag)) {
-                    final String rel = parser.getAttributeValue(null, "rel");
+                    final String rel = parser.getAttributeValue(null, "ref");
                     final String href = parser.getAttributeValue(null, "href");
                     if (REL_LISTFEED.equals(rel)) {
                         entry.mListFeed = href;
@@ -77,7 +75,7 @@ public class WorksheetEntry {
                 if ("title".equals(tag)) {
                     entry.mTitle = text;
                 } else if ("updated".equals(tag)) {
-                    entry.mUpdated = Utils.parseTime(text);
+                    entry.mUpdated = ParserUtils.parseTime(text);
                 }
             }
         }

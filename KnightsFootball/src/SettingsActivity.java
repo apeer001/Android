@@ -24,13 +24,25 @@ public class SettingsActivity extends AbstractSettingsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mNewsPref.setEntries(R.array.listNames);
-        mNewsPref.setEntryValues(R.array.listValues);
 
-        final String getValueArray = getResources().getStringArray(R.array.listValues)[0];
-        final String getNewsURL = mNewsPref.getSharedPreferences().getString(SP_KEY_NEWS_URL, getValueArray);
+        final CharSequence[] entries = new CharSequence[] {
+            "Top Athletics Stories", "UCF Sports", "UCF Pride", "O\'Leary Blogs", "Student Paper", "UCF Today", "Orlando Sentinel",
+        };
+        mNewsPref.setEntries(entries);
+
+        final CharSequence[] entriesValue = new CharSequence[] {
+            "http://www.ucfathletics.com/headline-rss.xml",
+            "http://ucf.rivals.com/rss2feed.asp?SID=908",
+            "http://feeds2.feedburner.com/sports/college/goldenknightsnotepad",
+            "http://olearypsiphi.com/RSS/rss.php",
+            "http://www.centralfloridafuture.com/se/central-florida-future-rss-1.991045",
+            "http://today.ucf.edu/feed/",
+            "http://www.orlandosentinel.com/sports/college/knights/rss2.0.xml",
+        };
+        mNewsPref.setEntryValues(entriesValue);
+
+        final String getNewsURL = mNewsPref.getSharedPreferences().getString(SP_KEY_NEWS_URL, entriesValue[0].toString());
         mNewsPref.setValueIndex(mNewsPref.findIndexOfValue(getNewsURL));
-
         mNewsPref.setSummary(mNewsPref.getEntry());
     }
 }

@@ -27,9 +27,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import com.itnoles.shared.provider.ScheduleContract.Schedule;
-import com.itnoles.shared.provider.ScheduleContract.Link;
-import com.itnoles.shared.provider.ScheduleContract.Staff;
 import com.itnoles.shared.util.SelectionBuilder;
 
 import java.util.ArrayList;
@@ -37,14 +34,25 @@ import java.util.ArrayList;
 public class ScheduleProvider extends ContentProvider {
     private ScheduleDatabase mOpenHelper;
 
+    private static final String SCHEDULE_TXT = "schedule";
+    private static final String STAFF_TXT = "staff";
+
+    public static final String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
+    public static final String UPDATED = "updated";
+
+    public static final Uri SCHEDULE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY + "/schedule");
+    public static final String DATE = "date";
+    public static final String TIME = "time";
+    public static final String SCHOOL = "school";
+    public static final String LOCATION = "location";
     private static final int SCHEDULE = 100;
     private static final int SCHEDULE_ID = 101;
 
-    private static final int LINK = 200;
-    private static final int LINK_ID = 201;
-
-    private static final int STAFF = 300;
-    private static final int STAFF_ID = 301;
+    public static final Uri STAFF_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY + "/staff");
+    public static final String NAME = "name";
+    public static final String POSITIONS = "positions";
+    private static final int STAFF = 200;
+    private static final int STAFF_ID = 201;
 
     /**
      * Allocate the UriMatcher object that catches all {@link Uri}
@@ -53,14 +61,11 @@ public class ScheduleProvider extends ContentProvider {
     private static final UriMatcher URIMATCHER;
     static {
         URIMATCHER = new UriMatcher(UriMatcher.NO_MATCH);
-        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "schedule", SCHEDULE);
-        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "schedule/*", SCHEDULE_ID);
+        URIMATCHER.addURI(CONTENT_AUTHORITY, "schedule", SCHEDULE);
+        URIMATCHER.addURI(CONTENT_AUTHORITY, "schedule/*", SCHEDULE_ID);
 
-        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "link", LINK);
-        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "link/*", LINK_ID);
-
-        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "staff", STAFF);
-        URIMATCHER.addURI(ScheduleContract.CONTENT_AUTHORITY, "staff/*", STAFF_ID);
+        URIMATCHER.addURI(CONTENT_AUTHORITY, "staff", STAFF);
+        URIMATCHER.addURI(CONTENT_AUTHORITY, "staff/*", STAFF_ID);
     }
 
     @Override
@@ -79,10 +84,6 @@ public class ScheduleProvider extends ContentProvider {
                 return "vnd.android.cursor.dir/vnd.itnoles.schedule";
             case SCHEDULE_ID:
                 return "vnd.android.cursor.item/vnd.itnoles.schedule";
-            case LINK:
-                return "vnd.android.cursor.dir/vnd.itnoles.link";
-            case LINK_ID:
-                return "vnd.android.cursor.item/vnd.itnoles.link";
             case STAFF:
                 return "vnd.android.cursor.dir/vnd.itnoles.staff";
             case STAFF_ID:
@@ -107,18 +108,13 @@ public class ScheduleProvider extends ContentProvider {
         final int match = URIMATCHER.match(uri);
         switch (match) {
             case SCHEDULE:
-                final long schID = db.insertOrThrow(ScheduleContract.SCHEDULE, null, values);
-                final Uri schUri = Schedule.buildScheduleUri(Long.toString(schID));
+                final long schID = db.insertOrThrow(SCHEDULE_TXT, null, values);
+                final Uri schUri = Uri.withAppendedPath(SCHEDULE_CONTENT_URI, Long.toString(schID));
                 getContext().getContentResolver().notifyChange(schUri, null);
                 return schUri;
-            case LINK:
-                final long lnkID = db.insertOrThrow(ScheduleContract.LINK, null, values);
-                final Uri lnkUri = Link.buildLinkUri(Long.toString(lnkID));
-                getContext().getContentResolver().notifyChange(lnkUri, null);
-                return lnkUri;
             case STAFF:
-                final long staffID = db.insertOrThrow(ScheduleContract.STAFF, null, values);
-                final Uri staffUri = Staff.buildStaffUri(Long.toString(staffID));
+                final long staffID = db.insertOrThrow(STAFF_TXT, null, values);
+                final Uri staffUri = Uri.withAppendedPath(STAFF_CONTENT_URI, Long.toString(staffID));
                 getContext().getContentResolver().notifyChange(staffUri, null);
                 return staffUri;
             default:
@@ -178,17 +174,13 @@ public class ScheduleProvider extends ContentProvider {
         final int match = URIMATCHER.match(uri);
         switch(match) {
             case SCHEDULE:
-                return builder.table(ScheduleContract.SCHEDULE);
+                return builder.table(SCHEDULE_TXT);
             case SCHEDULE_ID:
-                return builder.table(ScheduleContract.SCHEDULE).where(Schedule.DATE + "='" + uri.getPathSegments().get(1) + "'");
-            case LINK:
-                return builder.table(ScheduleContract.LINK);
-            case LINK_ID:
-                return builder.table(ScheduleContract.LINK).where(Link.NAME + "='" + uri.getPathSegments().get(1) + "'");
+                return builder.table(SCHEDULE_TXT).where(DATE + "='" + uri.getPathSegments().get(1) + "'");
             case STAFF:
-                return builder.table(ScheduleContract.STAFF);
+                return builder.table(STAFF_TXT);
             case STAFF_ID:
-                return builder.table(ScheduleContract.STAFF).where(Staff.NAME + "='" + uri.getPathSegments().get(1) + "'");
+                return builder.table(STAFF_TXT).where(NAME + "='" + uri.getPathSegments().get(1) + "'");
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

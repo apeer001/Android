@@ -14,9 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.knightfootball.service;
+package com.itnoles.knightfootball;
 
 import android.content.Intent;
+import android.net.NetworkInfo;
 
 import com.itnoles.shared.service.AbstractSyncService;
 import com.itnoles.shared.io.WorksheetsHandler;
@@ -30,7 +31,8 @@ public class SyncService extends AbstractSyncService {
          * Check to see if we are connected to a data or wifi network.
          * if false, return early or execute XML
          */
-        if (!mNetwork.isNetworkConnected()) {
+        final NetworkInfo activeNetwork = mManager.getActiveNetworkInfo();
+        if (!(activeNetwork != null && activeNetwork.isConnectedOrConnecting())) {
             return;
         }
         mRemoteExecutor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(mRemoteExecutor));

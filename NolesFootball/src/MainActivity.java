@@ -18,9 +18,11 @@ package com.itnoles.nolesfootball;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.MenuItem;
 import com.itnoles.shared.activities.AbstractMainActivity;
-import com.itnoles.shared.fragments.LinkFragment;
 import com.itnoles.shared.fragments.TeamFragment;
 
 public class MainActivity extends AbstractMainActivity {
@@ -29,22 +31,26 @@ public class MainActivity extends AbstractMainActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mActionBar.addTab(mActionBar.newTab().setText("Headlines")
-                  .setTabListener(new TabListener<HeadlinesFragment>(this, "headlines", HeadlinesFragment.class)));
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
 
-        mActionBar.addTab(mActionBar.newTab().setText("Team")
-                  .setTabListener(new TabListener<TeamFragment>(this, "team", TeamFragment.class)));
+        final ActionBar bar = getSupportActionBar();
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        mActionBar.addTab(mActionBar.newTab().setText("Link")
-                  .setTabListener(new TabListener<LinkFragment>(this, "link", LinkFragment.class)));
+        final TabsAdapter tabsAdapter = new TabsAdapter(this, viewPager);
+        tabsAdapter.addTab(bar.newTab().setText("News"), HeadlinesFragment.class);
+        tabsAdapter.addTab(bar.newTab().setText("Team"), TeamFragment.class);
+        tabsAdapter.addTab(bar.newTab().setText("Link"), LinkFragment.class);
 
         final Intent syncIntent = new Intent(this, SyncService.class);
         startService(syncIntent);
     }
 
     @Override
-    protected void showSetting() {
-        final Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.settings) {
+            final Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

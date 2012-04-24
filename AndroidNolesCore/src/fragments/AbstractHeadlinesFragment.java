@@ -18,7 +18,6 @@ package com.itnoles.shared.fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
@@ -35,36 +34,30 @@ import com.itnoles.shared.R;
 import com.itnoles.shared.activities.BrowserDetailActivity;
 import com.itnoles.shared.io.NewsListLoader;
 import com.itnoles.shared.util.News;
-import com.itnoles.shared.util.SharedPreferencesHelper;
 
 import java.util.List;
 
 public abstract class AbstractHeadlinesFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
     private static final int HEADLINE_LOADER = 0x0;
 
-    // This is the Adapter being used to display the list's data.
-    private NewsListAdapter mAdapter;
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
-
-    protected SharedPreferencesHelper mPrefsHelper;
+    private String mURL;
 
     @Override
     public void onActivityCreated(Bundle savedState) {
+        this.mURL = getNewsURL();
+
         super.onActivityCreated(savedState);
 
-        // Load Shared Preference Manager with helper
-        final String packagePrefs = getActivity().getPackageName() + "_preferences";
-        final SharedPreferences prefs = getActivity().getSharedPreferences(packagePrefs, Context.MODE_PRIVATE);
-        mPrefsHelper = new SharedPreferencesHelper(prefs);
+        setEmptyText(getString(R.string.noncontent));
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new NewsListAdapter(getActivity());
-        setListAdapter(mAdapter);
+        setListAdapter(new NewsListAdapter(getActivity()));
 
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
-        final View detailsFrame = getActivity().findViewById(R.id.detail_frame);
+        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
         if (detailsFrame != null && detailsFrame.getVisibility() != View.VISIBLE) {
             detailsFrame.setVisibility(View.VISIBLE);
         }
@@ -81,11 +74,10 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
     @Override
     public void onResume() {
         super.onResume();
-
-        // Restart the Loaders for shared prefences changes when SP_KEY_NEWS_REFRESH is true
-        if (mPrefsHelper.getNewsFresh()) {
+        // When getNewsURL() get different value from mURL, it will restart the loaders.
+        if (!mURL.equals(getNewsURL())) {
+            mURL = getNewsURL();
             getLoaderManager().restartLoader(HEADLINE_LOADER, null, this);
-            mPrefsHelper.setNewsRefreshToFalse();
         }
     }
 
@@ -102,7 +94,7 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
                 // Execute a transaction, replacing any existing fragment
                 // with this one inside the frame.
                 getFragmentManager().beginTransaction()
-                    .replace(R.id.detail_frame, df)
+                    .replace(R.id.fragment_details, df)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
                 mShownCheckPosition = position;
@@ -117,13 +109,13 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created.
-        return new NewsListLoader(getActivity(), getNewsURL());
+        return new NewsListLoader(getActivity(), mURL);
     }
 
     @Override
     public void onLoadFinished(Loader<List<News>> loader, List<News> data) {
         // Set the new data in the adapter.
-        mAdapter.setData(data);
+        ((NewsListAdapter) getListAdapter()).setData(data);
 
         // The list should now be shown.
         if (isResumed()) {
@@ -136,17 +128,14 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
     @Override
     public void onLoaderReset(Loader<List<News>> loader) {
         // Clear the data in the adapter.
-        mAdapter.setData(null);
+        ((NewsListAdapter) getListAdapter()).setData(null);
     }
 
     protected abstract String getNewsURL();
 
     static class NewsListAdapter extends ArrayAdapter<News> {
-        private final LayoutInflater mLayoutInflater;
-
         public NewsListAdapter(Context context) {
             super(context, 0);
-            this.mLayoutInflater = LayoutInflater.from(context);
         }
 
         public void setData(List<News> data) {
@@ -168,7 +157,8 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
             ViewHolder holder;
 
             if (convertView == null) {
-                convertView = mLayoutInflater.inflate(R.layout.headlines_item, null);
+                final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = vi.inflate(R.layout.headlines_item, null);
 
                 // Creates a ViewHolder and store references to the three
                 // children views we want to bind data to.

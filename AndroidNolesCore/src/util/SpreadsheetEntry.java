@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package com.itnoles.shared.io;
-
-import com.itnoles.shared.util.Utils;
+package com.itnoles.shared.util;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -71,7 +69,7 @@ public class SpreadsheetEntry extends HashMap<String, String> {
             } else if (type == TEXT) {
                 if ("updated".equals(tag)) {
                     final String text = parser.getText();
-                    entry.mUpdated = Utils.parseTime(text);
+                    entry.mUpdated = ParserUtils.parseTime(text);
                 } else if ("title".equals(tag)) {
                     final String text = parser.getText();
                     entry.put("title", text);

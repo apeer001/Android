@@ -66,7 +66,6 @@ public class BrowserDetailFragment extends SherlockFragment {
         setHasOptionsMenu(true);
 
         mWebView = (WebView) getView().findViewById(R.id.webview);
-        mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setSupportZoom(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
 
@@ -109,12 +108,12 @@ public class BrowserDetailFragment extends SherlockFragment {
      * Free memory and destroy the internal state of the WebView.
      */
     @Override
-    public void onDestroyView() {
+    public void onDestroy() {
         if (mWebView != null) {
             mWebView.freeMemory();
             mWebView.destroy();
         }
-        super.onDestroyView();
+        super.onDestroy();
     }
 
     @Override
@@ -129,6 +128,7 @@ public class BrowserDetailFragment extends SherlockFragment {
         final ShareActionProvider actionProvider = (ShareActionProvider) menuItem.getActionProvider();
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getArguments().getString("url"));
         actionProvider.setShareIntent(shareIntent);
     }
 }

@@ -1,23 +1,23 @@
 <resources>
-	<string name="app_name">Knights Football</string>
-	<!--<string name="backup_manager_key"></string>-->
+    <string name="app_name">Knights Football</string>
+    <!--<string name="backup_manager_key"></string>-->
 
-	<string-array name="listNames">
-		<item>Top Athletics Stories</item>
-		<item>UCF Sports</item>
-		<item>UCF Pride</item>
-		<item>O\'Leary Blogs</item>
-		<item>Student Paper</item>
-		<item>UCF Today</item>
-		<item>Orlando Sentinel</item>
-	</string-array>
-	<string-array name="listValues">
-		<item>http://www.ucfathletics.com/headline-rss.xml</item>
-		<item>http://ucf.rivals.com/rss2feed.asp?SID=908</item>
-		<item>http://feeds2.feedburner.com/sports/college/goldenknightsnotepad</item>
-		<item>http://olearypsiphi.com/RSS/rss.php</item>
-		<item>http://www.centralfloridafuture.com/se/central-florida-future-rss-1.991045</item>
-		<item>http://today.ucf.edu/feed/</item>
-		<item>http://www.orlandosentinel.com/sports/college/knights/rss2.0.xml</item>
-	</string-array>
+    <string-array name="linkNames">
+        <item>Tickets</item>
+        <item>UCF Gameday</item>
+        <item>Alumni Tracker</item>
+        <item>Golden Knights Club</item>
+        <item>Radio Network</item>
+        <item>UCF Photos</item>
+        <item>UKNIGHT Patch</item>
+    </string-array>
+    <string-array name="linkValues">
+        <item>http://ucfathletics.cstv.com/tickets/ucf-tickets.html</item>
+        <item>http://ucfathletics.cstv.com/brighthouse/</item>
+        <item>http://cbs.sportsline.com/collegefootball/alumni-tracker/school/5233</item>
+        <item>http://www.ucfathleticfund.com/</item>
+        <item>http://ucfathletics.cstv.com/multimedia/ucf-isp-radio-network.html</item>
+        <item>http://ucfphotos.photoshelter.com/gallery-list</item>
+        <item>http://ucfathletics.cstv.com/sports/patch/ucf-patch-body.html</item>
+    </string-array>
 </resources>
