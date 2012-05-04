@@ -63,6 +63,8 @@ public class BrowserDetailFragment extends SherlockFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        getSherlockActivity().getSupportActionBar().setTitle(getArguments().getString("url"));
+
         setHasOptionsMenu(true);
 
         mWebView = (WebView) getView().findViewById(R.id.webview);

@@ -24,24 +24,48 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.itnoles.shared.activities.BrowserDetailActivity;
+import com.itnoles.shared.fragments.BrowserDetailFragment;
 
 public class LinkFragment extends SherlockListFragment {
+    private boolean mDualPane;
+    private int mShownCheckPosition = -1;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setListAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.linkNames, android.R.id.text1));
 
-        final View detailsFrame = getActivity().findViewById(R.id.detail_frame);
-        if (detailsFrame != null) {
-            detailsFrame.setVisibility(View.GONE);
-        }
+        // Check to see if we have a frame in which to embed the details
+        // fragment directly in the containing UI.
+        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
+        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         final String urlString = getResources().getStringArray(R.array.linkValues)[position];
-        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlString));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        if (mDualPane) {
+            // We can display everything in-place with fragments, so update
+            // the list to highlight the selected item and show the data.
+            getListView().setItemChecked(position, true);
+            if (mShownCheckPosition != position) {
+                // If we are not currently showing a fragment for the new
+                // position, we need to create and install a new one.
+                final BrowserDetailFragment df = BrowserDetailFragment.newInstance(urlString);
+
+                // Execute a transaction, replacing any existing fragment
+                // with this one inside the frame.
+                getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_details, df)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
+                mShownCheckPosition = position;
+            }
+        } else {
+            final Intent intent = new Intent(getActivity(), BrowserDetailActivity.class);
+            intent.putExtra("url", urlString);
+            startActivity(intent);
+        }
     }
 }

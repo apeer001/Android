@@ -28,7 +28,7 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import com.itnoles.shared.provider.ScheduleProvider;
 
 public class StaffFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor>  {
-    private static final int STAFF_LOADER = 0x03;
+    private static final int STAFF_LOADER = 0x2;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

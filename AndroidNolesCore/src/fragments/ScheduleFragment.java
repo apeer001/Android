@@ -29,7 +29,7 @@ import com.itnoles.shared.R;
 import com.itnoles.shared.provider.ScheduleProvider;
 
 public class ScheduleFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int SCHEDULE_LOADER = 0x01;
+    private static final int SCHEDULE_LOADER = 0x1;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

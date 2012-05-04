@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.SSLCertificateSocketFactory;
+import android.net.SSLSessionCache;
 import android.text.format.DateUtils;
 
 import org.apache.http.Header;
@@ -47,14 +49,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
-public final class HttpUtils {
+public class HttpUtils {
     private static final int SECOND_IN_MILLIS = (int) DateUtils.SECOND_IN_MILLIS;
 
     private static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String ENCODING_GZIP = "gzip";
 
     // Prevent intialization
-    private HttpUtils() {
+    protected HttpUtils() {
     }
 
     /**
@@ -73,7 +75,7 @@ public final class HttpUtils {
 
         final SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-        registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+        registry.register(new Scheme("https", getHttpsSocketFactory(context), 443));
         final ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params, registry);
         final DefaultHttpClient client = new DefaultHttpClient(manager, params);
 
@@ -103,6 +105,16 @@ public final class HttpUtils {
         });
 
         return client;
+    }
+
+    /**
+     * Create a session cache at the default location for this app with {@link SSLCertificateSocketFactory} and TCP timeout
+     * @param context reference for Activity or Application
+     * @return a new instance of SSLSocketFactory
+     */
+    private static SSLSocketFactory getHttpsSocketFactory(Context context) {
+        final SSLSessionCache sessionCache = new SSLSessionCache(context);
+        return SSLCertificateSocketFactory.getHttpSocketFactory(20 * SECOND_IN_MILLIS, sessionCache).getSocketFactory();
     }
 
     /**
