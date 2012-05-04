@@ -25,12 +25,12 @@ public class SettingsActivity extends AbstractSettingsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final CharSequence[] entries = new CharSequence[] {
+        final CharSequence[] entries = {
             "Top Athletics Stories", "Warchant", "Noles Digest", "Tomahawk Nation", "Spirit Blog", "Orlando Sentinel",
         };
         mNewsPref.setEntries(entries);
 
-        final CharSequence[] entriesValue = new CharSequence[] {
+        final CharSequence[] entriesValue = {
             "http://www.seminoles.com/headline-rss.xml",
             "http://floridastate.rivals.com/rss2feed.asp?SID=1061",
             "http://rss.scout.com/rss.aspx?sid=16",

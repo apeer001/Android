@@ -34,12 +34,10 @@ import java.util.ArrayList;
 public class ScheduleProvider extends ContentProvider {
     private ScheduleDatabase mOpenHelper;
 
-    private static final String SCHEDULE_TXT = "schedule";
-    private static final String STAFF_TXT = "staff";
-
     public static final String CONTENT_AUTHORITY = "com.itnoles.shared.provider.sports";
     public static final String UPDATED = "updated";
 
+    public static final String SCHEDULE_TXT = "schedule";
     public static final Uri SCHEDULE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY + "/schedule");
     public static final String DATE = "date";
     public static final String TIME = "time";
@@ -48,6 +46,7 @@ public class ScheduleProvider extends ContentProvider {
     private static final int SCHEDULE = 100;
     private static final int SCHEDULE_ID = 101;
 
+    public static final String STAFF_TXT = "staff";
     public static final Uri STAFF_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY + "/staff");
     public static final String NAME = "name";
     public static final String POSITIONS = "positions";

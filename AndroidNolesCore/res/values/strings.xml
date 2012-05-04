@@ -1,7 +1,9 @@
 <resources>
 	<string name="noncontent">content is not available</string>
+	<string name="menu_refresh">Refresh</string>
+	
+	<!-- Settings -->
 	<string name="day_title">Day mode</string>
-
 	<string name="general">General</string>
 	<string name="settings">Settings</string>
 	<string name="about_settings">About App</string>

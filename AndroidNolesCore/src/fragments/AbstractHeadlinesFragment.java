@@ -30,6 +30,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.itnoles.shared.R;
 import com.itnoles.shared.activities.BrowserDetailActivity;
 import com.itnoles.shared.io.NewsListLoader;
@@ -46,11 +49,15 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
 
     @Override
     public void onActivityCreated(Bundle savedState) {
-        this.mURL = getNewsURL();
+        mURL = getNewsURL();
 
         super.onActivityCreated(savedState);
 
+        // Give some text to display if there is no data.
         setEmptyText(getString(R.string.noncontent));
+
+        // We have a menu item to show in action bar.
+        setHasOptionsMenu(true);
 
         // Create an empty adapter we will use to display the loaded data.
         setListAdapter(new NewsListAdapter(getActivity()));
@@ -58,9 +65,6 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
         final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
-        if (detailsFrame != null && detailsFrame.getVisibility() != View.VISIBLE) {
-            detailsFrame.setVisibility(View.VISIBLE);
-        }
         mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
 
         // Start out with a progress indicator.
@@ -79,6 +83,19 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
             mURL = getNewsURL();
             getLoaderManager().restartLoader(HEADLINE_LOADER, null, this);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.headline_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_refresh) {
+            getLoaderManager().restartLoader(HEADLINE_LOADER, null, this);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -154,35 +171,36 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         public View getView(int position, View convertView, ViewGroup parent) {
             // A ViewHolder keeps references to children views to avoid
             // unneccessary calls to findViewById() on each row.
-            ViewHolder holder;
-
-            if (convertView == null) {
-                final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = vi.inflate(R.layout.headlines_item, null);
-
-                // Creates a ViewHolder and store references to the three
-                // children views we want to bind data to.
-                holder = new ViewHolder();
-                holder.mTitle = (TextView) convertView.findViewById(R.id.title);
-                holder.mDate = (TextView) convertView.findViewById(R.id.date);
-                holder.mDesc = (TextView) convertView.findViewById(R.id.description);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
+            final ViewHolder holder = ViewHolder.get(convertView, parent);
             final News news = getItem(position);
             holder.mTitle.setText(news.getTitle());
             holder.mDate.setText(news.getPubDate());
             holder.mDesc.setText(news.getDesc());
 
-            return convertView;
+            return holder.mRoot;
+        }
+    }
+
+    static class ViewHolder {
+        public static ViewHolder get(View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                return new ViewHolder(parent);
+            }
+            return (ViewHolder) convertView.getTag();
         }
 
-        static class ViewHolder {
-            TextView mTitle;
-            TextView mDate;
-            TextView mDesc;
+        public final View mRoot;
+        public final TextView mTitle;
+        public final TextView mDate;
+        public final TextView mDesc;
+
+        private ViewHolder(ViewGroup parent) {
+            mRoot = LayoutInflater.from(parent.getContext()).inflate(R.layout.headlines_item, null);
+            mRoot.setTag(this);
+
+            mTitle = (TextView) mRoot.findViewById(R.id.title);
+            mDate = (TextView) mRoot.findViewById(R.id.date);
+            mDesc = (TextView) mRoot.findViewById(R.id.description);
         }
     }
 }

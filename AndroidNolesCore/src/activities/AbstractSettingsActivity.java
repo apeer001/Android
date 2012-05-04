@@ -26,6 +26,7 @@ import android.preference.Preference;
 import android.preference.PreferenceScreen;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.itnoles.shared.R;
 
 public abstract class AbstractSettingsActivity extends SherlockPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -34,6 +35,8 @@ public abstract class AbstractSettingsActivity extends SherlockPreferenceActivit
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Load the XML preferences file
         addPreferencesFromResource(R.xml.preferences);
@@ -45,7 +48,7 @@ public abstract class AbstractSettingsActivity extends SherlockPreferenceActivit
             appVersion.setSummary("");
         }
 
-        mNewsPref = (ListPreference) findPreference("news");
+        mNewsPref = (ListPreference) findPreference("newsurl_preference");
     }
 
     @Override
@@ -62,6 +65,14 @@ public abstract class AbstractSettingsActivity extends SherlockPreferenceActivit
 
         // Unregister the listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -39,9 +39,6 @@ public class TeamFragment extends SherlockListFragment {
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
         final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
-        if (detailsFrame != null && detailsFrame.getVisibility() != View.VISIBLE) {
-            detailsFrame.setVisibility(View.VISIBLE);
-        }
         mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
 
         final String[] array = new String[] {getString(R.string.schedules), getString(R.string.staff)};

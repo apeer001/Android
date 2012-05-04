@@ -24,10 +24,10 @@ import android.text.format.Time;
 /**
  * Various utility methods used by {@link XmlHandler} implementations.
  */
-public final class ParserUtils {
+public class ParserUtils {
     private static Time sTime = new Time();
 
-    private ParserUtils() {
+    protected ParserUtils() {
     }
 
     /**

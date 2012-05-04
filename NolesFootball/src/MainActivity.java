@@ -17,8 +17,8 @@
 package com.itnoles.nolesfootball;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
@@ -28,26 +28,32 @@ import com.itnoles.shared.fragments.TeamFragment;
 public class MainActivity extends AbstractMainActivity {
     // Called when the activity is first created.
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
 
         final ActionBar bar = getSupportActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        final TabsAdapter tabsAdapter = new TabsAdapter(this, viewPager);
+        final TabsAdapter tabsAdapter = new TabsAdapter(this);
         tabsAdapter.addTab(bar.newTab().setText("News"), HeadlinesFragment.class);
         tabsAdapter.addTab(bar.newTab().setText("Team"), TeamFragment.class);
         tabsAdapter.addTab(bar.newTab().setText("Link"), LinkFragment.class);
 
-        final Intent syncIntent = new Intent(this, SyncService.class);
-        startService(syncIntent);
+        // This isn't directly affecting the UI, so put it on a worker thread.
+        final AsyncTask<Void, Void, Void> doSyncTask = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                final Intent syncIntent = new Intent(MainActivity.this, SyncService.class);
+                startService(syncIntent);
+                return null;
+            }
+        };
+        doSyncTask.execute();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.settings) {
+        if (item.getItemId() == R.id.menu_settings) {
             final Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }

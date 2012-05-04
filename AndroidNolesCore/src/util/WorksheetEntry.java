@@ -62,7 +62,7 @@ public class WorksheetEntry {
             if (type == START_TAG) {
                 tag = parser.getName();
                 if ("link".equals(tag)) {
-                    final String rel = parser.getAttributeValue(null, "ref");
+                    final String rel = parser.getAttributeValue(null, "rel");
                     final String href = parser.getAttributeValue(null, "href");
                     if (REL_LISTFEED.equals(rel)) {
                         entry.mListFeed = href;

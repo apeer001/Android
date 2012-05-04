@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<item type="id" name="settings">false</item>
+	<!-- menu -->
+	<item type="id" name="menu_share">false</item>
+	<item type="id" name="menu_settings">false</item>
+	<item type="id" name="menu_refresh">false</item>
+
 	<item type="id" name="date">false</item>
 	<item type="id" name="pager">false</item>
 	<item type="id" name="fragment_details">false</item>
+	<item type="id" name="empty_loading">false</item>
+	<item type="id" name="webview">false</item>
 
 	<!-- Schedule -->
 	<item type="id" name="school">false</item>
@@ -13,8 +19,4 @@
 	<!-- Headlines -->
 	<item type="id" name="title">false</item>
 	<item type="id" name="description">false</item>
-
-	<item type="id" name="empty_loading">false</item>
-	<item type="id" name="webview">false</item>
-	<item type="id" name="menu_share">false</item>
 </resources>

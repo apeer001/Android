@@ -37,8 +37,6 @@ import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
 public class WorksheetsHandler extends XmlHandler {
     private static final String TAG = "WorksheetsHandler";
-    private static final String SCHEDULE = "schedule";
-    private static final String STAFF = "staff";
 
     private final RemoteExecutor mExecutor;
 
@@ -62,8 +60,8 @@ public class WorksheetsHandler extends XmlHandler {
         }
 
         // consider updating each spreadsheet based on update timestamp
-        considerUpdate(sheets, SCHEDULE, ScheduleProvider.SCHEDULE_CONTENT_URI, resolver);
-        considerUpdate(sheets, STAFF, ScheduleProvider.STAFF_CONTENT_URI, resolver);
+        considerUpdate(sheets, ScheduleProvider.SCHEDULE_TXT, ScheduleProvider.SCHEDULE_CONTENT_URI, resolver);
+        considerUpdate(sheets, ScheduleProvider.STAFF_TXT, ScheduleProvider.STAFF_CONTENT_URI, resolver);
 
         return new ArrayList<ContentProviderOperation>();
     }
@@ -78,8 +76,7 @@ public class WorksheetsHandler extends XmlHandler {
 
         final long localUpdated = ParserUtils.queryDirUpdated(targetDir, resolver);
         final long serverUpdated = entry.getUpdated();
-        Log.d(TAG, "considerUpdate() for " + entry.getTitle() + " found localUpdated="
-                + localUpdated + ", server=" + serverUpdated);
+        Log.d(TAG, "considerUpdate() for " + entry.getTitle() + " found localUpdated=" + localUpdated + ", server=" + serverUpdated);
         if (localUpdated >= serverUpdated) {
             return;
         }
@@ -90,9 +87,9 @@ public class WorksheetsHandler extends XmlHandler {
 
     private XmlHandler createRemoteHandler(WorksheetEntry entry) {
         final String title = entry.getTitle();
-        if (SCHEDULE.equals(title)) {
+        if (ScheduleProvider.SCHEDULE_TXT.equals(title)) {
             return new ScheduleHandler();
-        } else if (STAFF.equals(title)) {
+        } else if (ScheduleProvider.STAFF_TXT.equals(title)) {
             return new StaffHandler();
         } else {
             throw new IllegalArgumentException("Unknown worksheet type");

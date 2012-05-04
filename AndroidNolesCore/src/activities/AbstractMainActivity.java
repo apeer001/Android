@@ -40,7 +40,7 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
     private boolean mDayMode;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG && SUPPORTS_GINGERBREAD) {
             StrictMode.enableDefaults();
         }
@@ -81,11 +81,11 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
         private final ViewPager mViewPager;
         private final ArrayList<String> mTabs = new ArrayList<String>();
 
-        public TabsAdapter(SherlockFragmentActivity activity, ViewPager pager) {
+        public TabsAdapter(SherlockFragmentActivity activity) {
             super(activity.getSupportFragmentManager());
             this.mContext = activity;
             this.mActionBar = activity.getSupportActionBar();
-            this.mViewPager = pager;
+            this.mViewPager = (ViewPager) activity.findViewById(R.id.pager);
             mViewPager.setAdapter(this);
             mViewPager.setOnPageChangeListener(this);
         }
