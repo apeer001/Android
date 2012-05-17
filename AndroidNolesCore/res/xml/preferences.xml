@@ -6,11 +6,6 @@
 		android:title="@string/listPref_title"
 		android:key="newsurl_preference"
 		android:dialogTitle="@string/listPref_dialogTitle" />
-
-	 <CheckBoxPreference
-	 	android:title="@string/day_title"
-	 	android:key="day_preference"
-	 	android:defaultValue="false" />
 	</PreferenceCategory>
 
 	<PreferenceCategory

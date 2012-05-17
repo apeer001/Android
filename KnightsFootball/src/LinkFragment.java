@@ -36,10 +36,8 @@ public class LinkFragment extends SherlockListFragment {
         super.onActivityCreated(savedInstanceState);
         setListAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.linkNames, android.R.id.text1));
 
-        // Check to see if we have a frame in which to embed the details
-        // fragment directly in the containing UI.
-        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
-        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+        // Check to see if we are in two-pane layout mode then show two panes
+        mDualPane = getResources().getBoolean(R.bool.has_two_panes);
     }
 
     @Override

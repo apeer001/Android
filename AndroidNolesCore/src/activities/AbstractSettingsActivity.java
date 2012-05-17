@@ -92,8 +92,8 @@ public abstract class AbstractSettingsActivity extends SherlockPreferenceActivit
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if ("newsurl_preference".equals(key)) {
             mNewsPref.setSummary(mNewsPref.getEntry());
+            final BackupManager backupManager = new BackupManager(this);
+            backupManager.dataChanged();
         }
-        final BackupManager backupManager = new BackupManager(this);
-        backupManager.dataChanged();
     }
 }

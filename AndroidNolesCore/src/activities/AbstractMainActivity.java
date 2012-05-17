@@ -20,7 +20,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
@@ -37,7 +36,6 @@ import java.util.ArrayList;
 
 public abstract class AbstractMainActivity extends SherlockFragmentActivity {
     private static final boolean SUPPORTS_GINGERBREAD = Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
-    private boolean mDayMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,21 +43,7 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
             StrictMode.enableDefaults();
         }
         super.onCreate(savedInstanceState);
-
-        this.mDayMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("day_preference", false);
-        if (mDayMode) {
-            this.setTheme(R.style.Theme_Sherlock_Light);
-        }
         setContentView(R.layout.main);
-    }
-
-    @Override
-    public void onResume() {
-        final boolean bool1 = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("day_preference", false);
-        if (bool1 != mDayMode) {
-            this.recreate();
-        }
-        super.onResume();
     }
 
     @Override

@@ -29,6 +29,5 @@ public class SportsBackupAgent extends BackupAgentHelper {
         final String packagePrefs = getPackageName() + "_preferences";
         final SharedPreferencesBackupHelper helper = new SharedPreferencesBackupHelper(this, packagePrefs);
         addHelper("newsurl_preference", helper);
-        addHelper("day_preference", helper);
     }
 }

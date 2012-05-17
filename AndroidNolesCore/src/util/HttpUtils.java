@@ -31,6 +31,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -69,9 +70,10 @@ public class HttpUtils {
         // Use generous timeouts for slow mobile networks
         HttpConnectionParams.setConnectionTimeout(params, 20 * SECOND_IN_MILLIS);
         HttpConnectionParams.setSoTimeout(params, 20 * SECOND_IN_MILLIS);
-
         HttpConnectionParams.setSocketBufferSize(params, 8192);
+
         HttpProtocolParams.setUserAgent(params, buildUserAgent(context));
+        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 
         final SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -121,7 +123,7 @@ public class HttpUtils {
      * Build and return a user-agent string that can identify this application
      * to remote servers. Contains the package name and version code.
      */
-    public static String buildUserAgent(Context context) {
+    private static String buildUserAgent(Context context) {
         try {
             final PackageManager manager = context.getPackageManager();
             final PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);

@@ -33,16 +33,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewsListLoader extends AsyncTaskLoader<List<News>> {
     private static final String LOG_TAG = "NewsListLoader";
 
-    private final String mURL;
     private final HttpClient mHttpClient;
+    private final String mURL;
 
     private List<News> mList;
 
