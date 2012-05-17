@@ -62,10 +62,8 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         // Create an empty adapter we will use to display the loaded data.
         setListAdapter(new NewsListAdapter(getActivity()));
 
-        // Check to see if we have a frame in which to embed the details
-        // fragment directly in the containing UI.
-        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
-        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+        // Check to see if we are in two-pane layout mode then show two panes
+        mDualPane = getResources().getBoolean(R.bool.has_two_panes);
 
         // Start out with a progress indicator.
         setListShown(false);
@@ -103,6 +101,9 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         final News news = (News) getListAdapter().getItem(position);
         final String urlString = news.getLink();
         if (mDualPane) {
+            // We can display everything in-place with fragments, so update
+            // the list to highlight the selected item and show the data.
+            getListView().setItemChecked(position, true);
             if (mShownCheckPosition != position) {
                 // If we are not currently showing a fragment for the new
                 // position, we need to create and install a new one.
