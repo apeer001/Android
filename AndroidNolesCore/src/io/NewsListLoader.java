@@ -23,25 +23,18 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 import android.util.Xml;
 
-import com.itnoles.shared.util.HttpUtils;
 import com.itnoles.shared.util.News;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 public class NewsListLoader extends AsyncTaskLoader<List<News>> {
     private static final String LOG_TAG = "NewsListLoader";
 
-    private final HttpClient mHttpClient;
     private final String mURL;
 
     private List<News> mList;
@@ -49,7 +42,6 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
     public NewsListLoader(Context context, String url) {
         super(context);
         this.mURL = url;
-        this.mHttpClient = HttpUtils.getHttpClient(context);
     }
 
     /**
@@ -99,28 +91,28 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
             return null;
         }
 
-        final HttpGet request = new HttpGet(mURL);
+        HttpURLConnection urlConnection = null;
         try {
-            final HttpResponse response = mHttpClient.execute(request);
-            final int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode != HttpStatus.SC_OK) {
-                Log.w(LOG_TAG, "Unexpected server response " + response.getStatusLine() + " for " + request.getRequestLine());
-                return null;
-            }
-            final InputStream input = response.getEntity().getContent();
+            final URL url = new URL(mURL);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            final InputStream input = new BufferedInputStream(urlConnection.getInputStream(), 8192);
             try {
                 final XmlPullParser parser = Xml.newPullParser();
                 parser.setInput(input, null);
                 return parse(parser);
             } catch (XmlPullParserException e) {
-                Log.w(LOG_TAG, "Malformed response for " + request.getRequestLine(), e);
+                Log.w(LOG_TAG, "Malformed response for ", e);
             } finally {
                 if (input != null) {
                     input.close();
                 }
             }
         } catch (IOException e) {
-            Log.w("Problem reading remote response for " + request.getRequestLine(), e);
+            Log.w("Problem reading remote response for ", e);
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
         return null;
     }

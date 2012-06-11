@@ -7,7 +7,12 @@
 <h2>Project dependency</h2>
 <ul>
    <li>ActionBarSherlock - https://github.com/JakeWharton/ActionBarSherlock</li>
+   <li>HttpResponseCache - https://github.com/candrews/HttpResponseCache</li>
+   <li>DiskLruCache - https://github.com/JakeWharton/DiskLruCache</li>
 </ul>
+
+<h2>Mono Related Project</h2>
+<p>If you see any folder that contains Mono, it will not be released to the Play Store.</p>
 
 <h2>License</h2>
 <pre><code>Copyright (C) 2011 Jonathan Steele
