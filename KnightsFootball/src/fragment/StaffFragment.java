@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2011 Jonathan Steele
  *
@@ -15,22 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.shared.activities;
+package com.itnoles.knightfootball.fragment;
 
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 
-import com.itnoles.shared.fragment.BrowserDetailFragment;
+import com.itnoles.knightfootball.ScheduleProvider;
+import com.itnoles.shared.fragment.AbstractStaffFragment;
 
-public class BrowserDetailActivity extends BaseSinglePaneActivity {
-    // Called when the activity is first created.
+public class StaffFragment extends AbstractStaffFragment  {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            final BrowserDetailFragment details = new BrowserDetailFragment();
-            details.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
-        }
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        final String[] projection = {"_id", "name", "positions"};
+        return new CursorLoader(getActivity(), ScheduleProvider.STAFF_CONTENT_URI, projection, null, null, null);
     }
 }

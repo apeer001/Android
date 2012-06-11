@@ -9,15 +9,13 @@
         <item>Golden Knights Club</item>
         <item>Radio Network</item>
         <item>UCF Photos</item>
-        <item>UKNIGHT Patch</item>
     </string-array>
     <string-array name="linkValues">
-        <item>http://ucfathletics.cstv.com/tickets/ucf-tickets.html</item>
-        <item>http://ucfathletics.cstv.com/brighthouse/</item>
+        <item>https://oss.ticketmaster.com/html/pack_home.htmI?l=EN&amp;team=ucf</item>
+        <item>http://www.ucfathletics.com/facilities/ucf-brighthouse-bio.html</item>
         <item>http://cbs.sportsline.com/collegefootball/alumni-tracker/school/5233</item>
         <item>http://www.ucfathleticfund.com/</item>
-        <item>http://ucfathletics.cstv.com/multimedia/ucf-isp-radio-network.html</item>
+        <item>http://www.ucfathletics.com/multimedia/ucf-isp-radio-network.html</item>
         <item>http://ucfphotos.photoshelter.com/gallery-list</item>
-        <item>http://ucfathletics.cstv.com/sports/patch/ucf-patch-body.html</item>
     </string-array>
 </resources>

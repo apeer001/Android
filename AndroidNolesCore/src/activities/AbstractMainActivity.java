@@ -17,6 +17,7 @@
 package com.itnoles.shared.activities;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -24,6 +25,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
@@ -32,9 +34,11 @@ import com.actionbarsherlock.view.Menu;
 import com.itnoles.shared.BuildConfig;
 import com.itnoles.shared.R;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public abstract class AbstractMainActivity extends SherlockFragmentActivity {
+    private static final String LOG_TAG = "AbstractMainActivity";
     private static final boolean SUPPORTS_GINGERBREAD = Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
 
     @Override
@@ -44,12 +48,37 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        final AsyncTask<Void, Void, Void> enableCache = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... urls) {
+                enableHttpResponseCache();
+                return null;
+            }
+        };
+        enableCache.execute();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.main_activity, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void enableHttpResponseCache() {
+        final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
+        final File httpCacheDir = new File(getCacheDir(), "http");
+        try {
+            Class.forName("android.net.http.HttpResponseCache")
+                 .getMethod("install", File.class, long.class)
+                 .invoke(null, httpCacheDir, httpCacheSize);
+        } catch (Exception httpResponseCacheNotAvailable) {
+            try {
+                com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache", e);
+            }
+        }
     }
 
     /**

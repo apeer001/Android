@@ -3,7 +3,7 @@
     <item
         android:id="@id/menu_share"
         android:title="@string/abs__shareactionprovider_share_with"
-        android:icon="@drawable/ic_menu_share"
+        android:icon="@drawable/ic_menu_share_holo_dark"
         android:showAsAction="ifRoom"
         android:actionProviderClass="com.actionbarsherlock.widget.ShareActionProvider">
     </item>

@@ -20,49 +20,45 @@ import android.content.ContentResolver;
 import android.util.Log;
 import android.util.Xml;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.InputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
 
 public class RemoteExecutor {
     private static final String LOG_TAG = "RemoteExecutor";
 
-    private final HttpClient mHttpClient;
     private final ContentResolver mResolver;
 
-    public RemoteExecutor(HttpClient httpClient, ContentResolver resolver) {
-        this.mHttpClient = httpClient;
+    public RemoteExecutor(ContentResolver resolver) {
         this.mResolver = resolver;
     }
 
-    public void executeWithPullParser(String url, XmlHandler handler) {
-        final HttpGet request = new HttpGet(url);
+    public void executeWithPullParser(String urlString, XmlHandler handler, int size) {
+        HttpsURLConnection urlConnection = null;
         try {
-            final HttpResponse response = mHttpClient.execute(request);
-            final int status = response.getStatusLine().getStatusCode();
-            if (status != HttpStatus.SC_OK) {
-                Log.w(LOG_TAG, "Unexpected server response " + response.getStatusLine() + " for " + request.getRequestLine());
-            }
-            final InputStream input = response.getEntity().getContent();
+            final URL url = new URL(urlString);
+            urlConnection = (HttpsURLConnection) url.openConnection();
+            final InputStream input = new BufferedInputStream(urlConnection.getInputStream(), size);
             try {
                 final XmlPullParser parser = Xml.newPullParser();
                 parser.setInput(input, null);
                 handler.parseAndApply(parser, mResolver);
             } catch (XmlPullParserException e) {
-                Log.w(LOG_TAG, "Malformed response for " + request.getRequestLine(), e);
+                Log.w(LOG_TAG, "Malformed response for ", e);
             } finally {
                 if (input != null) {
                     input.close();
                 }
             }
         } catch (IOException e) {
-            Log.w("Problem reading remote response for " + request.getRequestLine(), e);
+            Log.w("Problem reading remote response for ", e);
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
     }
 }

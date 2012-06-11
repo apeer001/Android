@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.shared.activities;
+package com.itnoles.nolesfootball.activities;
 
 import android.os.Bundle;
 
-import com.itnoles.shared.fragment.BrowserDetailFragment;
+import com.itnoles.nolesfootball.fragment.StaffFragment;
+import com.itnoles.shared.activities.BaseSinglePaneActivity;
 
-public class BrowserDetailActivity extends BaseSinglePaneActivity {
+public class StaffActivity extends BaseSinglePaneActivity {
     // Called when the activity is first created.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            final BrowserDetailFragment details = new BrowserDetailFragment();
-            details.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
+            final StaffFragment staff = new StaffFragment();
+            getSupportFragmentManager().beginTransaction().add(android.R.id.content, staff).commit();
         }
     }
 }

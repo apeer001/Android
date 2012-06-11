@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 public abstract class XmlHandler {
     private static final String LOG_TAG = "XmlHandler";
-    static final String ENTRY = "entry";
+    protected static final String ENTRY = "entry";
 
     private final String mAuthority;
 

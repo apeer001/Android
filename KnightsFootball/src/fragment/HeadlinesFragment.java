@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2011 Jonathan Steele
  *
@@ -15,22 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.shared.activities;
+package com.itnoles.knightfootball.fragment;
 
-import android.os.Bundle;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
-import com.itnoles.shared.fragment.BrowserDetailFragment;
+import com.itnoles.shared.fragment.AbstractHeadlinesFragment;
 
-public class BrowserDetailActivity extends BaseSinglePaneActivity {
-    // Called when the activity is first created.
+public class HeadlinesFragment extends AbstractHeadlinesFragment {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            final BrowserDetailFragment details = new BrowserDetailFragment();
-            details.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
-        }
+    protected String getNewsURL() {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return prefs.getString("newsurl_preference", "http://www.ucfathletics.com/sports/m-footbl/headline-rss.xml");
     }
 }

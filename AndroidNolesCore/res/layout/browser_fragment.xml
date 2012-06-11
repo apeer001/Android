@@ -12,7 +12,7 @@
     	android:visibility="gone"
     	android:layout_width="match_parent"
     	android:layout_height="wrap_content"
-    	style="@style/Widget.Sherlock.ProgressBar.Horizontal" />
+    	style="@style/Widget.Sherlock.Light.ProgressBar.Horizontal" />
 
     <WebView
         android:id="@id/webview"

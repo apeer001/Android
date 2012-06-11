@@ -16,15 +16,15 @@
 
 package com.itnoles.shared.activities;
 
+//import android.app.ListFragment;
 import android.os.Bundle;
 
-//import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.itnoles.shared.R;
 
 public abstract class BaseSinglePaneActivity extends SherlockFragmentActivity {
-    //private SherlockListFragment mFragment;
+    //private ListFragment mFragment;
 
     // Called when the activity is first created.
     @Override
@@ -57,5 +57,5 @@ public abstract class BaseSinglePaneActivity extends SherlockFragmentActivity {
      * Called in <code>onCreate</code> when the fragment constituting this activity is needed.
      * The returned fragment's arguments may be set to the intent used to invoke this activity.
      */
-    //protected abstract SherlockListFragment onCreatePane();
+    //protected abstract ListFragment onCreatePane();
 }
