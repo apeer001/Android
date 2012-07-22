@@ -16,7 +16,7 @@
 
 package com.itnoles.shared.util;
 
-import android.util.Log;
+import android.text.Html;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,7 +27,7 @@ import java.util.Locale;
  * It is one of the Modal object that shared between Controller and View.
  */
 public class News {
-    private static final String LOG_TAG = "News";
+    private static final String LOG_TAG = LogUtils.makeLogTag(News.class);
 
     private String mTitle;
     private String mLink;
@@ -53,7 +53,7 @@ public class News {
         } else if ("published".equals(key)) {
             setPublished(value);
         } else if ("description".equals(key) || "content".equals(key)) {
-            mDesc = value;
+            mDesc = Html.fromHtml(value).toString();
         } else if ("link".equals(key)) {
             mLink = value;
         }
@@ -63,7 +63,7 @@ public class News {
         try {
             mPublished = getDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(date);
         } catch (ParseException e) {
-            Log.w(LOG_TAG, "Fail to parse published date", e);
+            LogUtils.LOGW(LOG_TAG, "Fail to parse published date", e);
         }
     }
 

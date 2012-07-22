@@ -18,7 +18,10 @@ package com.itnoles.shared.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -30,9 +33,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.itnoles.shared.R;
 import com.itnoles.shared.activities.BrowserDetailActivity;
 import com.itnoles.shared.io.NewsListLoader;
@@ -41,16 +41,27 @@ import com.itnoles.shared.util.News;
 import java.util.List;
 
 public abstract class AbstractHeadlinesFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
-    private static final int HEADLINE_LOADER = 0x0;
+    private static final boolean SUPPORTS_GINGERBREAD = Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
+    protected static final int HEADLINES_LOADER = 0x0;
+
+    static final int INTERNAL_PROGRESS_CONTAINER_ID = 0x00ff0002;
+    static final int INTERNAL_EMPTY_ID = 0x00ff0001;
+    static final int INTERNAL_LIST_CONTAINER_ID = 0x00ff0003;
 
     protected boolean mDualPane;
     protected int mShownCheckPosition = -1;
-    private String mURL;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View root = inflater.inflate(R.layout.headlines_fragment, container, false);
+        root.findViewById(R.id.progressContainer).setId(INTERNAL_PROGRESS_CONTAINER_ID);
+        root.findViewById(R.id.internalEmpty).setId(INTERNAL_EMPTY_ID);
+        root.findViewById(R.id.listContainer).setId(INTERNAL_LIST_CONTAINER_ID);
+        return root;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedState) {
-        mURL = getNewsURL();
-
         super.onActivityCreated(savedState);
 
         // Give some text to display if there is no data.
@@ -62,44 +73,39 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         // Create an empty adapter we will use to display the loaded data.
         setListAdapter(new NewsListAdapter(getActivity()));
 
-        // Check to see if we are in two-pane layout mode then show two panes
-        mDualPane = getResources().getBoolean(R.bool.has_two_panes);
+        // Show the header title
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        setHeaderTitle(prefs.getString("newstitle_preference", "Top Athletics Stories"));
 
-        // Start out with a progress indicator.
-        setListShown(false);
+        // Check to see if we have a frame in which to embed the details
+        // fragment directly in the containing UI.
+        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
+        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+
+        if (mDualPane) {
+            // In dual-pane mode, the list view highlights the selected item.
+            getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        }
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
-        getLoaderManager().initLoader(HEADLINE_LOADER, null, this);
+        getLoaderManager().initLoader(HEADLINES_LOADER, getArguments(), this);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // When getNewsURL() get different value from mURL, it will restart the loaders.
-        if (!mURL.equals(getNewsURL())) {
-            mURL = getNewsURL();
-            getLoaderManager().restartLoader(HEADLINE_LOADER, null, this);
+    private void setHeaderTitle(String header) {
+        final TextView headerView = (TextView) getView().findViewById(R.id.section_title);
+        if (headerView != null) {
+            headerView.setText(header);
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.headline_fragment, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_refresh) {
-            getLoaderManager().restartLoader(HEADLINE_LOADER, null, this);
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
+        // Start out with a progress indicator.
+        setListShown(false);
+
         // This is called when a new Loader needs to be created.
-        return new NewsListLoader(getActivity(), mURL);
+        return new NewsListLoader(getActivity(), args.getString("url"));
     }
 
     @Override
@@ -129,6 +135,7 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
             // We can display everything in-place with fragments, so update
             // the list to highlight the selected item and show the data.
             getListView().setItemChecked(position, true);
+
             if (mShownCheckPosition != position) {
                 // If we are not currently showing a fragment for the new
                 // position, we need to create and install a new one.
@@ -143,13 +150,26 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
                 mShownCheckPosition = position;
             }
         } else {
-            final Intent intent = new Intent(getSherlockActivity(), BrowserDetailActivity.class);
+            final Intent intent = new Intent(getActivity(), BrowserDetailActivity.class);
             intent.putExtra("url", urlString);
             startActivity(intent);
         }
     }
 
-    protected abstract String getNewsURL();
+    protected void putSourceIntoPreference(String title, String url) {
+        final SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+        editor.putString("newsurl_preference", url);
+        editor.putString("newstitle_preference", title);
+        if (SUPPORTS_GINGERBREAD) {
+            editor.apply();
+        } else {
+            editor.commit();
+        }
+        final Bundle bundle = new Bundle();
+        bundle.putString("url", url);
+        getLoaderManager().restartLoader(HEADLINES_LOADER, bundle, this);
+        setHeaderTitle(title);
+    }
 
     static class NewsListAdapter extends ArrayAdapter<News> {
         public NewsListAdapter(Context context) {
@@ -183,13 +203,6 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
     }
 
     static class ViewHolder {
-        public static ViewHolder get(View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                return new ViewHolder(parent);
-            }
-            return (ViewHolder) convertView.getTag();
-        }
-
         public final View mRoot;
         public final TextView mTitle;
         public final TextView mDate;
@@ -202,6 +215,13 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
             mTitle = (TextView) mRoot.findViewById(R.id.title);
             mDate = (TextView) mRoot.findViewById(R.id.date);
             mDesc = (TextView) mRoot.findViewById(R.id.description);
+        }
+
+        public static ViewHolder get(View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                return new ViewHolder(parent);
+            }
+            return (ViewHolder) convertView.getTag();
         }
     }
 }

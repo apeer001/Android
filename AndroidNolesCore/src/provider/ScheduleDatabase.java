@@ -14,12 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.shared;
+package com.itnoles.shared.provider;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+
+import static com.itnoles.shared.util.LogUtils.makeLogTag;
+import static com.itnoles.shared.util.LogUtils.LOGW;
 
 /**
  * Helper for managing {@link SQLiteDatabase} that stores data in
@@ -27,7 +29,7 @@ import android.util.Log;
  */
 public class ScheduleDatabase extends SQLiteOpenHelper {
     // Used for debugging and logging
-    private static final String LOG_TAG = "ScheduleDatabaseHelper";
+    private static final String LOG_TAG = makeLogTag(ScheduleDatabase.class);
 
     /**
      * The database that the provider uses as its underlying data store
@@ -67,7 +69,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != DATABASE_VERSION) {
-            Log.w(LOG_TAG, "Destroying old data during upgrade");
+            LOGW(LOG_TAG, "Destroying old data during upgrade");
 
             // Kills the table and existing data
             db.execSQL("DROP TABLE IF EXISTS schedule");

@@ -16,20 +16,17 @@
 
 package com.itnoles.nolesfootball.activities;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.MenuItem;
-import com.itnoles.nolesfootball.R;
 import com.itnoles.nolesfootball.WorksheetsHandler;
 import com.itnoles.nolesfootball.fragment.HeadlinesFragment;
 import com.itnoles.nolesfootball.fragment.LinkFragment;
 import com.itnoles.nolesfootball.fragment.TeamFragment;
+import com.itnoles.shared.Utils;
 import com.itnoles.shared.activities.AbstractMainActivity;
 import com.itnoles.shared.io.RemoteExecutor;
 
@@ -45,9 +42,9 @@ public class MainActivity extends AbstractMainActivity {
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         final TabsAdapter tabsAdapter = new TabsAdapter(this);
-        tabsAdapter.addTab(bar.newTab().setText("News"), HeadlinesFragment.class);
-        tabsAdapter.addTab(bar.newTab().setText("Team"), TeamFragment.class);
-        tabsAdapter.addTab(bar.newTab().setText("Link"), LinkFragment.class);
+        tabsAdapter.addTab(bar.newTab().setText("News"), HeadlinesFragment.class, createBundleForURLFromPrefs());
+        tabsAdapter.addTab(bar.newTab().setText("Team"), TeamFragment.class, null);
+        tabsAdapter.addTab(bar.newTab().setText("Link"), LinkFragment.class, null);
 
         // Load and parse the XML Spreadsheet from Google Drive
         final AsyncTask<Void, Void, Void> doSyncTask = new AsyncTask<Void, Void, Void>() {
@@ -57,9 +54,7 @@ public class MainActivity extends AbstractMainActivity {
                  * Check to see if we are connected to a data or wifi network.
                  * if false, return early or execute XML
                  */
-                final ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                final NetworkInfo activeNetwork = manager.getActiveNetworkInfo();
-                if (!(activeNetwork != null && activeNetwork.isConnectedOrConnecting())) {
+                if (!Utils.isOnline(MainActivity.this)) {
                     return null;
                 }
 
@@ -71,12 +66,10 @@ public class MainActivity extends AbstractMainActivity {
         doSyncTask.execute();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_settings) {
-            final Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-        }
-        return super.onOptionsItemSelected(item);
+    private Bundle createBundleForURLFromPrefs() {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final Bundle bundle = new Bundle();
+        bundle.putString("url", prefs.getString("newsurl_preference", "http://www.seminoles.com/sports/m-footbl/headline-rss.xml"));
+        return bundle;
     }
 }

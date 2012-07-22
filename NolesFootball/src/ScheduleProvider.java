@@ -18,12 +18,10 @@ package com.itnoles.nolesfootball;
 
 import android.content.ContentValues;
 import android.content.UriMatcher;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import com.itnoles.shared.AbstractScheduleProvider;
-import com.itnoles.shared.util.SelectionBuilder;
+import com.itnoles.shared.provider.AbstractScheduleProvider;
 
 public class ScheduleProvider extends AbstractScheduleProvider {
     public static final String CONTENT_AUTHORITY = "com.itnoles.nolesfootball.provider";
@@ -34,40 +32,12 @@ public class ScheduleProvider extends AbstractScheduleProvider {
      * Allocate the UriMatcher object that catches all {@link Uri}
      * variations supported by this {@link ContentProvider}.
      */
-    private static final UriMatcher URIMATCHER;
     static {
-        URIMATCHER = new UriMatcher(UriMatcher.NO_MATCH);
         URIMATCHER.addURI(CONTENT_AUTHORITY, "schedule", SCHEDULE);
         URIMATCHER.addURI(CONTENT_AUTHORITY, "schedule/*", SCHEDULE_ID);
 
         URIMATCHER.addURI(CONTENT_AUTHORITY, "staff", STAFF);
         URIMATCHER.addURI(CONTENT_AUTHORITY, "staff/*", STAFF_ID);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getType(Uri uri) {
-        final int match = URIMATCHER.match(uri);
-        switch (match) {
-            case SCHEDULE:
-                return "vnd.android.cursor.dir/vnd.itnoles.schedule";
-            case SCHEDULE_ID:
-                return "vnd.android.cursor.item/vnd.itnoles.schedule";
-            case STAFF:
-                return "vnd.android.cursor.dir/vnd.itnoles.staff";
-            case STAFF_ID:
-                return "vnd.android.cursor.item/vnd.itnoles.staff";
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        final SelectionBuilder builder = buildSimpleSelection(uri);
-        return builder.where(selection, selectionArgs).query(db, projection, sortOrder);
     }
 
     /** {@inheritDoc} */
@@ -87,49 +57,7 @@ public class ScheduleProvider extends AbstractScheduleProvider {
                 getContext().getContentResolver().notifyChange(staffUri, null);
                 return staffUri;
             default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-        }
-    }
-
-        /** {@inheritDoc} */
-    @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        final SelectionBuilder builder = buildSimpleSelection(uri);
-        final int retVal = builder.where(selection, selectionArgs).update(db, values);
-        getContext().getContentResolver().notifyChange(uri, null);
-        return retVal;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        final SelectionBuilder builder = buildSimpleSelection(uri);
-        final int retVal = builder.where(selection, selectionArgs).delete(db);
-        getContext().getContentResolver().notifyChange(uri, null);
-        return retVal;
-    }
-
-    /**
-     * Build a simple {@link SelectionBuilder} to match the requested
-     * {@link Uri}. This is usually enough to support {@link #query},
-     * {@link #update}, and {@link #delete} operations.
-     */
-    private SelectionBuilder buildSimpleSelection(Uri uri) {
-        final SelectionBuilder builder = new SelectionBuilder();
-        final int match = URIMATCHER.match(uri);
-        switch(match) {
-            case SCHEDULE:
-                return builder.table(SCHEDULE_TXT);
-            case SCHEDULE_ID:
-                return builder.table(SCHEDULE_TXT).where("date" + "='" + uri.getPathSegments().get(1) + "'");
-            case STAFF:
-                return builder.table(STAFF_TXT);
-            case STAFF_ID:
-                return builder.table(STAFF_TXT).where("name" + "='" + uri.getPathSegments().get(1) + "'");
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
+                throw new UnsupportedOperationException(UNKNOWN_URI_LOG + uri);
         }
     }
 }

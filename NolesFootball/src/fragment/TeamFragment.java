@@ -36,8 +36,10 @@ public class TeamFragment extends SherlockListFragment {
     public void onActivityCreated(Bundle savedState) {
         super.onActivityCreated(savedState);
 
-        // Check to see if we are in two-pane layout mode then show two panes
-        mDualPane = getResources().getBoolean(R.bool.has_two_panes);
+        // Check to see if we have a frame in which to embed the details
+        // fragment directly in the containing UI.
+        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
+        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
 
         final String[] array = new String[] {getString(R.string.schedules), getString(R.string.staff)};
         final ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_list_item_1, array);

@@ -16,12 +16,13 @@
 
 package com.itnoles.shared.activities;
 
+//import android.app.Activity;
 //import android.app.ListFragment;
 import android.os.Bundle;
+//import android.view.MenuItem;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.itnoles.shared.R;
 
 public abstract class BaseSinglePaneActivity extends SherlockFragmentActivity {
     //private ListFragment mFragment;
@@ -30,18 +31,11 @@ public abstract class BaseSinglePaneActivity extends SherlockFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // If we are in two-pane layout mode, this activity is no longer necessary
-        if (getResources().getBoolean(R.bool.has_two_panes)) {
-            finish();
-            return;
-        }
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         /*if (savedInstanceState == null) {
             mFragment = onCreatePane();
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, mFragment).commit();
+            getFragmentManager().beginTransaction().add(android.R.id.content, mFragment).commit();
         }*/
     }
 

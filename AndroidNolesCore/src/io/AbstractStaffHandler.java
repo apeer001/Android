@@ -19,7 +19,6 @@ package com.itnoles.shared.io;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.net.Uri;
-import android.util.Log;
 
 import com.itnoles.shared.util.SpreadsheetEntry;
 
@@ -29,12 +28,14 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static com.itnoles.shared.util.LogUtils.makeLogTag;
+import static com.itnoles.shared.util.LogUtils.LOGV;
 import static com.itnoles.shared.util.ParserUtils.queryItemUpdated;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
 public abstract class AbstractStaffHandler extends XmlHandler {
-    private static final String TAG = "StaffHandler";
+    private static final String TAG = makeLogTag(AbstractStaffHandler.class);
 
     private final Uri mUri;
 
@@ -58,9 +59,7 @@ public abstract class AbstractStaffHandler extends XmlHandler {
                 // Check for existing details, only update when changed
                 final long localUpdated = queryItemUpdated(staffUri, resolver);
                 final long serverUpdated = entry.getUpdated();
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "found staff localUpdated=" + localUpdated + ", server=" + serverUpdated);
-                }
+                LOGV(TAG, "found staff localUpdated=" + localUpdated + ", server=" + serverUpdated);
                 if (localUpdated >= serverUpdated) {
                     continue;
                 }

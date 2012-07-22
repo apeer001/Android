@@ -37,8 +37,15 @@ public class LinkFragment extends SherlockListFragment {
         super.onActivityCreated(savedInstanceState);
         setListAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.linkNames, android.R.layout.simple_list_item_1));
 
-        // Check to see if we are in two-pane layout mode then show two panes
-        mDualPane = getResources().getBoolean(R.bool.has_two_panes);
+        // Check to see if we have a frame in which to embed the details
+        // fragment directly in the containing UI.
+        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
+        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+
+        if (mDualPane) {
+            // In dual-pane mode, the list view highlights the selected item.
+            getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        }
     }
 
     @Override
@@ -48,6 +55,7 @@ public class LinkFragment extends SherlockListFragment {
             // We can display everything in-place with fragments, so update
             // the list to highlight the selected item and show the data.
             getListView().setItemChecked(position, true);
+
             if (mShownCheckPosition != position) {
                 // If we are not currently showing a fragment for the new
                 // position, we need to create and install a new one.

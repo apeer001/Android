@@ -17,7 +17,6 @@
 package com.itnoles.shared.io;
 
 import android.content.ContentResolver;
-import android.util.Log;
 import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -27,8 +26,11 @@ import java.io.*;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
+import static com.itnoles.shared.util.LogUtils.makeLogTag;
+import static com.itnoles.shared.util.LogUtils.LOGW;
+
 public class RemoteExecutor {
-    private static final String LOG_TAG = "RemoteExecutor";
+    private static final String LOG_TAG = makeLogTag(RemoteExecutor.class);
 
     private final ContentResolver mResolver;
 
@@ -47,14 +49,14 @@ public class RemoteExecutor {
                 parser.setInput(input, null);
                 handler.parseAndApply(parser, mResolver);
             } catch (XmlPullParserException e) {
-                Log.w(LOG_TAG, "Malformed response for ", e);
+                LOGW(LOG_TAG, "Malformed response for ", e);
             } finally {
                 if (input != null) {
                     input.close();
                 }
             }
         } catch (IOException e) {
-            Log.w("Problem reading remote response for ", e);
+            LOGW(LOG_TAG, "Problem reading remote response for ", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

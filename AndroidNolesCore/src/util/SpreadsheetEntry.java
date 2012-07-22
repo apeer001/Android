@@ -38,6 +38,8 @@ public class SpreadsheetEntry extends HashMap<String, String> {
 
     private static Matcher sContentMatcher;
 
+    private long mUpdated;
+
     private static Matcher getContentMatcher(CharSequence input) {
         synchronized (LOCK) {
             if (sContentMatcher == null) {
@@ -48,8 +50,6 @@ public class SpreadsheetEntry extends HashMap<String, String> {
         }
         return sContentMatcher;
     }
-
-    private long mUpdated;
 
     public long getUpdated() {
         return mUpdated;
