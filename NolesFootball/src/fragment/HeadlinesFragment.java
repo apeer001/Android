@@ -16,15 +16,42 @@
 
 package com.itnoles.nolesfootball.fragment;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.itnoles.shared.R;
 import com.itnoles.shared.fragment.AbstractHeadlinesFragment;
 
 public class HeadlinesFragment extends AbstractHeadlinesFragment {
     @Override
-    protected String getNewsURL() {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return prefs.getString("newsurl_preference", "http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.headline_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final String title = (String) item.getTitle();
+        switch (item.getItemId()) {
+            case R.id.menu_refresh:
+                getLoaderManager().restartLoader(HEADLINES_LOADER, null, this);
+                break;
+            case R.id.athletics:
+                putSourceIntoPreference(title, "http://www.seminoles.com/headline-rss.xml");
+                break;
+            case R.id.warchant:
+                putSourceIntoPreference(title, "http://floridastate.rivals.com/rss2feed.asp?SID=1061");
+                break;
+            case R.id.digest:
+                putSourceIntoPreference(title, "http://rss.scout.com/rss.aspx?sid=16");
+                break;
+            case R.id.tomahawk:
+                putSourceIntoPreference(title, "http://feeds.feedburner.com/sportsblogs/tomahawknation.xml");
+                break;
+            case R.id.spirit:
+                putSourceIntoPreference(title, "http://www.seminoles.com/blog/atom.xml");
+                break;
+            default:
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -17,12 +17,10 @@
 package com.itnoles.shared.io;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 import android.util.Xml;
 
+import com.itnoles.shared.Utils;
 import com.itnoles.shared.util.News;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -32,50 +30,22 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import static com.itnoles.shared.util.LogUtils.makeLogTag;
+import static com.itnoles.shared.util.LogUtils.LOGW;
+
+/**
+ * A custom Loader that loads all of the headlines.
+ */
 public class NewsListLoader extends AsyncTaskLoader<List<News>> {
-    private static final String LOG_TAG = "NewsListLoader";
+    private static final String LOG_TAG = makeLogTag(NewsListLoader.class);
+
+    private List<News> mNews;
 
     private final String mURL;
 
-    private List<News> mList;
-
     public NewsListLoader(Context context, String url) {
         super(context);
-        this.mURL = url;
-    }
-
-    /**
-     * Called when there is new data to deliver to the client. The
-     * super class will take care of delivering it; the implementation
-     * here just adds a little more logic.
-     */
-    @Override
-    public void deliverResult(List<News> list) {
-        mList = list;
-
-        if (isStarted()) {
-            // If the Loader is currently started, we can immediately
-            // deliver its results.
-            super.deliverResult(list);
-        }
-    }
-
-    /**
-     * Handles a request to start the Loader.
-     */
-    @Override
-    protected void onStartLoading() {
-        if (mList != null) {
-            // If we currently have a result available, deliver it
-            // immediately.
-            deliverResult(mList);
-        }
-
-        if (mList == null) {
-            // If the data has changed since the last time it was loaded
-            // or is not currently available, start a load.
-            forceLoad();
-        }
+        mURL = url;
     }
 
     /**
@@ -85,9 +55,7 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
      */
     @Override
     public List<News> loadInBackground() {
-        final ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (!(activeNetwork != null && activeNetwork.isConnectedOrConnecting())) {
+        if (!Utils.isOnline(getContext())) {
             return null;
         }
 
@@ -101,20 +69,54 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
                 parser.setInput(input, null);
                 return parse(parser);
             } catch (XmlPullParserException e) {
-                Log.w(LOG_TAG, "Malformed response for ", e);
+                LOGW(LOG_TAG, "Malformed response for ", e);
             } finally {
                 if (input != null) {
                     input.close();
                 }
             }
         } catch (IOException e) {
-            Log.w("Problem reading remote response for ", e);
+            LOGW(LOG_TAG, "Problem reading remote response for ", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
         }
         return null;
+    }
+
+    /**
+     * Called when there is new data to deliver to the client. The
+     * super class will take care of delivering it; the implementation
+     * here just adds a little more logic.
+     */
+    @Override
+    public void deliverResult(List<News> news) {
+        mNews = news;
+
+        if (isStarted()) {
+            // If the Loader is currently started, we can immediately
+            // deliver its results.
+            super.deliverResult(news);
+        }
+    }
+
+    /**
+     * Handles a request to start the Loader.
+     */
+    @Override
+    protected void onStartLoading() {
+        if (mNews != null) {
+            // If we currently have a result available, deliver it
+            // immediately.
+            deliverResult(mNews);
+        }
+
+        if (mNews == null) {
+            // If the data has changed since the last time it was loaded
+            // or is not currently available, start a load.
+            forceLoad();
+        }
     }
 
     /**
@@ -136,14 +138,15 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
         // Ensure the loader is stopped
         onStopLoading();
 
-        if (mList != null) {
-            mList.clear();
+        // At this point we can release the resources associated with 'news'
+        // if needed.
+        if (mNews != null) {
+            mNews.clear();
         }
     }
 
     private List<News> parse(XmlPullParser parser) throws XmlPullParserException, IOException {
         final List<News> results = new ArrayList<News>();
-
         // The News that is currently being parsed
         News currentNews = null;
         // The current event returned by the parser

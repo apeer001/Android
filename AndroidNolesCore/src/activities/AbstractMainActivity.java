@@ -25,26 +25,26 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
 import com.itnoles.shared.BuildConfig;
 import com.itnoles.shared.R;
+import com.itnoles.shared.util.LogUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public abstract class AbstractMainActivity extends SherlockFragmentActivity {
-    private static final String LOG_TAG = "AbstractMainActivity";
+    private static final String LOG_TAG = LogUtils.makeLogTag(AbstractMainActivity.class);
     private static final boolean SUPPORTS_GINGERBREAD = Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG && SUPPORTS_GINGERBREAD) {
-            StrictMode.enableDefaults();
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -59,12 +59,6 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
         enableCache.execute();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.main_activity, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
     private void enableHttpResponseCache() {
         final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
         final File httpCacheDir = new File(getCacheDir(), "http");
@@ -76,7 +70,7 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
             try {
                 com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
             } catch (Exception e) {
-                Log.e(LOG_TAG, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache", e);
+                LogUtils.LOGE(LOG_TAG, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache", e);
             }
         }
     }
@@ -92,7 +86,17 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
         private final Context mContext;
         private final ActionBar mActionBar;
         private final ViewPager mViewPager;
-        private final ArrayList<String> mTabs = new ArrayList<String>();
+        private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+
+        static final class TabInfo {
+            private final Class<?> mClss;
+            private final Bundle mArgs;
+
+            TabInfo(Class<?> clss, Bundle args) {
+                mClss = clss;
+                mArgs = args;
+            }
+        }
 
         public TabsAdapter(SherlockFragmentActivity activity) {
             super(activity.getSupportFragmentManager());
@@ -103,9 +107,10 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
             mViewPager.setOnPageChangeListener(this);
         }
 
-        public void addTab(Tab tab, Class<?> clss) {
+        public void addTab(Tab tab, Class<?> clss, Bundle args) {
+            final TabInfo info = new TabInfo(clss, args);
+            mTabs.add(info);
             tab.setTabListener(this);
-            mTabs.add(clss.getName());
             mActionBar.addTab(tab);
             notifyDataSetChanged();
         }
@@ -117,7 +122,8 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return Fragment.instantiate(mContext, mTabs.get(position), null);
+            final TabInfo info = mTabs.get(position);
+            return Fragment.instantiate(mContext, info.mClss.getName(), info.mArgs);
         }
 
         @Override

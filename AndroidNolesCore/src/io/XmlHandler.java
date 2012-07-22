@@ -20,7 +20,6 @@ import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.OperationApplicationException;
 import android.os.RemoteException;
-import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -28,8 +27,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static com.itnoles.shared.util.LogUtils.makeLogTag;
+import static com.itnoles.shared.util.LogUtils.LOGW;
+
 public abstract class XmlHandler {
-    private static final String LOG_TAG = "XmlHandler";
+    private static final String LOG_TAG = makeLogTag(XmlHandler.class);
     protected static final String ENTRY = "entry";
 
     private final String mAuthority;
@@ -48,16 +50,16 @@ public abstract class XmlHandler {
             final ArrayList<ContentProviderOperation> batch = parse(parser, resolver);
             resolver.applyBatch(mAuthority, batch);
         } catch (XmlPullParserException e) {
-            Log.w(LOG_TAG, "Problem parsing XML response", e);
+            LOGW(LOG_TAG, "Problem parsing XML response", e);
         } catch (IOException e) {
-            Log.w(LOG_TAG, "Problem reading response", e);
+            LOGW(LOG_TAG, "Problem reading response", e);
         } catch (RemoteException e) {
             // Failed binder transactions aren't recoverable
-            Log.w(LOG_TAG, "Problem applying batch operation", e);
+            LOGW(LOG_TAG, "Problem applying batch operation", e);
         } catch (OperationApplicationException e) {
             // Failures like constraint violation aren't recoverable
             // wrapping around to retry parsing again.
-            Log.w(LOG_TAG, "Problem applying batch operation", e);
+            LOGW(LOG_TAG, "Problem applying batch operation", e);
         }
     }
 

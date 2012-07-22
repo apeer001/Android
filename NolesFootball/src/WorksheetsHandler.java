@@ -19,7 +19,6 @@ package com.itnoles.nolesfootball;
 import android.content.ContentResolver;
 import android.content.ContentProviderOperation;
 import android.net.Uri;
-import android.util.Log;
 
 import com.itnoles.shared.io.RemoteExecutor;
 import com.itnoles.shared.io.XmlHandler;
@@ -33,11 +32,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.itnoles.shared.util.LogUtils.makeLogTag;
+import static com.itnoles.shared.util.LogUtils.LOGD;
+import static com.itnoles.shared.util.LogUtils.LOGW;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
 public class WorksheetsHandler extends XmlHandler {
-    private static final String TAG = "WorksheetsHandler";
+    private static final String TAG = makeLogTag(WorksheetsHandler.class);
 
     private final RemoteExecutor mExecutor;
 
@@ -55,7 +57,7 @@ public class WorksheetsHandler extends XmlHandler {
         while ((type = parser.next()) != END_DOCUMENT) {
             if (type == START_TAG && ENTRY.equals(parser.getName())) {
                 final WorksheetEntry entry = WorksheetEntry.fromParser(parser);
-                Log.d(TAG, "found worksheet " + entry.toString());
+                LOGD(TAG, "found worksheet " + entry.toString());
                 sheets.put(entry.getTitle(), entry);
             }
         }
@@ -71,13 +73,13 @@ public class WorksheetsHandler extends XmlHandler {
         final WorksheetEntry entry = sheets.get(sheetName);
         if (entry == null) {
             // Silently ignore missing spreadsheets to allow sync to continue.
-            Log.w(TAG, "Missing '" + sheetName + "' worksheet data");
+            LOGW(TAG, "Missing '" + sheetName + "' worksheet data");
             return;
         }
 
         final long localUpdated = ParserUtils.queryDirUpdated(targetDir, resolver);
         final long serverUpdated = entry.getUpdated();
-        Log.d(TAG, "considerUpdate() for " + entry.getTitle() + " found localUpdated=" + localUpdated + ", server=" + serverUpdated);
+        LOGD(TAG, "considerUpdate() for " + entry.getTitle() + " found localUpdated=" + localUpdated + ", server=" + serverUpdated);
         if (localUpdated >= serverUpdated) {
             return;
         }
