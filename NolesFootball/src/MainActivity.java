@@ -64,10 +64,12 @@ public class MainActivity extends AbstractMainActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
+                    final NolesHeadlinesFragment headlines = new NolesHeadlinesFragment();
                     final Bundle bundle = new Bundle();
                     bundle.putString("title", "Top Athletics Stories");
                     bundle.putString("url", "http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
-                    return Fragment.instantiate(MainActivity.this, "NolesHeadlinesFragment", bundle);
+                    headlines.setArguments(bundle);
+                    return headlines;
                 case 1:
                     return new TeamFragment();
                 case 2:

@@ -108,12 +108,8 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
         // Set the new data in the adapter.
         ((NewsListAdapter) getListAdapter()).setData(data);
 
-        // The list should now be shown.
-        //if (isResumed()) {
-            setListShown(true);
-        //} else {
-            //setListShownNoAnimation(true);
-        //}
+        // Show the list
+        setListShown(true);
     }
 
     @Override

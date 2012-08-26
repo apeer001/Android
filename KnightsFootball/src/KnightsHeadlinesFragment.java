@@ -23,7 +23,7 @@ import com.itnoles.shared.R;
 import com.itnoles.shared.fragment.HeadlinesFragment;
 
 public class KnightsHeadlinesFragment extends HeadlinesFragment {
-	@Override
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.headline_fragment, menu);
     }
