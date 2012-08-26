@@ -31,17 +31,15 @@ import java.util.ArrayList;
 import static com.itnoles.shared.util.LogUtils.makeLogTag;
 import static com.itnoles.shared.util.LogUtils.LOGV;
 import static com.itnoles.shared.util.ParserUtils.queryItemUpdated;
-import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
-import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
-public abstract class AbstractStaffHandler extends XmlHandler {
-    private static final String TAG = makeLogTag(AbstractStaffHandler.class);
+public class StaffHandler extends XmlHandler {
+    private static final String TAG = makeLogTag(StaffHandler.class);
 
     private final Uri mUri;
 
-    public AbstractStaffHandler(String authority, Uri uri) {
+    public StaffHandler(String authority, Uri uri) {
         super(authority);
-        this.mUri = uri;
+        mUri = uri;
     }
 
     @Override
@@ -49,9 +47,13 @@ public abstract class AbstractStaffHandler extends XmlHandler {
         final ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
         // Walk document, parsing any incoming entries
-        int type;
-        while ((type = parser.next()) != END_DOCUMENT) {
-            if (type == START_TAG && ENTRY.equals(parser.getName())) {
+        parser.require(XmlPullParser.START_TAG, null, "feed");
+        while (parser.next() != XmlPullParser.END_DOCUMENT) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+            final String name = parser.getName();
+            if ("entry".equals(name)) {
                 // Process single spreadsheet row at a time
                 final SpreadsheetEntry entry = SpreadsheetEntry.fromParser(parser);
                 final Uri staffUri = Uri.withAppendedPath(mUri, Uri.encode(entry.get("title")));

@@ -11,20 +11,22 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.knightfootball.fragment;
+package com.itnoles.nolesfootball;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 
-import com.itnoles.shared.fragment.AbstractHeadlinesFragment;
+import com.itnoles.shared.fragment.AbstractStaffFragment;
 
-public class HeadlinesFragment extends AbstractHeadlinesFragment {
+public class StaffFragment extends AbstractStaffFragment {
     @Override
-    protected String getNewsURL() {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return prefs.getString("newsurl_preference", "http://www.ucfathletics.com/sports/m-footbl/headline-rss.xml");
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        final String[] projection = {"_id", "name", "positions"};
+        return new CursorLoader(getActivity(), ScheduleProvider.STAFF_CONTENT_URI, projection, null, null, null);
     }
 }

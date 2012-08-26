@@ -34,7 +34,7 @@ public abstract class AbstractScheduleFragment extends SherlockListFragment impl
         super.onActivityCreated(savedInstanceState);
 
         final String[] projection = {"school", "date", "time"};
-        setListAdapter(new SimpleCursorAdapter(getSherlockActivity(), R.layout.schedule_item, null, projection,
+        setListAdapter(new SimpleCursorAdapter(getActivity(), R.layout.schedule_item, null, projection,
             new int[] {R.id.school, R.id.date, R.id.time}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
 
         getLoaderManager().initLoader(SCHEDULE_LOADER, null, this);

@@ -17,15 +17,16 @@
 package com.itnoles.shared.activities;
 
 //import android.app.Activity;
-//import android.app.ListFragment;
+//import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 //import android.view.MenuItem;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 public abstract class BaseSinglePaneActivity extends SherlockFragmentActivity {
-    //private ListFragment mFragment;
+    private Fragment mFragment;
 
     // Called when the activity is first created.
     @Override
@@ -33,10 +34,10 @@ public abstract class BaseSinglePaneActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        /*if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
             mFragment = onCreatePane();
-            getFragmentManager().beginTransaction().add(android.R.id.content, mFragment).commit();
-        }*/
+            getSupportFragmentManager().beginTransaction().add(android.R.id.content, mFragment).commit();
+        }
     }
 
     @Override
@@ -51,5 +52,5 @@ public abstract class BaseSinglePaneActivity extends SherlockFragmentActivity {
      * Called in <code>onCreate</code> when the fragment constituting this activity is needed.
      * The returned fragment's arguments may be set to the intent used to invoke this activity.
      */
-    //protected abstract ListFragment onCreatePane();
+    protected abstract Fragment onCreatePane();
 }

@@ -21,6 +21,8 @@ import android.content.ContentProviderOperation;
 import android.net.Uri;
 
 import com.itnoles.shared.io.RemoteExecutor;
+import com.itnoles.shared.io.ScheduleHandler;
+import com.itnoles.shared.io.StaffHandler;
 import com.itnoles.shared.io.XmlHandler;
 import com.itnoles.shared.util.ParserUtils;
 import com.itnoles.shared.util.WorksheetEntry;
@@ -34,8 +36,7 @@ import java.util.HashMap;
 
 import static com.itnoles.shared.util.LogUtils.makeLogTag;
 import static com.itnoles.shared.util.LogUtils.LOGD;
-import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
-import static org.xmlpull.v1.XmlPullParser.START_TAG;
+import static com.itnoles.shared.util.LogUtils.LOGW;
 
 public class WorksheetsHandler extends XmlHandler {
     private static final String TAG = makeLogTag(WorksheetsHandler.class);
@@ -51,10 +52,15 @@ public class WorksheetsHandler extends XmlHandler {
     public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException {
         final HashMap<String, WorksheetEntry> sheets = new HashMap<String, WorksheetEntry>();
 
-        // walk response, collecting all known spreadsheets
-        int type;
-        while ((type = parser.next()) != END_DOCUMENT) {
-            if (type == START_TAG && ENTRY.equals(parser.getName())) {
+        // collecting all known spreadsheets
+        parser.require(XmlPullParser.START_TAG, null, "feed");
+        while (parser.next() != XmlPullParser.END_DOCUMENT) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+            final String name = parser.getName();
+            // Starts by looking for the entry tag
+            if ("entry".equals(name)) {
                 final WorksheetEntry entry = WorksheetEntry.fromParser(parser);
                 LOGD(TAG, "found worksheet " + entry.toString());
                 sheets.put(entry.getTitle(), entry);
@@ -72,7 +78,7 @@ public class WorksheetsHandler extends XmlHandler {
         final WorksheetEntry entry = sheets.get(sheetName);
         if (entry == null) {
             // Silently ignore missing spreadsheets to allow sync to continue.
-            Log.w(TAG, "Missing '" + sheetName + "' worksheet data");
+            LOGW(TAG, "Missing '" + sheetName + "' worksheet data");
             return;
         }
 
@@ -83,16 +89,16 @@ public class WorksheetsHandler extends XmlHandler {
             return;
         }
 
-        final XmlHandler handler = createRemoteHandler(entry);
+        final XmlHandler handler = createRemoteHandler(entry, targetDir);
         mExecutor.executeWithPullParser(entry.getListFeed(), handler, 8192);
     }
 
-    private XmlHandler createRemoteHandler(WorksheetEntry entry) {
+    private XmlHandler createRemoteHandler(WorksheetEntry entry, Uri targetDir) {
         final String title = entry.getTitle();
         if (ScheduleProvider.SCHEDULE_TXT.equals(title)) {
-            return new ScheduleHandler();
+            return new ScheduleHandler(ScheduleProvider.CONTENT_AUTHORITY, targetDir);
         } else if (ScheduleProvider.STAFF_TXT.equals(title)) {
-            return new StaffHandler();
+            return new StaffHandler(ScheduleProvider.CONTENT_AUTHORITY, targetDir);
         } else {
             throw new IllegalArgumentException("Unknown worksheet type");
         }

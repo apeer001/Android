@@ -11,23 +11,22 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.nolesfootball.fragment;
+package com.itnoles.knightfootball;
 
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
-import com.itnoles.nolesfootball.ScheduleProvider;
-import com.itnoles.shared.fragment.AbstractStaffFragment;
+import com.itnoles.shared.fragment.AbstractScheduleFragment;
 
-public class StaffFragment extends AbstractStaffFragment {
+public class ScheduleFragment extends AbstractScheduleFragment {
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        final String[] projection = {"_id", "name", "positions"};
-        return new CursorLoader(getActivity(), ScheduleProvider.STAFF_CONTENT_URI, projection, null, null, null);
+        final String[] projection = {"_id", "date", "time", "school"};
+        return new CursorLoader(getActivity(), ScheduleProvider.SCHEDULE_CONTENT_URI, projection, null, null, null);
     }
 }

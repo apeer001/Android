@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2011 Jonathan Steele
  *
@@ -11,15 +12,18 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.itnoles.knightfootball;
 
-import com.itnoles.shared.io.AbstractScheduleHandler;
+import android.support.v4.app.Fragment;
 
-public class ScheduleHandler extends AbstractScheduleHandler {
-    public ScheduleHandler() {
-        super(ScheduleProvider.CONTENT_AUTHORITY, ScheduleProvider.SCHEDULE_CONTENT_URI);
+import com.itnoles.shared.activities.BaseSinglePaneActivity;
+
+public class StaffActivity extends BaseSinglePaneActivity {
+	@Override
+    protected Fragment onCreatePane() {
+        return new StaffFragment();
     }
 }

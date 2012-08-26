@@ -17,20 +17,15 @@
 
 package com.itnoles.shared.activities;
 
-import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 import com.itnoles.shared.fragment.BrowserDetailFragment;
 
 public class BrowserDetailActivity extends BaseSinglePaneActivity {
-    // Called when the activity is first created.
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            final BrowserDetailFragment details = new BrowserDetailFragment();
-            details.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, details).commit();
-        }
+    protected Fragment onCreatePane() {
+        final BrowserDetailFragment details = new BrowserDetailFragment();
+        details.setArguments(getIntent().getExtras());
+        return details;
     }
 }

@@ -17,7 +17,6 @@
 package com.itnoles.knightfootball;
 
 import android.content.ContentValues;
-import android.content.UriMatcher;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 

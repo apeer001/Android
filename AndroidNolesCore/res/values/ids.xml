@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<!-- menu -->
-	<item type="id" name="menu_share" />
-	<item type="id" name="menu_refresh" />
+    <!-- menu -->
+    <item type="id" name="menu_share" />
+    <item type="id" name="menu_refresh" />
 
-	<item type="id" name="date" />
-	<item type="id" name="pager" />
-	<item type="id" name="fragment_details" />
-	<item type="id" name="empty_loading" />
-	<item type="id" name="webview" />
+    <item type="id" name="date" />
+    <item type="id" name="pager" />
+    <item type="id" name="fragment_details" />
+    <item type="id" name="empty_loading" />
+    <item type="id" name="webview" />
 
-	<!-- Schedule -->
-	<item type="id" name="school" />
-	<item type="id" name="time" />
-	<item type="id" name="location" />
+    <!-- Schedule -->
+    <item type="id" name="school" />
+    <item type="id" name="time" />
+    <item type="id" name="location" />
 
-	<!-- Headlines -->
-	<item type="id" name="section_title" />
-	<item type="id" name="title" />
-	<item type="id" name="description" />
+    <!-- Headlines -->
+    <item type="id" name="section_title" />
+    <item type="id" name="title" />
+    <item type="id" name="description" />
 </resources>

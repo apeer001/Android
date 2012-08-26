@@ -18,10 +18,7 @@ package com.itnoles.shared.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -40,8 +37,7 @@ import com.itnoles.shared.util.News;
 
 import java.util.List;
 
-public abstract class AbstractHeadlinesFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
-    private static final boolean SUPPORTS_GINGERBREAD = Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
+public class HeadlinesFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
     protected static final int HEADLINES_LOADER = 0x0;
 
     static final int INTERNAL_PROGRESS_CONTAINER_ID = 0x00ff0002;
@@ -74,8 +70,7 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         setListAdapter(new NewsListAdapter(getActivity()));
 
         // Show the header title
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        setHeaderTitle(prefs.getString("newstitle_preference", "Top Athletics Stories"));
+        setHeaderTitle(getArguments().getString("title"));
 
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
@@ -114,11 +109,11 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         ((NewsListAdapter) getListAdapter()).setData(data);
 
         // The list should now be shown.
-        if (isResumed()) {
+        //if (isResumed()) {
             setListShown(true);
-        } else {
-            setListShownNoAnimation(true);
-        }
+        //} else {
+            //setListShownNoAnimation(true);
+        //}
     }
 
     @Override
@@ -156,15 +151,7 @@ public abstract class AbstractHeadlinesFragment extends SherlockListFragment imp
         }
     }
 
-    protected void putSourceIntoPreference(String title, String url) {
-        final SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
-        editor.putString("newsurl_preference", url);
-        editor.putString("newstitle_preference", title);
-        if (SUPPORTS_GINGERBREAD) {
-            editor.apply();
-        } else {
-            editor.commit();
-        }
+    protected void reloadLoaderWithNewInformation(String title, String url) {
         final Bundle bundle = new Bundle();
         bundle.putString("url", url);
         getLoaderManager().restartLoader(HEADLINES_LOADER, bundle, this);

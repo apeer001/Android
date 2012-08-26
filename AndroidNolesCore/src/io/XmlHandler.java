@@ -32,7 +32,6 @@ import static com.itnoles.shared.util.LogUtils.LOGW;
 
 public abstract class XmlHandler {
     private static final String LOG_TAG = makeLogTag(XmlHandler.class);
-    protected static final String ENTRY = "entry";
 
     private final String mAuthority;
 
@@ -45,14 +44,10 @@ public abstract class XmlHandler {
      * {@link ContentProviderOperation} that are immediately applied using the
      * given {@link ContentResolver}.
      */
-    public void parseAndApply(XmlPullParser parser, ContentResolver resolver) {
+    public void parseAndApply(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException {
         try {
             final ArrayList<ContentProviderOperation> batch = parse(parser, resolver);
             resolver.applyBatch(mAuthority, batch);
-        } catch (XmlPullParserException e) {
-            LOGW(LOG_TAG, "Problem parsing XML response", e);
-        } catch (IOException e) {
-            LOGW(LOG_TAG, "Problem reading response", e);
         } catch (RemoteException e) {
             // Failed binder transactions aren't recoverable
             LOGW(LOG_TAG, "Problem applying batch operation", e);

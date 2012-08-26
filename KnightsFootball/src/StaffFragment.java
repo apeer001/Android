@@ -11,15 +11,22 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.itnoles.knightfootball;
 
-import com.itnoles.shared.io.AbstractStaffHandler;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 
-public class StaffHandler extends AbstractStaffHandler {
-    public StaffHandler() {
-        super(ScheduleProvider.CONTENT_AUTHORITY, ScheduleProvider.STAFF_CONTENT_URI);
+import com.itnoles.shared.fragment.AbstractStaffFragment;
+
+public class StaffFragment extends AbstractStaffFragment {
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        final String[] projection = {"_id", "name", "positions"};
+        return new CursorLoader(getActivity(), ScheduleProvider.STAFF_CONTENT_URI, projection, null, null, null);
     }
 }
