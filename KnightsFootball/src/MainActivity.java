@@ -14,37 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.nolesfootball.activities;
+package com.itnoles.knightfootball;
 
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.itnoles.nolesfootball.WorksheetsHandler;
-import com.itnoles.nolesfootball.fragment.HeadlinesFragment;
-import com.itnoles.nolesfootball.fragment.LinkFragment;
-import com.itnoles.nolesfootball.fragment.TeamFragment;
 import com.itnoles.shared.Utils;
 import com.itnoles.shared.activities.AbstractMainActivity;
 import com.itnoles.shared.io.RemoteExecutor;
 
 public class MainActivity extends AbstractMainActivity {
-    private static final String WORKSHEET_URL = "https://spreadsheets.google.com/feeds/worksheets/0AvRfIfyMiQAGdDI4dEkwZW9XcDdqUHVOcXpzU0FqcWc/public/basic";
+    private static final String WORKSHEET_URL = "https://spreadsheets.google.com/feeds/worksheets/0AvRfIfyMiQAGdFowOThSZGs5OXpQMnpvdEJSc29TWHc/public/basic";
 
     // Called when the activity is first created.
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        final ActionBar bar = getSupportActionBar();
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        final TabsAdapter tabsAdapter = new TabsAdapter(this);
-        tabsAdapter.addTab(bar.newTab().setText("News"), HeadlinesFragment.class, createBundleForURLFromPrefs());
-        tabsAdapter.addTab(bar.newTab().setText("Team"), TeamFragment.class, null);
-        tabsAdapter.addTab(bar.newTab().setText("Link"), LinkFragment.class, null);
+        addViewPagerWithTab(new HomePagerAdapter(getSupportFragmentManager()));
 
         // Load and parse the XML Spreadsheet from Google Drive
         final AsyncTask<Void, Void, Void> doSyncTask = new AsyncTask<Void, Void, Void>() {
@@ -66,10 +55,33 @@ public class MainActivity extends AbstractMainActivity {
         doSyncTask.execute();
     }
 
-    private Bundle createBundleForURLFromPrefs() {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        final Bundle bundle = new Bundle();
-        bundle.putString("url", prefs.getString("newsurl_preference", "http://www.seminoles.com/sports/m-footbl/headline-rss.xml"));
-        return bundle;
+    private class HomePagerAdapter extends FragmentPagerAdapter {
+        public HomePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    final KnightsHeadlinesFragment headlines = new KnightsHeadlinesFragment();
+                    final Bundle bundle = new Bundle();
+                    bundle.putString("title", "Top Athletics Stories");
+                    bundle.putString("url", "http://www.ucfathletics.com/sports/m-footbl/headline-rss.xml");
+                    headlines.setArguments(bundle);
+                    return headlines;
+                case 1:
+                    return new TeamFragment();
+                case 2:
+                    return new LinkFragment();
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
     }
 }

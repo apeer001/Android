@@ -18,27 +18,21 @@ package com.itnoles.shared.io;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Xml;
 
 import com.itnoles.shared.Utils;
 import com.itnoles.shared.util.News;
+import com.itnoles.shared.util.XMLParserConnection;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
 import java.util.*;
-
-import static com.itnoles.shared.util.LogUtils.makeLogTag;
-import static com.itnoles.shared.util.LogUtils.LOGW;
 
 /**
  * A custom Loader that loads all of the headlines.
  */
 public class NewsListLoader extends AsyncTaskLoader<List<News>> {
-    private static final String LOG_TAG = makeLogTag(NewsListLoader.class);
-
     private List<News> mNews;
 
     private final String mURL;
@@ -59,30 +53,42 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
             return null;
         }
 
-        HttpURLConnection urlConnection = null;
-        try {
-            final URL url = new URL(mURL);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            final InputStream input = new BufferedInputStream(urlConnection.getInputStream(), 8192);
-            try {
-                final XmlPullParser parser = Xml.newPullParser();
-                parser.setInput(input, null);
-                return parse(parser);
-            } catch (XmlPullParserException e) {
-                LOGW(LOG_TAG, "Malformed response for ", e);
-            } finally {
-                if (input != null) {
-                    input.close();
+        final List<News> results = new ArrayList<News>();
+        final XMLParserConnection connection = new XMLParserConnection(getContext());
+        connection.execute(mURL, 8192, new XMLParserConnection.XMLParserListener() {
+            public void onPostExecute(XmlPullParser parser) throws XmlPullParserException, IOException {
+                // The News that is currently being parsed
+                News currentNews = null;
+                // The current event returned by the parser
+                int eventType;
+                while ((eventType = parser.next()) != XmlPullParser.END_DOCUMENT) {
+                    String name = null;
+                    switch(eventType) {
+                        case XmlPullParser.START_TAG:
+                            name = parser.getName();
+                            if ("item".equals(name) || "entry".equals(name)) {
+                                currentNews = new News();
+                            } else if (currentNews != null) {
+                                if ("link".equals(name) && parser.getAttributeCount() > 0) {
+                                    final String url = parser.getAttributeValue(null, "url");
+                                    currentNews.setValue(name, url);
+                                } else {
+                                    currentNews.setValue(name, parser.nextText());
+                                }
+                            }
+                            break;
+                        case XmlPullParser.END_TAG:
+                            name = parser.getName();
+                            if ("item".equals(name) || "entry".equals(name)) {
+                                results.add(currentNews);
+                            }
+                            break;
+                        default:
+                    }
                 }
             }
-        } catch (IOException e) {
-            LOGW(LOG_TAG, "Problem reading remote response for ", e);
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-        }
-        return null;
+        });
+        return results;
     }
 
     /**
@@ -143,36 +149,5 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
         if (mNews != null) {
             mNews.clear();
         }
-    }
-
-    private List<News> parse(XmlPullParser parser) throws XmlPullParserException, IOException {
-        final List<News> results = new ArrayList<News>();
-        // The News that is currently being parsed
-        News currentNews = null;
-        // The current event returned by the parser
-        int eventType = parser.getEventType();
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-            String name;
-            if (eventType == XmlPullParser.START_TAG) {
-                name = parser.getName();
-                if ("item".equals(name) || "entry".equals(name)) {
-                    currentNews = new News();
-                } else if (currentNews != null) {
-                    if ("link".equals(name) && parser.getAttributeCount() > 0) {
-                        final String url = parser.getAttributeValue(null, "url");
-                        currentNews.setValue(name, url);
-                    } else {
-                        currentNews.setValue(name, parser.nextText());
-                    }
-                }
-            } else if (eventType == XmlPullParser.END_TAG) {
-                name = parser.getName();
-                if ("item".equals(name) || "entry".equals(name)) {
-                    results.add(currentNews);
-                }
-            }
-            eventType = parser.next();
-        }
-        return results;
     }
 }

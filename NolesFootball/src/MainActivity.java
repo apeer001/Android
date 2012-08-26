@@ -14,37 +14,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.knightfootball.activities;
+package com.itnoles.nolesfootball;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.itnoles.knightfootball.WorksheetsHandler;
-import com.itnoles.knightfootball.fragment.HeadlinesFragment;
-import com.itnoles.knightfootball.fragment.LinkFragment;
-import com.itnoles.knightfootball.fragment.TeamFragment;
 import com.itnoles.shared.Utils;
 import com.itnoles.shared.activities.AbstractMainActivity;
 import com.itnoles.shared.io.RemoteExecutor;
 
 public class MainActivity extends AbstractMainActivity {
-    private static final String WORKSHEET_URL = "https://spreadsheets.google.com/feeds/worksheets/0AvRfIfyMiQAGdFowOThSZGs5OXpQMnpvdEJSc29TWHc/public/basic";
+    private static final String WORKSHEET_URL = "https://spreadsheets.google.com/feeds/worksheets/0AvRfIfyMiQAGdDI4dEkwZW9XcDdqUHVOcXpzU0FqcWc/public/basic";
 
     // Called when the activity is first created.
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addViewPagerWithTab(new HomePagerAdapter(getSupportFragmentManager()));
 
-        final ActionBar bar = getSupportActionBar();
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        final TabsAdapter tabsAdapter = new TabsAdapter(this);
-        tabsAdapter.addTab(bar.newTab().setText("News"), HeadlinesFragment.class);
-        tabsAdapter.addTab(bar.newTab().setText("Team"), TeamFragment.class);
-        tabsAdapter.addTab(bar.newTab().setText("Link"), LinkFragment.class);
-
-        // Load and parse the XML Spreadsheet from Google Drive
+        // Load and parse the XML worksheet from Google Spreadsheet
         final AsyncTask<Void, Void, Void> doSyncTask = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -52,15 +43,43 @@ public class MainActivity extends AbstractMainActivity {
                  * Check to see if we are connected to a data or wifi network.
                  * if false, return early or execute XML
                  */
-                if (!Utils.isOnline()) {
+                if (!Utils.isOnline(MainActivity.this)) {
                     return null;
                 }
 
-                final RemoteExecutor executor = new RemoteExecutor(getContentResolver());
+                final RemoteExecutor executor = new RemoteExecutor(MainActivity.this, getContentResolver());
                 executor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(executor), 4096);
                 return null;
             }
         };
         doSyncTask.execute();
+    }
+
+    private class HomePagerAdapter extends FragmentPagerAdapter {
+        public HomePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    final Bundle bundle = new Bundle();
+                    bundle.putString("title", "Top Athletics Stories");
+                    bundle.putString("url", "http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
+                    return Fragment.instantiate(MainActivity.this, "NolesHeadlinesFragment", bundle);
+                case 1:
+                    return new TeamFragment();
+                case 2:
+                    return new LinkFragment();
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
     }
 }

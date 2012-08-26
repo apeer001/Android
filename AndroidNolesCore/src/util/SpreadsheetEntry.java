@@ -24,11 +24,6 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
-import static org.xmlpull.v1.XmlPullParser.END_TAG;
-import static org.xmlpull.v1.XmlPullParser.START_TAG;
-import static org.xmlpull.v1.XmlPullParser.TEXT;
-
 public class SpreadsheetEntry extends HashMap<String, String> {
     public static final long serialVersionUID = 1L;
 
@@ -58,29 +53,23 @@ public class SpreadsheetEntry extends HashMap<String, String> {
     public static SpreadsheetEntry fromParser(XmlPullParser parser) throws XmlPullParserException, IOException {
         final int depth = parser.getDepth();
         final SpreadsheetEntry entry = new SpreadsheetEntry();
-
-        String tag = null;
-        int type;
-        while (((type = parser.next()) != END_TAG || parser.getDepth() > depth) && type != END_DOCUMENT) {
-            if (type == START_TAG) {
-                tag = parser.getName();
-            } else if (type == END_TAG) {
-                tag = null;
-            } else if (type == TEXT) {
-                if ("updated".equals(tag)) {
-                    final String text = parser.getText();
-                    entry.mUpdated = ParserUtils.parseTime(text);
-                } else if ("title".equals(tag)) {
-                    final String text = parser.getText();
-                    entry.put("title", text);
-                } else if ("content".equals(tag)) {
-                    final String text = parser.getText();
-                    final Matcher matcher = getContentMatcher(text);
-                    while (matcher.find()) {
-                        final String key = matcher.group(1);
-                        final String value = matcher.group(2).trim();
-                        entry.put(key, value);
-                    }
+        parser.require(XmlPullParser.START_TAG, null, "entry");
+        while (parser.next() != XmlPullParser.END_DOCUMENT && parser.getDepth() > depth) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+            final String name = parser.getName();
+            if ("updated".equals(name)) {
+                entry.mUpdated = ParserUtils.readUpdated(parser);
+            } else if ("title".equals(name)) {
+                entry.put("title", ParserUtils.readTitle(parser));
+            } else if ("content".equals(name)) {
+                final String text = ParserUtils.readText(parser);
+                final Matcher matcher = getContentMatcher(text);
+                while (matcher.find()) {
+                    final String key = matcher.group(1);
+                    final String value = matcher.group(2).trim();
+                    entry.put(key, value);
                 }
             }
         }

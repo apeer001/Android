@@ -11,17 +11,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.knightfootball.fragment;
+package com.itnoles.nolesfootball;
 
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
-import com.itnoles.knightfootball.ScheduleProvider;
 import com.itnoles.shared.fragment.AbstractScheduleFragment;
 
 public class ScheduleFragment extends AbstractScheduleFragment {

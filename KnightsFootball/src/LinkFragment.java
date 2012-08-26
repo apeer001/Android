@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2011 Jonathan Steele
  *
@@ -15,22 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.knightfootball.activities;
+package com.itnoles.knightfootball;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-import com.itnoles.knightfootball.fragment.ScheduleFragment;
-import com.itnoles.shared.activities.BaseSinglePaneActivity;
+import com.itnoles.shared.fragment.AbstractLinkFragment;
 
-public class ScheduleActivity extends BaseSinglePaneActivity {
-    // Called when the activity is first created.
+public class LinkFragment extends AbstractLinkFragment {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        setListAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.linkNames, android.R.layout.simple_list_item_1));
+        super.onActivityCreated(savedInstanceState);
+    }
 
-        if (savedInstanceState == null) {
-            final ScheduleFragment schedule = new ScheduleFragment();
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, schedule).commit();
-        }
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        final String urlString = getResources().getStringArray(R.array.linkValues)[position];
+        fromItemClick(urlString, position);
     }
 }

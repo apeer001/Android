@@ -14,40 +14,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.knightfootball.fragment;
+package com.itnoles.shared.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.itnoles.knightfootball.R;
+import com.itnoles.shared.R;
 import com.itnoles.shared.activities.BrowserDetailActivity;
-import com.itnoles.shared.fragment.BrowserDetailFragment;
 
-public class LinkFragment extends SherlockListFragment {
+public abstract class AbstractLinkFragment extends SherlockListFragment {
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setListAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.linkNames, android.R.id.text1));
 
-        // Check to see if we are in two-pane layout mode then show two panes
-        mDualPane = getResources().getBoolean(R.bool.has_two_panes);
+        // Check to see if we have a frame in which to embed the details
+        // fragment directly in the containing UI.
+        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
+        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+
+        if (mDualPane) {
+            // In dual-pane mode, the list view highlights the selected item.
+            getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        }
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        final String urlString = getResources().getStringArray(R.array.linkValues)[position];
+    protected void fromItemClick(String urlString, int position) {
         if (mDualPane) {
             // We can display everything in-place with fragments, so update
             // the list to highlight the selected item and show the data.
             getListView().setItemChecked(position, true);
+
             if (mShownCheckPosition != position) {
                 // If we are not currently showing a fragment for the new
                 // position, we need to create and install a new one.

@@ -4,9 +4,7 @@
         android:title="@string/menu_refresh"
         android:icon="@drawable/ic_menu_refresh"
         android:showAsAction="ifRoom" />
-    <item
-        android:title="Source"
-        android:showAsAction="always|withText">
+    <item android:title="Source" android:showAsAction="always|withText">
         <menu>
             <item android:id="@+id/athletics" android:title="Top Athletics Stories" />
             <item android:id="@+id/warchant" android:title="Warchant" />

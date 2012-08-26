@@ -21,19 +21,15 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.format.Time;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+
 public class ParserUtils {
     private static Time sTime = new Time();
 
     private ParserUtils() {}
-
-     /**
-     * Parse the given string as a RFC 3339 timestamp, returning the value as
-     * milliseconds since the epoch.
-     */
-    public static long parseTime(String time) {
-        sTime.parse3339(time);
-        return sTime.toMillis(false);
-    }
 
     /**
      * Query and return the updated time for the requested
@@ -66,5 +62,36 @@ public class ParserUtils {
         } finally {
             cursor.close();
         }
+    }
+
+    // Processes title tags in the feed.
+    public static String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, null, "title");
+        final String title = readText(parser);
+        parser.require(XmlPullParser.END_TAG, null, "title");
+        return title;
+    }
+
+    // For the tags extracts their text values.
+    public static String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
+        String result = "";
+        if (parser.next() == XmlPullParser.TEXT) {
+            result = parser.getText();
+            parser.nextTag();
+        }
+        return result;
+    }
+
+    /*
+     * Process the updated tag in the feed and parse the given string
+     * as a RFC 3339 timestamp, returning the value as milliseconds since
+     * the epoch.
+     */
+    public static long readUpdated(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, null, "updated");
+        sTime.parse3339(readText(parser));
+        final long updated = sTime.toMillis(false);
+        parser.require(XmlPullParser.END_TAG, null, "updated");
+        return updated;
     }
 }

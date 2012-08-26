@@ -15,22 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.nolesfootball.activities;
+package com.itnoles.nolesfootball;
 
-import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
-import com.itnoles.nolesfootball.fragment.ScheduleFragment;
 import com.itnoles.shared.activities.BaseSinglePaneActivity;
 
 public class ScheduleActivity extends BaseSinglePaneActivity {
-    // Called when the activity is first created.
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            final ScheduleFragment schedule = new ScheduleFragment();
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, schedule).commit();
-        }
+    protected Fragment onCreatePane() {
+        return new ScheduleFragment();
     }
 }

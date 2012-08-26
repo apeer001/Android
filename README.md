@@ -8,6 +8,7 @@
 <ul>
    <li>ActionBarSherlock - https://github.com/JakeWharton/ActionBarSherlock</li>
    <li>HttpResponseCache - https://github.com/candrews/HttpResponseCache</li>
+   <li>DiskLruCache - https://github.com/JakeWharton/DiskLruCache</li>
 </ul>
 
 <h2>Mono Related Project</h2>

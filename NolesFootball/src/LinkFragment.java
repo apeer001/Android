@@ -14,20 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.knightfootball.fragment;
+package com.itnoles.nolesfootball;
 
-import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-import com.itnoles.knightfootball.ScheduleProvider;
-import com.itnoles.shared.fragment.AbstractStaffFragment;
+import com.itnoles.shared.fragment.AbstractLinkFragment;
 
-public class StaffFragment extends AbstractStaffFragment  {
+public class LinkFragment extends AbstractLinkFragment {
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        final String[] projection = {"_id", "name", "positions"};
-        return new CursorLoader(getActivity(), ScheduleProvider.STAFF_CONTENT_URI, projection, null, null, null);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        setListAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.linkNames, android.R.layout.simple_list_item_1));
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        final String urlString = getResources().getStringArray(R.array.linkValues)[position];
+        fromItemClick(urlString, position);
     }
 }

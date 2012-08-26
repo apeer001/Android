@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.nolesfootball.fragment;
+package com.itnoles.nolesfootball;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.itnoles.shared.R;
-import com.itnoles.shared.fragment.AbstractHeadlinesFragment;
+import com.itnoles.shared.fragment.HeadlinesFragment;
 
-public class HeadlinesFragment extends AbstractHeadlinesFragment {
+public class NolesHeadlinesFragment extends HeadlinesFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.headline_fragment, menu);
@@ -36,19 +36,19 @@ public class HeadlinesFragment extends AbstractHeadlinesFragment {
                 getLoaderManager().restartLoader(HEADLINES_LOADER, null, this);
                 break;
             case R.id.athletics:
-                putSourceIntoPreference(title, "http://www.seminoles.com/headline-rss.xml");
+                reloadLoaderWithNewInformation(title, "http://www.seminoles.com/headline-rss.xml");
                 break;
             case R.id.warchant:
-                putSourceIntoPreference(title, "http://floridastate.rivals.com/rss2feed.asp?SID=1061");
+                reloadLoaderWithNewInformation(title, "http://floridastate.rivals.com/rss2feed.asp?SID=1061");
                 break;
             case R.id.digest:
-                putSourceIntoPreference(title, "http://rss.scout.com/rss.aspx?sid=16");
+                reloadLoaderWithNewInformation(title, "http://rss.scout.com/rss.aspx?sid=16");
                 break;
             case R.id.tomahawk:
-                putSourceIntoPreference(title, "http://feeds.feedburner.com/sportsblogs/tomahawknation.xml");
+                reloadLoaderWithNewInformation(title, "http://feeds.feedburner.com/sportsblogs/tomahawknation.xml");
                 break;
             case R.id.spirit:
-                putSourceIntoPreference(title, "http://www.seminoles.com/blog/atom.xml");
+                reloadLoaderWithNewInformation(title, "http://www.seminoles.com/blog/atom.xml");
                 break;
             default:
         }

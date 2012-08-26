@@ -15,22 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.nolesfootball.activities;
+package com.itnoles.knightfootball;
 
-import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
-import com.itnoles.nolesfootball.fragment.StaffFragment;
 import com.itnoles.shared.activities.BaseSinglePaneActivity;
 
-public class StaffActivity extends BaseSinglePaneActivity {
-    // Called when the activity is first created.
+public class ScheduleActivity extends BaseSinglePaneActivity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            final StaffFragment staff = new StaffFragment();
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, staff).commit();
-        }
+    protected Fragment onCreatePane() {
+        return new ScheduleFragment();
     }
 }

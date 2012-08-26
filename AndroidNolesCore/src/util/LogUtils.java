@@ -16,9 +16,9 @@
 
 package com.itnoles.shared.util;
 
-import com.itnoles.shared.BuildConfig;
-
 import android.util.Log;
+
+import com.itnoles.shared.BuildConfig;
 
 /**
  * Helper methods that make logging more consistent throughout the app.

@@ -21,7 +21,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class Utils {
-	private Utils() {}
+    private Utils() {}
 
     /**
      * check if device is connected to the internet or not
