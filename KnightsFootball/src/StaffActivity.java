@@ -22,7 +22,7 @@ import android.support.v4.app.Fragment;
 import com.itnoles.shared.activities.BaseSinglePaneActivity;
 
 public class StaffActivity extends BaseSinglePaneActivity {
-	@Override
+    @Override
     protected Fragment onCreatePane() {
         return new StaffFragment();
     }
