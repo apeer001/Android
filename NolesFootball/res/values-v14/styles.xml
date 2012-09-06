@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-	<style name="Theme.Noles" parent="Theme.Sherlock.Light.DarkActionBar">
-		<item name="android:actionBarStyle">@style/ActionBar.Solid</item>
-		<item name="android:actionBarTabStyle">@style/ActionBar.TabView</item>
-	</style>
+    <style name="Theme.Noles" parent="Theme.Sherlock.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/ActionBar.Solid</item>
+    </style>
 
-	<style name="ActionBar.Solid" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
-		<item name="android:backgroundStacked">#ff540115</item>
-	</style>
-
-	<style name="ActionBar.TabView" parent="Widget.Sherlock.Light.ActionBar.TabView">
-		<item name="android:background">@drawable/tab_indicator_ab</item>
+    <style name="ActionBar.Solid" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+        <item name="android:backgroundStacked">#ff540115</item>
 	</style>
 </resources>

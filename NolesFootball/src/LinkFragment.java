@@ -18,7 +18,6 @@ package com.itnoles.nolesfootball;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.itnoles.shared.fragment.AbstractLinkFragment;
@@ -26,7 +25,7 @@ import com.itnoles.shared.fragment.AbstractLinkFragment;
 public class LinkFragment extends AbstractLinkFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        setListAdapter(ArrayAdapter.createFromResource(getActivity(), R.array.linkNames, android.R.layout.simple_list_item_1));
+        setResourceIDIntoArrayAdapter(R.array.linkNames);
         super.onActivityCreated(savedInstanceState);
     }
 

@@ -51,7 +51,7 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.headlines_fragment, container, false);
         root.findViewById(R.id.progressContainer).setId(INTERNAL_PROGRESS_CONTAINER_ID);
-        root.findViewById(R.id.internalEmpty).setId(INTERNAL_EMPTY_ID);
+        root.findViewById(android.R.id.empty).setId(INTERNAL_EMPTY_ID);
         root.findViewById(R.id.listContainer).setId(INTERNAL_LIST_CONTAINER_ID);
         return root;
     }

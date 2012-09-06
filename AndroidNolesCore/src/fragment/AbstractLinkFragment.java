@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -43,6 +44,10 @@ public abstract class AbstractLinkFragment extends SherlockListFragment {
             // In dual-pane mode, the list view highlights the selected item.
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
+    }
+
+    protected void setResourceIDIntoArrayAdapter(int resource) {
+        setListAdapter(ArrayAdapter.createFromResource(getActivity(), resource, android.R.layout.simple_list_item_1));
     }
 
     protected void fromItemClick(String urlString, int position) {

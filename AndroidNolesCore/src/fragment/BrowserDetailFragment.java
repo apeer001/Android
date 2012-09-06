@@ -52,7 +52,7 @@ public class BrowserDetailFragment extends SherlockFragment {
     }
 
     /**
-     * Called to instantiate the view. Creates and returns the WebView.
+     * Called to instantiate the view.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
