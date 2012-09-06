@@ -19,7 +19,6 @@ package com.itnoles.nolesfootball;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.itnoles.shared.R;
 import com.itnoles.shared.fragment.HeadlinesFragment;
 
 public class NolesHeadlinesFragment extends HeadlinesFragment {

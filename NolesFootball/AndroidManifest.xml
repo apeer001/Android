@@ -1,34 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.itnoles.nolesfootball"
-	android:versionCode="1"
-	android:versionName="1.0.0"
-	android:installLocation="auto">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.itnoles.nolesfootball"
+    android:versionCode="1"
+    android:versionName="1.0.0"
+    android:installLocation="auto">
 
-	<uses-sdk android:minSdkVersion="8" android:targetSdkVersion="16" />
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="16" />
 
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-	<application android:label="@string/app_name"
-	             android:icon="@drawable/ic_launcher"
-	             android:theme="@style/Theme.Noles"
-	             android:backupAgent="com.itnoles.shared.SportsBackupAgent"
-	             android:hardwareAccelerated="true">
-		<activity android:name=".MainActivity" android:label="@string/app_name">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
+    <application
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_launcher"
+        android:theme="@style/Theme.Noles"
+        android:backupAgent="com.itnoles.shared.SportsBackupAgent"
+        android:hardwareAccelerated="true">
 
-		<activity android:name="com.itnoles.shared.activities.BrowserDetailActivity" />
-		<activity android:name=".ScheduleActivity" android:label="@string/schedules" />
-		<activity android:name=".StaffActivity" android:label="@string/staff" />
+        <activity android:name=".MainActivity" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-		<provider android:authorities="com.itnoles.nolesfootball.provider"
-			      android:name=".ScheduleProvider"
-			      android:exported="false" />
+        <activity android:name="com.itnoles.shared.activities.BrowserDetailActivity" />
+        <activity android:name=".ScheduleActivity" android:label="@string/schedules" />
+        <activity android:name=".StaffActivity" android:label="@string/staff" />
+
+        <provider android:authorities="com.itnoles.nolesfootball.provider"
+                  android:name=".ScheduleProvider"
+                  android:exported="false" />
         <!--<meta-data android:name="com.google.android.backup.api_key" android:value="@string/backup_manager_key" />-->
-	</application>
+    </application>
 </manifest>
