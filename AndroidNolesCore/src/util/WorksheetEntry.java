@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Google Inc.
+ * Copyright 2012 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.text.format.DateUtils;
 
 import java.io.IOException;
+
+import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
+import static org.xmlpull.v1.XmlPullParser.END_TAG;
+import static org.xmlpull.v1.XmlPullParser.START_TAG;
+import static org.xmlpull.v1.XmlPullParser.TEXT;
 
 public class WorksheetEntry {
     private static final String REL_LISTFEED = "http://schemas.google.com/spreadsheets/2006#listfeed";
@@ -50,21 +55,28 @@ public class WorksheetEntry {
     public static WorksheetEntry fromParser(XmlPullParser parser) throws XmlPullParserException, IOException {
         final int depth = parser.getDepth();
         final WorksheetEntry entry = new WorksheetEntry();
-        parser.require(XmlPullParser.START_TAG, null, "entry");
-        while (parser.next() != XmlPullParser.END_DOCUMENT && parser.getDepth() > depth) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-            final String name = parser.getName();
-            if ("link".equals(name)) {
-                final String relType = parser.getAttributeValue(null, "rel");
-                if (REL_LISTFEED.equals(relType)) {
-                    entry.mListFeed = parser.getAttributeValue(null, "href");
+
+        String tag = null;
+        int type;
+        while (((type = parser.next()) != END_TAG || parser.getDepth() > depth) && type != END_DOCUMENT) {
+            if (type == START_TAG) {
+                tag = parser.getName();
+                if ("link".equals(tag)) {
+                    final String rel = parser.getAttributeValue(null, "rel");
+                    final String href = parser.getAttributeValue(null, "href");
+                    if (REL_LISTFEED.equals(rel)) {
+                        entry.mListFeed = href;
+                    }
                 }
-            } else if ("title".equals(name)) {
-                entry.mTitle = ParserUtils.readTitle(parser);
-            } else if ("updated".equals(name)) {
-                entry.mUpdated = ParserUtils.readUpdated(parser);
+            } else if (type == END_TAG) {
+                tag = null;
+            } else if (type == TEXT) {
+                final String text = parser.getText();
+                if ("title".equals(tag)) {
+                    entry.mTitle = text;
+                } else if ("updated".equals(tag)) {
+                    entry.mUpdated = ParserUtils.parseTime(text);
+                }
             }
         }
         return entry;

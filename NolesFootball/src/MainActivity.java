@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,7 @@ package com.itnoles.nolesfootball;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 
-import com.itnoles.shared.Utils;
 import com.itnoles.shared.activities.AbstractMainActivity;
 import com.itnoles.shared.io.RemoteExecutor;
 
@@ -33,55 +29,28 @@ public class MainActivity extends AbstractMainActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addViewPagerWithTab(new HomePagerAdapter(getSupportFragmentManager()));
+
+        final Bundle headlines = new Bundle();
+        headlines.putString("title", "Top Athletics Stories");
+        headlines.putString("url", "http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
+        addTab("News", NolesHeadlinesFragment.class, headlines);
+
+        addTab("Team", TeamFragment.class, null);
+        addTab("Link", LinkFragment.class, null);
 
         // Load and parse the XML worksheet from Google Spreadsheet
         final AsyncTask<Void, Void, Void> doSyncTask = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                /**
-                 * Check to see if we are connected to a data or wifi network.
-                 * if false, return early or execute XML
-                 */
-                if (!Utils.isOnline(MainActivity.this)) {
-                    return null;
-                }
-
                 final RemoteExecutor executor = new RemoteExecutor(MainActivity.this, getContentResolver());
                 executor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(executor), 4096);
                 return null;
             }
         };
-        doSyncTask.execute();
-    }
-
-    private class HomePagerAdapter extends FragmentPagerAdapter {
-        public HomePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    final NolesHeadlinesFragment headlines = new NolesHeadlinesFragment();
-                    final Bundle bundle = new Bundle();
-                    bundle.putString("title", "Top Athletics Stories");
-                    bundle.putString("url", "http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
-                    headlines.setArguments(bundle);
-                    return headlines;
-                case 1:
-                    return new TeamFragment();
-                case 2:
-                    return new LinkFragment();
-                default:
-                    return null;
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
+        if (hasHoneycomb()) {
+            doSyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            doSyncTask.execute();
         }
     }
 }

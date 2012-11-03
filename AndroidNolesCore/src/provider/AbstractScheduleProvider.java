@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ import android.content.ContentProvider;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.UriMatcher;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
@@ -48,8 +47,7 @@ public abstract class AbstractScheduleProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        final Context context = getContext();
-        mOpenHelper = new ScheduleDatabase(context);
+        mOpenHelper = new ScheduleDatabase(getContext());
         return true;
     }
 
@@ -95,8 +93,16 @@ public abstract class AbstractScheduleProvider extends ContentProvider {
                 throw new UnsupportedOperationException(UNKNOWN_URI_LOG + uri);
         }
 
+        // Apply the query to the underlying database.
         final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        return qb.query(db, projection, selection, selectionArgs, null, null, sortOrder, null);
+        final Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder, null);
+
+        // Register the contexts ContentResolver to be notified if
+        // the cursor result set changes.
+        c.setNotificationUri(getContext().getContentResolver(), uri);
+
+        // Return a cursor to the query result.
+        return c;
     }
 
     /** {@inheritDoc} */

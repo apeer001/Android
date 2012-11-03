@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     * Creates the underlying database with table name and column names taken from the
-     * ScheduleContract class.
+     * Creates the underlying database with table name and column names
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -56,6 +55,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
             + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
             + "date TEXT,"
             + "time TEXT,"
+            + "tv TEXT,"
             + "school TEXT,"
             + "updated TEXT)");
 

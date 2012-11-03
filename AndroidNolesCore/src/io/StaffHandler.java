@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,13 +47,9 @@ public class StaffHandler extends XmlHandler {
         final ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
 
         // Walk document, parsing any incoming entries
-        parser.require(XmlPullParser.START_TAG, null, "feed");
-        while (parser.next() != XmlPullParser.END_DOCUMENT) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-            final String name = parser.getName();
-            if ("entry".equals(name)) {
+        int type;
+        while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
+            if (type == XmlPullParser.START_TAG && "entry".equals(parser.getName())) {
                 // Process single spreadsheet row at a time
                 final SpreadsheetEntry entry = SpreadsheetEntry.fromParser(parser);
                 final Uri staffUri = Uri.withAppendedPath(mUri, Uri.encode(entry.get("title")));

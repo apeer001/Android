@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.itnoles.shared.R;
+import com.itnoles.shared.SimpleSectionedListAdapter;
 import com.itnoles.shared.activities.BrowserDetailActivity;
 import com.itnoles.shared.io.NewsListLoader;
 import com.itnoles.shared.util.News;
@@ -40,37 +41,30 @@ import java.util.List;
 public class HeadlinesFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
     protected static final int HEADLINES_LOADER = 0x0;
 
-    static final int INTERNAL_PROGRESS_CONTAINER_ID = 0x00ff0002;
-    static final int INTERNAL_EMPTY_ID = 0x00ff0001;
-    static final int INTERNAL_LIST_CONTAINER_ID = 0x00ff0003;
-
     protected boolean mDualPane;
     protected int mShownCheckPosition = -1;
 
+    private NewsListAdapter mNewsAdapter;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View root = inflater.inflate(R.layout.headlines_fragment, container, false);
-        root.findViewById(R.id.progressContainer).setId(INTERNAL_PROGRESS_CONTAINER_ID);
-        root.findViewById(android.R.id.empty).setId(INTERNAL_EMPTY_ID);
-        root.findViewById(R.id.listContainer).setId(INTERNAL_LIST_CONTAINER_ID);
-        return root;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // The SimpleCursorAdapter is wrapped in a SimpleSectionedListAdapter so that
+        // we can show list headers separating out the different days of the sporting events.
+        mNewsAdapter = new NewsListAdapter(getActivity());
+        setListAdapter(new SimpleSectionedListAdapter(getActivity(), R.layout.list_section_header, mNewsAdapter));
     }
 
     @Override
     public void onActivityCreated(Bundle savedState) {
         super.onActivityCreated(savedState);
 
-        // Give some text to display if there is no data.
-        setEmptyText(getString(R.string.noncontent));
-
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
-        // Create an empty adapter we will use to display the loaded data.
-        setListAdapter(new NewsListAdapter(getActivity()));
-
-        // Show the header title
-        setHeaderTitle(getArguments().getString("title"));
+        // Start out with a progress indicator.
+        setListShown(false);
 
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
@@ -87,35 +81,34 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
         getLoaderManager().initLoader(HEADLINES_LOADER, getArguments(), this);
     }
 
-    private void setHeaderTitle(String header) {
-        final TextView headerView = (TextView) getView().findViewById(R.id.section_title);
-        if (headerView != null) {
-            headerView.setText(header);
-        }
-    }
-
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
-        // Start out with a progress indicator.
-        setListShown(false);
-
         // This is called when a new Loader needs to be created.
         return new NewsListLoader(getActivity(), args.getString("url"));
     }
 
     @Override
     public void onLoadFinished(Loader<List<News>> loader, List<News> data) {
-        // Set the new data in the adapter.
-        ((NewsListAdapter) getListAdapter()).setData(data);
+        // Set the section header title
+        final String title = getArguments().getString("title");
+        final SimpleSectionedListAdapter.Section[] section = {new SimpleSectionedListAdapter.Section(0, title)};
+        ((SimpleSectionedListAdapter) getListAdapter()).setSections(section);
 
-        // Show the list
-        setListShown(true);
+        // Set the new data in the adapter.
+        mNewsAdapter.setData(data);
+
+        // The list should now be shown.
+        if (isResumed()) {
+            setListShown(true);
+        } else {
+            setListShownNoAnimation(true);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<List<News>> loader) {
         // Clear the data in the adapter.
-        ((NewsListAdapter) getListAdapter()).setData(null);
+        mNewsAdapter.setData(null);
     }
 
     @Override
@@ -149,9 +142,9 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
 
     protected void reloadLoaderWithNewInformation(String title, String url) {
         final Bundle bundle = new Bundle();
+        bundle.putString("title", title);
         bundle.putString("url", url);
         getLoaderManager().restartLoader(HEADLINES_LOADER, bundle, this);
-        setHeaderTitle(title);
     }
 
     static class NewsListAdapter extends ArrayAdapter<News> {

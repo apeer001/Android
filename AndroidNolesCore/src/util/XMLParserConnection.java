@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,8 @@ package com.itnoles.shared.util;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.util.Xml;
+import android.net.ConnectivityManager;
+import android.os.Build;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -30,38 +31,61 @@ import java.net.*;
 public class XMLParserConnection {
     private static final String LOG_TAG = LogUtils.makeLogTag(XMLParserConnection.class);
 
+    private final Context mContext;
     private final String mUserAgent;
 
+    static {
+        // Per http://android-developers.blogspot.com/2011/09/androids-http-clients.html
+        final boolean SUPPORTS_FROYO = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
+        if (!SUPPORTS_FROYO) {
+            System.setProperty("http.keepAlive", "false");
+        }
+    }
+
     public XMLParserConnection(Context context) {
+        mContext = context;
         mUserAgent = buildUserAgent(context);
     }
 
     public void execute(String urlString, int size, XMLParserListener listener) {
+        // Check to see if we are connected to a data or wifi network.
+        if (!isOnline()) {
+            return;
+        }
+
         HttpURLConnection urlConnection = null;
+        InputStream input = null;
+        BufferedInputStream bufferedInput = null;
         try {
             final URL url = new URL(urlString);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestProperty("User-Agent", mUserAgent);
-            final InputStream input = new BufferedInputStream(urlConnection.getInputStream(), size);
-            try {
-                final XmlPullParser parser = Xml.newPullParser();
-                parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-                parser.setInput(input, null);
-                parser.nextTag();
-                listener.onPostExecute(parser);
-            } catch (XmlPullParserException e) {
-                LogUtils.LOGW(LOG_TAG, "Malformed response for ", e);
-            } finally {
-                if (input != null) {
-                    input.close();
-                }
-            }
+            input = urlConnection.getInputStream();
+
+            bufferedInput = new BufferedInputStream(input, size);
+            final XmlPullParser parser = XMLParserUtils.newPullParser(bufferedInput);
+            listener.onPostExecute(parser);
+        } catch (XmlPullParserException e) {
+            LogUtils.LOGW(LOG_TAG, "Malformed response for ", e);
         } catch (IOException e) {
             LogUtils.LOGW(LOG_TAG, "Problem reading remote response for ", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
+
+            closeQuietly(bufferedInput);
+            closeQuietly(input);
+        }
+    }
+
+    private static void closeQuietly(InputStream input) {
+        try {
+            if (input != null) {
+                input.close();
+            }
+        } catch (IOException ioe) {
+            // ignore
         }
     }
 
@@ -80,6 +104,11 @@ public class XMLParserConnection {
         } catch (NameNotFoundException ignored) {}
 
         return context.getPackageName() + "/" + versionName + " (" + versionCode + ") (gzip)";
+    }
+
+    private boolean isOnline() {
+        final ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
     public interface XMLParserListener {

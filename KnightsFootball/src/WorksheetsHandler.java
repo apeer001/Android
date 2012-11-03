@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,15 +52,10 @@ public class WorksheetsHandler extends XmlHandler {
     public ArrayList<ContentProviderOperation> parse(XmlPullParser parser, ContentResolver resolver) throws XmlPullParserException, IOException {
         final HashMap<String, WorksheetEntry> sheets = new HashMap<String, WorksheetEntry>();
 
-        // collecting all known spreadsheets
-        parser.require(XmlPullParser.START_TAG, null, "feed");
-        while (parser.next() != XmlPullParser.END_DOCUMENT) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-            final String name = parser.getName();
-            // Starts by looking for the entry tag
-            if ("entry".equals(name)) {
+        // walk response, collecting all known spreadsheets
+        int type;
+        while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
+            if (type == XmlPullParser.START_TAG && "entry".equals(parser.getName())) {
                 final WorksheetEntry entry = WorksheetEntry.fromParser(parser);
                 LOGD(TAG, "found worksheet " + entry.toString());
                 sheets.put(entry.getTitle(), entry);

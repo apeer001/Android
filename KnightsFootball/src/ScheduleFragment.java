@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ import com.itnoles.shared.fragment.AbstractScheduleFragment;
 public class ScheduleFragment extends AbstractScheduleFragment {
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        final String[] projection = {"_id", "date", "time", "school"};
+        final String[] projection = {"_id", "date", "tv", "time", "school"};
         return new CursorLoader(getActivity(), ScheduleProvider.SCHEDULE_CONTENT_URI, projection, null, null, null);
     }
 }

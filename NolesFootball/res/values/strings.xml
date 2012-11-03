@@ -2,7 +2,6 @@
 
 <resources>
     <string name="app_name">Noles Football</string>
-    <!--string name="backup_manager_key"></string>-->
 
     <string-array name="linkNames">
         <item>Tickets</item>

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Knights Football</string>
-    <!--<string name="backup_manager_key"></string>-->
 
     <string-array name="linkNames">
         <item>Tickets</item>

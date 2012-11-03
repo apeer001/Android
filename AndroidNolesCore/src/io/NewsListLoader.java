@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@ package com.itnoles.shared.io;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.itnoles.shared.Utils;
 import com.itnoles.shared.util.News;
 import com.itnoles.shared.util.XMLParserConnection;
 
@@ -49,10 +48,6 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
      */
     @Override
     public List<News> loadInBackground() {
-        if (!Utils.isOnline(getContext())) {
-            return null;
-        }
-
         final List<News> results = new ArrayList<News>();
         final XMLParserConnection connection = new XMLParserConnection(getContext());
         connection.execute(mURL, 8192, new XMLParserConnection.XMLParserListener() {
