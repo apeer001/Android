@@ -8,6 +8,8 @@
         android:id="@id/empty_loading"
         android:layout_width="match_parent"
         android:layout_height="2.0dip"
+        android:indeterminate="false"
+        android:visibility="gone"
         style="@style/Widget.Sherlock.ProgressBar.Horizontal" />
 
     <WebView

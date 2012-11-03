@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,70 +18,39 @@ package com.itnoles.knightfootball;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 
-import com.itnoles.shared.Utils;
 import com.itnoles.shared.activities.AbstractMainActivity;
 import com.itnoles.shared.io.RemoteExecutor;
 
 public class MainActivity extends AbstractMainActivity {
     private static final String WORKSHEET_URL = "https://spreadsheets.google.com/feeds/worksheets/0AvRfIfyMiQAGdFowOThSZGs5OXpQMnpvdEJSc29TWHc/public/basic";
 
+    TabsAdapter mTabsAdapter;
+
     // Called when the activity is first created.
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addViewPagerWithTab(new HomePagerAdapter(getSupportFragmentManager()));
 
-        // Load and parse the XML Spreadsheet from Google Drive
+        mTabsAdapter = new TabsAdapter(this);
+
+        final Bundle headlines = new Bundle();
+        headlines.putString("title", "Top Athletics Stories");
+        headlines.putString("url", "http://www.ucfathletics.com/sports/m-footbl/headline-rss.xml");
+        mTabsAdapter.addTab(bar.newTab().setText("News"), KnightsHeadlinesFragment.class, headlines);
+
+        mTabsAdapter.addTab(bar.newTab().setText("Team"), TeamFragment.class, null);
+        mTabsAdapter.addTab(bar.newTab().setText("Link"), LinkFragment.class, null);
+
+        // Load and parse the XML worksheet from Google Spreadsheet
         final AsyncTask<Void, Void, Void> doSyncTask = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                /**
-                 * Check to see if we are connected to a data or wifi network.
-                 * if false, return early or execute XML
-                 */
-                if (!Utils.isOnline(MainActivity.this)) {
-                    return null;
-                }
-
-                final RemoteExecutor executor = new RemoteExecutor(getContentResolver());
+                final RemoteExecutor executor = new RemoteExecutor(MainActivity.this, getContentResolver());
                 executor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(executor), 4096);
                 return null;
             }
         };
         doSyncTask.execute();
-    }
-
-    private class HomePagerAdapter extends FragmentPagerAdapter {
-        public HomePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    final KnightsHeadlinesFragment headlines = new KnightsHeadlinesFragment();
-                    final Bundle bundle = new Bundle();
-                    bundle.putString("title", "Top Athletics Stories");
-                    bundle.putString("url", "http://www.ucfathletics.com/sports/m-footbl/headline-rss.xml");
-                    headlines.setArguments(bundle);
-                    return headlines;
-                case 1:
-                    return new TeamFragment();
-                case 2:
-                    return new LinkFragment();
-                default:
-                    return null;
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
     }
 }

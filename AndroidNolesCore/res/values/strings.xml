@@ -1,9 +1,3 @@
 <resources>
-    <string name="noncontent">content is not available</string>
-    <string name="loading">Loading&#8230;</string>
     <string name="menu_refresh">Refresh</string>
-
-    <!-- Team -->
-    <string name="schedules">Schedules</string>
-    <string name="staff">Coaches and Staff</string>
 </resources>

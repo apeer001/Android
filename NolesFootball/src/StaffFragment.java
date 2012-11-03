@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,17 +16,13 @@
 
 package com.itnoles.nolesfootball;
 
-import android.database.Cursor;
-import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.net.Uri;
 
 import com.itnoles.shared.fragment.AbstractStaffFragment;
 
 public class StaffFragment extends AbstractStaffFragment {
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        final String[] projection = {"_id", "name", "positions"};
-        return new CursorLoader(getActivity(), ScheduleProvider.STAFF_CONTENT_URI, projection, null, null, null);
+    protected Uri getURI() {
+        return ScheduleProvider.STAFF_CONTENT_URI;
     }
 }

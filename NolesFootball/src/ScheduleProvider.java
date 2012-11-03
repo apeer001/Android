@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,15 +46,13 @@ public class ScheduleProvider extends AbstractScheduleProvider {
         final int match = URIMATCHER.match(uri);
         switch (match) {
             case SCHEDULE:
-                final long schID = db.insertOrThrow(SCHEDULE_TXT, null, values);
-                final Uri schUri = Uri.withAppendedPath(SCHEDULE_CONTENT_URI, Long.toString(schID));
-                getContext().getContentResolver().notifyChange(schUri, null);
-                return schUri;
+                db.insertOrThrow(SCHEDULE_TXT, null, values);
+                getContext().getContentResolver().notifyChange(uri, null);
+                return Uri.withAppendedPath(SCHEDULE_CONTENT_URI, values.getAsString("title"));
             case STAFF:
-                final long staffID = db.insertOrThrow(STAFF_TXT, null, values);
-                final Uri staffUri = Uri.withAppendedPath(STAFF_CONTENT_URI, Long.toString(staffID));
-                getContext().getContentResolver().notifyChange(staffUri, null);
-                return staffUri;
+                db.insertOrThrow(STAFF_TXT, null, values);
+                getContext().getContentResolver().notifyChange(uri, null);
+                return Uri.withAppendedPath(STAFF_CONTENT_URI, values.getAsString("title"));
             default:
                 throw new UnsupportedOperationException(UNKNOWN_URI_LOG + uri);
         }

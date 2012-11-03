@@ -16,33 +16,12 @@
 
 package com.itnoles.nolesfootball;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
+import com.itnoles.shared.fragment.AbstractTeamFragment;
 
-public class TeamFragment extends SherlockListFragment {
-    private boolean mDualPane;
-    private int mShownCheckPosition = -1;
-
-    @Override
-    public void onActivityCreated(Bundle savedState) {
-        super.onActivityCreated(savedState);
-
-        // Check to see if we have a frame in which to embed the details
-        // fragment directly in the containing UI.
-        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
-        mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
-
-        final String[] array = {getString(R.string.schedules), getString(R.string.staff)};
-        final ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_list_item_1, array);
-        setListAdapter(adapter);
-    }
-
+public class TeamFragment extends AbstractTeamFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         switch(position) {
@@ -55,27 +34,6 @@ public class TeamFragment extends SherlockListFragment {
                 replaceFragmentOrStartActivity(staff, StaffActivity.class);
                 break;
             default:
-        }
-    }
-
-    private void replaceFragmentOrStartActivity(SherlockListFragment fragment, Class clzz) {
-        if (mDualPane) {
-            final int position = getSelectedItemPosition();
-            // We can display everything in-place with fragments, so update
-            // the list to highlight the selected item and show the data.
-            getListView().setItemChecked(position, true);
-            if (mShownCheckPosition != position) {
-                // Execute a transaction, replacing any existing fragment
-                // with this one inside the frame.
-                getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_details, fragment)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .commit();
-                mShownCheckPosition = position;
-            }
-        } else {
-            final Intent intent = new Intent(getActivity(), clzz);
-            startActivity(intent);
         }
     }
 }

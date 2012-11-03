@@ -1,17 +1,17 @@
 /*
- * Copyright 2011 Google Inc.
+ * Copyright (C) 2012 Jonathan Steele
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.itnoles.shared.util;
@@ -21,15 +21,23 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.format.Time;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-
+/**
+ * Various utility methods used by {@link XmlHandler} implementations.
+ */
 public class ParserUtils {
     private static Time sTime = new Time();
 
-    private ParserUtils() {}
+    private ParserUtils() {
+    }
+
+    /**
+     * Parse the given string as a RFC 3339 timestamp, returning the value as
+     * milliseconds since the epoch.
+     */
+    public static long parseTime(String time) {
+        sTime.parse3339(time);
+        return sTime.toMillis(false);
+    }
 
     /**
      * Query and return the updated time for the requested
@@ -62,36 +70,5 @@ public class ParserUtils {
         } finally {
             cursor.close();
         }
-    }
-
-    // Processes title tags in the feed.
-    public static String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, null, "title");
-        final String title = readText(parser);
-        parser.require(XmlPullParser.END_TAG, null, "title");
-        return title;
-    }
-
-    // For the tags extracts their text values.
-    public static String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
-        String result = "";
-        if (parser.next() == XmlPullParser.TEXT) {
-            result = parser.getText();
-            parser.nextTag();
-        }
-        return result;
-    }
-
-    /*
-     * Process the updated tag in the feed and parse the given string
-     * as a RFC 3339 timestamp, returning the value as milliseconds since
-     * the epoch.
-     */
-    public static long readUpdated(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, null, "updated");
-        sTime.parse3339(readText(parser));
-        final long updated = sTime.toMillis(false);
-        parser.require(XmlPullParser.END_TAG, null, "updated");
-        return updated;
     }
 }

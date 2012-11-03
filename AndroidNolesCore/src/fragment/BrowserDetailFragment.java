@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 package com.itnoles.shared.fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,7 @@ import com.itnoles.shared.R;
  */
 public class BrowserDetailFragment extends SherlockFragment {
     private WebView mWebView;
+    private ProgressBar mProgressBar;
 
     public static BrowserDetailFragment newInstance(String urlString) {
         final BrowserDetailFragment f = new BrowserDetailFragment();
@@ -65,23 +67,31 @@ public class BrowserDetailFragment extends SherlockFragment {
 
         setHasOptionsMenu(true);
 
+        mProgressBar = (ProgressBar) getView().findViewById(R.id.empty_loading);
+
         mWebView = (WebView) getView().findViewById(R.id.webview);
         mWebView.getSettings().setSupportZoom(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
 
         mWebView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int newProgress) {
-                final ProgressBar progress = (ProgressBar) getView().findViewById(R.id.empty_loading);
-                progress.setProgress(newProgress);
-                progress.setVisibility(View.VISIBLE);
-                if (newProgress == 100) {
-                    progress.setVisibility(View.GONE);
-                }
+                mProgressBar.setProgress(newProgress);
             }
         });
 
         mWebView.setWebViewClient(new WebViewClient() {
+            @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                mProgressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                mProgressBar.setVisibility(View.GONE);
             }
         });
 

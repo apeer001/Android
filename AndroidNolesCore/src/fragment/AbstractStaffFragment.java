@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,10 @@
 package com.itnoles.shared.fragment;
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -40,6 +42,12 @@ public abstract class AbstractStaffFragment extends SherlockListFragment impleme
     }
 
     @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        final String[] projection = {"_id", "name", "positions"};
+        return new CursorLoader(getActivity(), getURI(), projection, null, null, null);
+    }
+
+    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         ((SimpleCursorAdapter) getListAdapter()).swapCursor(cursor);
     }
@@ -48,4 +56,6 @@ public abstract class AbstractStaffFragment extends SherlockListFragment impleme
     public void onLoaderReset(Loader<Cursor> loader) {
         ((SimpleCursorAdapter) getListAdapter()).swapCursor(null);
     }
+
+    protected abstract Uri getURI();
 }

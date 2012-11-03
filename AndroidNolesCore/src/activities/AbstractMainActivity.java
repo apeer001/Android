@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Jonathan Steele
+ * Copyright (C) 2012 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
 
 package com.itnoles.shared.activities;
 
-import android.net.http.HttpResponseCache;
-import android.os.AsyncTask;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -30,14 +30,10 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.itnoles.shared.BuildConfig;
 import com.itnoles.shared.R;
 
-import java.io.*;
+import java.util.ArrayList;
 
-import static com.itnoles.shared.util.LogUtils.makeLogTag;
-import static com.itnoles.shared.util.LogUtils.LOGE;
-
-public abstract class AbstractMainActivity extends SherlockFragmentActivity implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
-    private static final String LOG_TAG = makeLogTag(AbstractMainActivity.class);
-    private ViewPager mViewPager;
+public abstract class AbstractMainActivity extends SherlockFragmentActivity {
+    TabsAdapter mTabsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,63 +44,99 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity impl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        final AsyncTask<Void, Void, Void> enableCache = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... urls) {
-                enableHttpResponseCache();
-                return null;
-            }
-        };
-        enableCache.execute();
-
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-    }
-
-    protected void addViewPagerWithTab(FragmentPagerAdapter adapter) {
-        mViewPager.setAdapter(adapter);
-        mViewPager.setOnPageChangeListener(this);
-
         final ActionBar bar = getSupportActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        bar.addTab(bar.newTab().setText("News").setTabListener(this));
-        bar.addTab(bar.newTab().setText("Team").setTabListener(this));
-        bar.addTab(bar.newTab().setText("Link").setTabListener(this));
+        mTabsAdapter = new TabsAdapter(this, bar);
     }
 
-    private void enableHttpResponseCache() {
-        final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
-        final File httpCacheDir = new File(getCacheDir(), "http");
-        try {
-            final boolean SUPPORTS_JELLYBEAN = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-            if (SUPPORTS_JELLYBEAN) {
-                HttpResponseCache.install(httpCacheDir, httpCacheSize);
-            } else {
-                com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
+    protected void addTab(String title, Class clzz, Bundle bundle) {
+        final ActionBar bar = getSupportActionBar();
+        mTabsAdapter.addTab(bar.newTab().setText(title), clzz, bundle);
+    }
+
+    protected Boolean hasHoneycomb() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
+    }
+
+    /**
+     * This is a helper class that implements the management of tabs and all
+     * details of connecting a ViewPager with associated TabHost. It relies on a
+     * trick.  Normally a tab host has a simple API for supplying a View or
+     * Intent that each tab will show. This is not sufficient for switching
+     * between pages. So instead we make the content part of the tab host
+     * 0dp high (it is not shown) and the TabsAdapter supplies its own dummy
+     * view to show as the tab content. It listens to changes in tabs, and takes
+     * care of switch to the correct paged in the ViewPager whenever the selected
+     * tab changes.
+     */
+    public static class TabsAdapter extends FragmentPagerAdapter implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
+        private final Context mContext;
+        private final ActionBar mActionBar;
+        private final ViewPager mViewPager;
+        private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+
+        static final class TabInfo {
+            private final Class<?> clss;
+            private final Bundle args;
+
+            TabInfo(Class<?> _class, Bundle _args) {
+                clss = _class;
+                args = _args;
             }
-        } catch (IOException ioe) {
-            LOGE(LOG_TAG, "Failed to set up HttpResponseCache", ioe);
+        }
+
+        public TabsAdapter(SherlockFragmentActivity activity, ActionBar actionbar) {
+            super(activity.getSupportFragmentManager());
+            mContext = activity;
+            mActionBar = actionbar;
+            mViewPager = (ViewPager) activity.findViewById(R.id.pager);
+            mViewPager.setAdapter(this);
+            mViewPager.setOnPageChangeListener(this);
+        }
+
+        public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
+            final TabInfo info = new TabInfo(clss, args);
+            tab.setTabListener(this);
+            mTabs.add(info);
+            mActionBar.addTab(tab);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return mTabs.size();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            final TabInfo info = mTabs.get(position);
+            return Fragment.instantiate(mContext, info.clss.getName(), info.args);
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            mActionBar.setSelectedNavigationItem(position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+        }
+
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+            mViewPager.setCurrentItem(tab.getPosition());
+        }
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
         }
     }
-
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {}
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {}
-
-    @Override
-    public void onPageScrolled(int i, float v, int i1) {}
-
-    @Override
-    public void onPageSelected(int position) {
-        getSupportActionBar().setSelectedNavigationItem(position);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {}
 }
