@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.nolesfootball;
+package com.itnoles.knightfootball;
 
 import android.support.v4.app.Fragment;
 
