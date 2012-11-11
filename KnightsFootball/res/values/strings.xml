@@ -1,20 +1,3 @@
 <resources>
     <string name="app_name">Knights Football</string>
-
-    <string-array name="linkNames">
-        <item>Tickets</item>
-        <item>UCF Gameday</item>
-        <item>Alumni Tracker</item>
-        <item>Golden Knights Club</item>
-        <item>Radio Network</item>
-        <item>UCF Photos</item>
-    </string-array>
-    <string-array name="linkValues">
-        <item>https://oss.ticketmaster.com/html/pack_home.htmI?l=EN&amp;team=ucf</item>
-        <item>http://www.ucfathletics.com/facilities/ucf-brighthouse-bio.html</item>
-        <item>http://cbs.sportsline.com/collegefootball/alumni-tracker/school/5233</item>
-        <item>http://www.ucfathleticfund.com/</item>
-        <item>http://www.ucfathletics.com/multimedia/ucf-isp-radio-network.html</item>
-        <item>http://ucfphotos.photoshelter.com/gallery-list</item>
-    </string-array>
 </resources>

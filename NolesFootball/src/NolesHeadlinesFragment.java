@@ -29,25 +29,25 @@ public class NolesHeadlinesFragment extends HeadlinesFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final String title = (String) item.getTitle();
+        mTitle = (String) item.getTitle();
         switch (item.getItemId()) {
             case R.id.menu_refresh:
                 getLoaderManager().restartLoader(HEADLINES_LOADER, null, this);
                 break;
             case R.id.athletics:
-                reloadLoaderWithNewInformation(title, "http://www.seminoles.com/headline-rss.xml");
+                reloadLoaderWithNewInformation("http://www.seminoles.com/headline-rss.xml");
                 break;
             case R.id.warchant:
-                reloadLoaderWithNewInformation(title, "http://floridastate.rivals.com/rss2feed.asp?SID=1061");
+                reloadLoaderWithNewInformation("http://floridastate.rivals.com/rss2feed.asp?SID=1061");
                 break;
             case R.id.digest:
-                reloadLoaderWithNewInformation(title, "http://rss.scout.com/rss.aspx?sid=16");
+                reloadLoaderWithNewInformation("http://rss.scout.com/rss.aspx?sid=16");
                 break;
             case R.id.tomahawk:
-                reloadLoaderWithNewInformation(title, "http://feeds.feedburner.com/sportsblogs/tomahawknation.xml");
+                reloadLoaderWithNewInformation("http://feeds.feedburner.com/sportsblogs/tomahawknation.xml");
                 break;
             case R.id.spirit:
-                reloadLoaderWithNewInformation(title, "http://www.seminoles.com/blog/atom.xml");
+                reloadLoaderWithNewInformation("http://www.seminoles.com/blog/atom.xml");
                 break;
             default:
         }

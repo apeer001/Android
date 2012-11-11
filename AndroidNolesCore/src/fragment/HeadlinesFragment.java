@@ -41,9 +41,10 @@ import java.util.List;
 public class HeadlinesFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
     protected static final int HEADLINES_LOADER = 0x0;
 
-    protected boolean mDualPane;
-    protected int mShownCheckPosition = -1;
+    protected String mTitle;
 
+    private boolean mDualPane;
+    private int mShownCheckPosition = -1;
     private NewsListAdapter mNewsAdapter;
 
     @Override
@@ -66,9 +67,14 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
         // Start out with a progress indicator.
         setListShown(false);
 
+        mTitle = getArguments().getString("title");
+
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
         final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
+        if (detailsFrame != null && detailsFrame.getVisibility() != View.VISIBLE) {
+            detailsFrame.setVisibility(View.VISIBLE);
+        }
         mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
 
         if (mDualPane) {
@@ -90,8 +96,7 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
     @Override
     public void onLoadFinished(Loader<List<News>> loader, List<News> data) {
         // Set the section header title
-        final String title = getArguments().getString("title");
-        final SimpleSectionedListAdapter.Section[] section = {new SimpleSectionedListAdapter.Section(0, title)};
+        final SimpleSectionedListAdapter.Section[] section = {new SimpleSectionedListAdapter.Section(0, mTitle)};
         ((SimpleSectionedListAdapter) getListAdapter()).setSections(section);
 
         // Set the new data in the adapter.
@@ -140,9 +145,8 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
         }
     }
 
-    protected void reloadLoaderWithNewInformation(String title, String url) {
+    protected void reloadLoaderWithNewInformation(String url) {
         final Bundle bundle = new Bundle();
-        bundle.putString("title", title);
         bundle.putString("url", url);
         getLoaderManager().restartLoader(HEADLINES_LOADER, bundle, this);
     }
