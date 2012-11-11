@@ -9,10 +9,18 @@
         android:textAppearance="?android:textAppearanceLarge" />
 
     <TextView
+        android:id="@id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/school"
+        android:textAppearance="?android:textAppearanceSmall" /> 
+
+    <TextView
         android:id="@id/tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/school"
+        android:gravity="center"
         android:textAppearance="?android:textAppearanceSmall" />
 
     <TextView

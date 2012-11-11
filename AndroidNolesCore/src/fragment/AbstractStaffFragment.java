@@ -24,8 +24,10 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.View;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.itnoles.shared.R;
 
 public abstract class AbstractStaffFragment extends SherlockListFragment implements LoaderManager.LoaderCallbacks<Cursor>  {
     private static final int STAFF_LOADER = 0x2;
@@ -37,6 +39,13 @@ public abstract class AbstractStaffFragment extends SherlockListFragment impleme
         final String[] projection = {"name", "positions"};
         setListAdapter(new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_2, null, projection,
             new int[] {android.R.id.text1, android.R.id.text2}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
+
+        // Check to see if we have a frame in which to embed the details
+        // fragment directly in the containing UI.
+        final View detailsFrame = getActivity().findViewById(R.id.fragment_details);
+        if (detailsFrame != null) {
+            detailsFrame.setVisibility(View.GONE);
+        }
 
         getLoaderManager().initLoader(STAFF_LOADER, null, this);
     }

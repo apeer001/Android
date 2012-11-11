@@ -25,22 +25,18 @@ import com.itnoles.shared.io.RemoteExecutor;
 public class MainActivity extends AbstractMainActivity {
     private static final String WORKSHEET_URL = "https://spreadsheets.google.com/feeds/worksheets/0AvRfIfyMiQAGdFowOThSZGs5OXpQMnpvdEJSc29TWHc/public/basic";
 
-    TabsAdapter mTabsAdapter;
-
     // Called when the activity is first created.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTabsAdapter = new TabsAdapter(this);
-
         final Bundle headlines = new Bundle();
         headlines.putString("title", "Top Athletics Stories");
         headlines.putString("url", "http://www.ucfathletics.com/sports/m-footbl/headline-rss.xml");
-        mTabsAdapter.addTab(bar.newTab().setText("News"), KnightsHeadlinesFragment.class, headlines);
+        onAddTab("News", KnightsHeadlinesFragment.class, headlines);
 
-        mTabsAdapter.addTab(bar.newTab().setText("Team"), TeamFragment.class, null);
-        mTabsAdapter.addTab(bar.newTab().setText("Link"), LinkFragment.class, null);
+        onAddTab("Schedule", ScheduleFragment.class, null);
+        onAddTab("Staff", StaffFragment.class, null);
 
         // Load and parse the XML worksheet from Google Spreadsheet
         final AsyncTask<Void, Void, Void> doSyncTask = new AsyncTask<Void, Void, Void>() {
@@ -51,6 +47,10 @@ public class MainActivity extends AbstractMainActivity {
                 return null;
             }
         };
-        doSyncTask.execute();
+        if (hasHoneycomb()) {
+            doSyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            doSyncTask.execute();
+        }
     }
 }

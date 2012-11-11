@@ -49,7 +49,7 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
         mTabsAdapter = new TabsAdapter(this, bar);
     }
 
-    protected void addTab(String title, Class clzz, Bundle bundle) {
+    protected void onAddTab(String title, Class clzz, Bundle bundle) {
         final ActionBar bar = getSupportActionBar();
         mTabsAdapter.addTab(bar.newTab().setText(title), clzz, bundle);
     }

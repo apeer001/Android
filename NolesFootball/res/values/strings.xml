@@ -2,25 +2,4 @@
 
 <resources>
     <string name="app_name">Noles Football</string>
-
-    <string-array name="linkNames">
-        <item>Tickets</item>
-        <item>Upcoming Events and Promo</item>
-        <item>Alumni Tracker</item>
-        <item>Seminoles Booster</item>
-        <item>Radio Affiliate</item>
-        <item>Traditions</item>
-        <item>Team Ranking</item>
-        <item>Seminoles Podcast</item>
-    </string-array>
-    <string-array name="linkValues">
-        <item>http://www.seminoles.com/tickets/fsu-tickets.html</item>
-        <item>http://www.seminoles.com/genrel/nole-zone.html</item>
-        <item>http://www.cbssports.com/collegefootball/alumni-tracker/school/5219</item>
-        <item>http://seminole-boosters.fsu.edu/Community/Page.aspx?pid=520&amp;srcid=223</item>
-        <item>http://www.seminoles.com/multimedia/broadcast.htm</item>
-        <item>http://www.seminoles.com/trads/fsu-trads.html</item>
-        <item>http://www.seminoles.com/genrel/rankings.html</item>
-        <item>http://www.seminoles.com/podcasts/fsu-podcasts.html</item>
-    </string-array>
 </resources>

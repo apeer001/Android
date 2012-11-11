@@ -33,10 +33,10 @@ public class MainActivity extends AbstractMainActivity {
         final Bundle headlines = new Bundle();
         headlines.putString("title", "Top Athletics Stories");
         headlines.putString("url", "http://www.seminoles.com/sports/m-footbl/headline-rss.xml");
-        addTab("News", NolesHeadlinesFragment.class, headlines);
+        onAddTab("News", NolesHeadlinesFragment.class, headlines);
 
-        addTab("Team", TeamFragment.class, null);
-        addTab("Link", LinkFragment.class, null);
+        onAddTab("Schedule", ScheduleFragment.class, null);
+        onAddTab("Staff", StaffFragment.class, null);
 
         // Load and parse the XML worksheet from Google Spreadsheet
         final AsyncTask<Void, Void, Void> doSyncTask = new AsyncTask<Void, Void, Void>() {
