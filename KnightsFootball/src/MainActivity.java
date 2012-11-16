@@ -16,7 +16,6 @@
 
 package com.itnoles.knightfootball;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.itnoles.shared.activities.AbstractMainActivity;
@@ -39,18 +38,11 @@ public class MainActivity extends AbstractMainActivity {
         onAddTab("Staff", StaffFragment.class, null);
 
         // Load and parse the XML worksheet from Google Spreadsheet
-        final AsyncTask<Void, Void, Void> doSyncTask = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
+        new Thread(new Runnable() {
+            public void run() {
                 final RemoteExecutor executor = new RemoteExecutor(MainActivity.this, getContentResolver());
                 executor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(executor), 4096);
-                return null;
             }
-        };
-        if (hasHoneycomb()) {
-            doSyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            doSyncTask.execute();
-        }
+        }).start();
     }
 }
