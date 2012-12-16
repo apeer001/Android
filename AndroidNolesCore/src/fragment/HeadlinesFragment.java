@@ -51,8 +51,8 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // The SimpleCursorAdapter is wrapped in a SimpleSectionedListAdapter so that
-        // we can show list headers separating out the different days of the sporting events.
+        // The NewsListAdapter is wrapped in a SimpleSectionedListAdapter so that
+        // we can show list headers for news title
         mNewsAdapter = new NewsListAdapter(getActivity());
         setListAdapter(new SimpleSectionedListAdapter(getActivity(), R.layout.list_section_header, mNewsAdapter));
     }

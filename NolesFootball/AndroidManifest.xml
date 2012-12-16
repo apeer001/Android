@@ -21,10 +21,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.itnoles.shared.activities.BrowserDetailActivity" />
-
         <provider android:authorities="com.itnoles.nolesfootball.provider"
-                  android:name=".ScheduleProvider"
-                  android:exported="false" />
+                  android:name=".ScheduleProvider" />
     </application>
 </manifest>

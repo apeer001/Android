@@ -25,4 +25,9 @@ public class StaffFragment extends AbstractStaffFragment {
     protected Uri getURI() {
         return ScheduleProvider.STAFF_CONTENT_URI;
     }
+
+    @Override
+    protected String getFullURL(String url) {
+        return "http://www.seminoles.com/sports/m-footbl/mtt/" + url + "00.html";
+    }
 }

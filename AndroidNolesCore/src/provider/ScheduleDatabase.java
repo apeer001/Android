@@ -57,12 +57,14 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
             + "time TEXT,"
             + "tv TEXT,"
             + "school TEXT,"
+            + "sectiontitle TEXT,"
             + "updated TEXT)");
 
         db.execSQL("CREATE TABLE staff ("
             + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
             + "name TEXT,"
             + "positions TEXT,"
+            + "url TEXT,"
             + "updated TEXT)");
     }
 
