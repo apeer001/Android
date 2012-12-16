@@ -70,6 +70,7 @@ public class StaffHandler extends XmlHandler {
                 builder.withValue("updated", serverUpdated);
                 builder.withValue("name", entry.get("title"));
                 builder.withValue("positions", entry.get("positions"));
+                builder.withValue("url", entry.get("url"));
 
                 // Normal staff details ready, write to provider
                 batch.add(builder.build());

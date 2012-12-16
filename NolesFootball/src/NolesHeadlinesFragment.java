@@ -29,11 +29,12 @@ public class NolesHeadlinesFragment extends HeadlinesFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mTitle = (String) item.getTitle();
+        final String title = (String) item.getTitle();
+        if (!mTitle.equals(title)) {
+            mTitle = title;
+        }
+
         switch (item.getItemId()) {
-            case R.id.menu_refresh:
-                getLoaderManager().restartLoader(HEADLINES_LOADER, null, this);
-                break;
             case R.id.athletics:
                 reloadLoaderWithNewInformation("http://www.seminoles.com/headline-rss.xml");
                 break;

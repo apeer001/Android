@@ -43,6 +43,6 @@ public class MainActivity extends AbstractMainActivity {
                 final RemoteExecutor executor = new RemoteExecutor(MainActivity.this, getContentResolver());
                 executor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(executor), 4096);
             }
-        }).start();
+        }, "sync").start();
     }
 }

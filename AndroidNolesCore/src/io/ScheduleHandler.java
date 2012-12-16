@@ -71,6 +71,7 @@ public class ScheduleHandler extends XmlHandler {
                 builder.withValue("tv", entry.get("tv"));
                 builder.withValue("time", entry.get("time"));
                 builder.withValue("school", entry.get("school"));
+                builder.withValue("sectiontitle", entry.get("sectiontitle"));
 
                 // Normal schedule details ready, write to provider
                 batch.add(builder.build());
