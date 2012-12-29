@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,11 +104,7 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
         mNewsAdapter.setData(data);
 
         // The list should now be shown.
-        if (isResumed()) {
-            setListShown(true);
-        } else {
-            setListShownNoAnimation(true);
-        }
+        setListShown(true);
     }
 
     @Override
@@ -172,36 +169,39 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
         public View getView(int position, View convertView, ViewGroup parent) {
             // A ViewHolder keeps references to children views to avoid
             // unneccessary calls to findViewById() on each row.
-            final ViewHolder holder = ViewHolder.get(convertView, parent);
-            final News news = getItem(position);
-            holder.mTitle.setText(news.getTitle());
-            holder.mDate.setText(news.getPubDate());
-            holder.mDesc.setText(news.getDesc());
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.headlines_item, null);
+            }
 
-            return holder.mRoot;
+            final News news = getItem(position);
+
+            final TextView title = ViewHolder.get(convertView, R.id.title);
+            title.setText(news.getTitle());
+
+            final TextView date = ViewHolder.get(convertView, R.id.date);
+            date.setText(news.getPubDate());
+
+            final TextView desc = ViewHolder.get(convertView, R.id.description);
+            desc.setText(news.getDesc());
+
+            return convertView;
         }
     }
 
     static class ViewHolder {
-        public final View mRoot;
-        public final TextView mTitle;
-        public final TextView mDate;
-        public final TextView mDesc;
-
-        private ViewHolder(ViewGroup parent) {
-            mRoot = LayoutInflater.from(parent.getContext()).inflate(R.layout.headlines_item, null);
-            mRoot.setTag(this);
-
-            mTitle = (TextView) mRoot.findViewById(R.id.title);
-            mDate = (TextView) mRoot.findViewById(R.id.date);
-            mDesc = (TextView) mRoot.findViewById(R.id.description);
-        }
-
-        public static ViewHolder get(View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                return new ViewHolder(parent);
+        @SuppressWarnings("unchecked")
+        public static <T extends View> T get(View view, int id) {
+            SparseArray<View> viewHolder = (SparseArray<View>) view.getTag();
+            if (viewHolder == null) {
+                viewHolder = new SparseArray<View>();
+                view.setTag(viewHolder);
             }
-            return (ViewHolder) convertView.getTag();
+            View res = viewHolder.get(id);
+            if (res == null) {
+                res = view.findViewById(id);
+                viewHolder.put(id, res);
+            }
+            return (T) res;
         }
     }
 }

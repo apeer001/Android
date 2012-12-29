@@ -75,7 +75,7 @@ public abstract class AbstractScheduleFragment extends SherlockListFragment impl
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             final String sectionTitle = cursor.getString(cursor.getColumnIndex("sectiontitle"));
-            if (sectionTitle != null && !sectionTitle.isEmpty()) {
+            if (sectionTitle != null && sectionTitle.length() != 0) { //API 9 String.isEmpty() 
                 sections.add(new SimpleSectionedListAdapter.Section(cursor.getPosition(), sectionTitle));
             }
             cursor.moveToNext();
