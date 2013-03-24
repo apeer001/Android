@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ import com.itnoles.shared.R;
 import com.itnoles.shared.SimpleSectionedListAdapter;
 import com.itnoles.shared.activities.BrowserDetailActivity;
 import com.itnoles.shared.io.NewsListLoader;
-import com.itnoles.shared.util.News;
+import com.itnoles.shared.io.model.News;
 
 import java.util.List;
 
@@ -149,8 +149,11 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
     }
 
     static class NewsListAdapter extends ArrayAdapter<News> {
+        private final LayoutInflater mLayoutInflater;
+
         public NewsListAdapter(Context context) {
             super(context, 0);
+            mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         public void setData(List<News> data) {
@@ -170,7 +173,7 @@ public class HeadlinesFragment extends SherlockListFragment implements LoaderMan
             // A ViewHolder keeps references to children views to avoid
             // unneccessary calls to findViewById() on each row.
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.headlines_item, null);
+                convertView = mLayoutInflater.inflate(R.layout.headlines_item, null);
             }
 
             final News news = getItem(position);

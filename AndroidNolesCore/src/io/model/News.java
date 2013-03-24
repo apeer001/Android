@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.shared.util;
+package com.itnoles.shared.io.model;
 
 import android.text.Html;
 
@@ -23,27 +23,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.itnoles.shared.LogUtils.makeLogTag;
+import static com.itnoles.shared.LogUtils.LOGW;
+
 /**
  * It is one of the Modal object that shared between Controller and View.
  */
 public class News {
-    private static final String LOG_TAG = LogUtils.makeLogTag(News.class);
+    private static final String LOG_TAG = makeLogTag(News.class);
 
     private String mTitle;
     private String mLink;
     private String mPubDate;
     private String mDesc;
     private Date mPublished;
-
-    private final ThreadLocal<SimpleDateFormat> mThreadDate = new ThreadLocal<SimpleDateFormat>();
-    private SimpleDateFormat getDateFormat(String format) {
-        SimpleDateFormat sdf = mThreadDate.get();
-        if (sdf == null) {
-            sdf = new SimpleDateFormat(format, Locale.US);
-            mThreadDate.set(sdf);
-        }
-        return sdf;
-    }
 
     public void setValue(String key, String value) {
         if ("title".equals(key)) {
@@ -61,28 +54,37 @@ public class News {
 
     private void setPublished(String date) {
         try {
-            mPublished = getDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(date);
+            final SafeAndroidDateFormat publishedDate = new SafeAndroidDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            mPublished = publishedDate.get().parse(date);
         } catch (ParseException e) {
-            LogUtils.LOGW(LOG_TAG, "Fail to parse published date", e);
+            LOGW(LOG_TAG, "Fail to parse published date", e);
         }
     }
 
-    public String getTitle() {
-        return mTitle;
-    }
-
-    public String getLink() {
-        return mLink;
-    }
+    public String getTitle() { return mTitle; }
+    public String getLink() { return mLink; }
 
     public String getPubDate() {
         if (mPublished != null) {
-            return getDateFormat("E, dd MMM yyyy HH:mm:ss z").format(mPublished);
+            final SafeAndroidDateFormat date = new SafeAndroidDateFormat("E, dd MMM yyyy HH:mm:ss z");
+            return date.get().format(mPublished);
         }
         return mPubDate;
     }
 
-    public String getDesc() {
-        return mDesc;
+    public String getDesc() { return mDesc; }
+
+    static class SafeAndroidDateFormat {
+        private final ThreadLocal<SimpleDateFormat> mThreadDate;
+
+        SafeAndroidDateFormat(String format) {
+            mThreadDate = new ThreadLocal<SimpleDateFormat>();
+            final SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
+            mThreadDate.set(sdf);
+        }
+
+        public final SimpleDateFormat get() {
+            return mThreadDate.get();
+        }
     }
 }

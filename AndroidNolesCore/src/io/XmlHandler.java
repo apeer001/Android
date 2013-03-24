@@ -27,8 +27,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.itnoles.shared.util.LogUtils.makeLogTag;
-import static com.itnoles.shared.util.LogUtils.LOGW;
+import static com.itnoles.shared.LogUtils.makeLogTag;
+import static com.itnoles.shared.LogUtils.LOGW;
 
 public abstract class XmlHandler {
     private static final String LOG_TAG = makeLogTag(XmlHandler.class);

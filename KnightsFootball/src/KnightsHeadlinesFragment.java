@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,16 +36,16 @@ public class KnightsHeadlinesFragment extends HeadlinesFragment {
 
         switch (item.getItemId()) {
             case R.id.athletics:
-                reloadLoaderWithNewInformation(title, "http://www.ucfathletics.com/headline-rss.xml");
+                reloadLoaderWithNewInformation("http://www.ucfathletics.com/headline-rss.xml");
                 break;
             case R.id.sports:
-                reloadLoaderWithNewInformation(title, "http://ucf.rivals.com/rss2feed.asp?SID=908");
+                reloadLoaderWithNewInformation("http://ucf.rivals.com/rss2feed.asp?SID=908");
                 break;
             case R.id.paper:
-                reloadLoaderWithNewInformation(title, "http://www.centralfloridafuture.com/se/central-florida-future-rss-1.991045");
+                reloadLoaderWithNewInformation("http://www.centralfloridafuture.com/se/central-florida-future-rss-1.991045");
                 break;
             case R.id.today:
-                reloadLoaderWithNewInformation(title, "http://today.ucf.edu/feed/");
+                reloadLoaderWithNewInformation("http://today.ucf.edu/feed/");
                 break;
             default:
         }

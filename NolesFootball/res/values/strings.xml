@@ -2,4 +2,10 @@
 
 <resources>
     <string name="app_name">Noles Football</string>
+    <string name="source">Source</string>
+    <string name="athletics">Top Athletics Stories</string>
+    <string name="warchant">Warchant</string>
+    <string name="digest">Noles Digest</string>
+    <string name="tomahawk">Tomahawk Nation</string>
+    <string name="spirit">Spirit Blogs</string>
 </resources>

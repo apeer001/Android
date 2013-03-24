@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:paddingLeft="6dip"
         android:paddingRight="6dip"
-        android:textAppearance="?android:textAppearanceMedium" />
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textIsSelectable="true" />
 
     <TextView
         android:id="@id/date"
@@ -18,7 +19,8 @@
         android:layout_below="@id/title"
         android:paddingLeft="6dip"
         android:paddingRight="6dip"
-        android:textAppearance="?android:textAppearanceSmall" />
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textIsSelectable="false" />
 		
 	<TextView
         android:id="@id/description"
@@ -27,5 +29,6 @@
         android:layout_below="@id/date"
         android:paddingLeft="6dip"
         android:paddingRight="6dip"
-        android:textAppearance="?android:textAppearanceSmall" />
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textIsSelectable="true" />
 </RelativeLayout>

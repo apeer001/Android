@@ -22,7 +22,6 @@ import android.net.Uri;
 
 import com.itnoles.shared.io.RemoteExecutor;
 import com.itnoles.shared.io.ScheduleHandler;
-import com.itnoles.shared.io.StaffHandler;
 import com.itnoles.shared.io.XmlHandler;
 import com.itnoles.shared.util.ParserUtils;
 import com.itnoles.shared.util.WorksheetEntry;
@@ -34,9 +33,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.itnoles.shared.util.LogUtils.makeLogTag;
-import static com.itnoles.shared.util.LogUtils.LOGD;
-import static com.itnoles.shared.util.LogUtils.LOGW;
+import static com.itnoles.shared.LogUtils.makeLogTag;
+import static com.itnoles.shared.LogUtils.LOGD;
+import static com.itnoles.shared.LogUtils.LOGW;
 
 public class WorksheetsHandler extends XmlHandler {
     private static final String TAG = makeLogTag(WorksheetsHandler.class);
@@ -64,7 +63,6 @@ public class WorksheetsHandler extends XmlHandler {
 
         // consider updating each spreadsheet based on update timestamp
         considerUpdate(sheets, ScheduleProvider.SCHEDULE_TXT, ScheduleProvider.SCHEDULE_CONTENT_URI, resolver);
-        considerUpdate(sheets, ScheduleProvider.STAFF_TXT, ScheduleProvider.STAFF_CONTENT_URI, resolver);
 
         return new ArrayList<ContentProviderOperation>();
     }
@@ -85,17 +83,14 @@ public class WorksheetsHandler extends XmlHandler {
         }
 
         final XmlHandler handler = createRemoteHandler(entry, targetDir);
-        mExecutor.executeWithPullParser(entry.getListFeed(), handler, 8192);
+        mExecutor.executeWithPullParser(entry.getListFeed(), handler);
     }
 
     private XmlHandler createRemoteHandler(WorksheetEntry entry, Uri targetDir) {
         final String title = entry.getTitle();
         if (ScheduleProvider.SCHEDULE_TXT.equals(title)) {
             return new ScheduleHandler(ScheduleProvider.CONTENT_AUTHORITY, targetDir);
-        } else if (ScheduleProvider.STAFF_TXT.equals(title)) {
-            return new StaffHandler(ScheduleProvider.CONTENT_AUTHORITY, targetDir);
-        } else {
-            throw new IllegalArgumentException("Unknown worksheet type");
         }
+        throw new IllegalArgumentException("Unknown worksheet type");
     }
 }

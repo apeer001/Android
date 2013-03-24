@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.itnoles.shared.util;
+package com.itnoles.shared;
 
 import android.util.Log;
-
-import com.itnoles.shared.BuildConfig;
 
 /**
  * Helper methods that make logging more consistent throughout the app.

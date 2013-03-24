@@ -28,8 +28,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.itnoles.shared.util.LogUtils.makeLogTag;
-import static com.itnoles.shared.util.LogUtils.LOGV;
+import static com.itnoles.shared.LogUtils.makeLogTag;
+import static com.itnoles.shared.LogUtils.LOGV;
 import static com.itnoles.shared.util.ParserUtils.queryItemUpdated;
 
 public class ScheduleHandler extends XmlHandler {
@@ -37,9 +37,9 @@ public class ScheduleHandler extends XmlHandler {
 
     private final Uri mUri;
 
-    public ScheduleHandler(String authority, Uri uri) {
+    public ScheduleHandler(String authority, Uri targetDir) {
         super(authority);
-        mUri = uri;
+        mUri = targetDir;
     }
 
     @Override

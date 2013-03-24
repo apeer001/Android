@@ -6,14 +6,16 @@
         android:id="@id/school"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:textAppearanceLarge" />
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textIsSelectable="true" />
 
     <TextView
         android:id="@id/date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/school"
-        android:textAppearance="?android:textAppearanceSmall" /> 
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textIsSelectable="true" /> 
 
     <TextView
         android:id="@id/tv"
@@ -21,7 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/school"
         android:gravity="center"
-        android:textAppearance="?android:textAppearanceSmall" />
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textIsSelectable="true" />
 
     <TextView
         android:id="@id/time"
@@ -30,5 +33,6 @@
         android:layout_below="@id/school"
         android:layout_alignRight="@id/tv"
         android:gravity="right"
-        android:textAppearance="?android:textAppearanceSmall" />
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textIsSelectable="true" />
 </RelativeLayout>

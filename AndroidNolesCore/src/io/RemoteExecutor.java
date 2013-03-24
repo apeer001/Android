@@ -19,7 +19,7 @@ package com.itnoles.shared.io;
 import android.content.ContentResolver;
 import android.content.Context;
 
-import com.itnoles.shared.util.XMLParserConnection;
+import com.itnoles.shared.XMLParserConnection;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -35,9 +35,9 @@ public class RemoteExecutor {
         mResolver = resolver;
     }
 
-    public void executeWithPullParser(String urlString, final XmlHandler handler, int size) {
+    public void executeWithPullParser(String urlString, final XmlHandler handler) {
         final XMLParserConnection connection = new XMLParserConnection(mContext);
-        connection.execute(urlString, size, new XMLParserConnection.XMLParserListener() {
+        connection.execute(urlString, new XMLParserConnection.XMLParserListener() {
             public void onPostExecute(XmlPullParser parser) throws XmlPullParserException, IOException {
                 handler.parseAndApply(parser, mResolver);
             }

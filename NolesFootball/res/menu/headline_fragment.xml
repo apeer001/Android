@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="Source" android:showAsAction="always|withText">
+    <item android:title="@string/source" android:showAsAction="always|withText">
         <menu>
-            <item android:id="@+id/athletics" android:title="Top Athletics Stories" />
-            <item android:id="@+id/warchant" android:title="Warchant" />
-            <item android:id="@+id/digest" android:title="Noles Digest" />
-            <item android:id="@+id/tomahawk" android:title="Tomahawk Nation" />
-            <item android:id="@+id/spirit" android:title="Spirit Blogs" />
+            <item android:id="@+id/athletics" android:title="@string/athletics" />
+            <item android:id="@+id/warchant" android:title="@string/warchant" />
+            <item android:id="@+id/digest" android:title="@string/digest" />
+            <item android:id="@+id/tomahawk" android:title="@string/tomahawk" />
+            <item android:id="@+id/spirit" android:title="@string/spirit" />
         </menu>
     </item>
 </menu>

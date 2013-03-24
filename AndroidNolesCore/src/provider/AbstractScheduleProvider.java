@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,17 +31,13 @@ import android.support.v4.database.DatabaseUtilsCompat;
 import java.util.ArrayList;
 
 public abstract class AbstractScheduleProvider extends ContentProvider {
-    protected ScheduleDatabase mOpenHelper;
+    private ScheduleDatabase mOpenHelper;
 
-    protected static final String UNKNOWN_URI_LOG = "Unknown uri: ";
+    private static final String UNKNOWN_URI_LOG = "Unknown uri: ";
 
     public static final String SCHEDULE_TXT = "schedule";
     protected static final int SCHEDULE = 100;
     protected static final int SCHEDULE_ID = 101;
-
-    public static final String STAFF_TXT = "staff";
-    protected static final int STAFF = 200;
-    protected static final int STAFF_ID = 201;
 
     protected static final UriMatcher URIMATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -60,10 +56,6 @@ public abstract class AbstractScheduleProvider extends ContentProvider {
                 return "vnd.android.cursor.dir/vnd.itnoles.schedule";
             case SCHEDULE_ID:
                 return "vnd.android.cursor.item/vnd.itnoles.schedule";
-            case STAFF:
-                return "vnd.android.cursor.dir/vnd.itnoles.staff";
-            case STAFF_ID:
-                return "vnd.android.cursor.item/vnd.itnoles.staff";
             default:
                 throw new UnsupportedOperationException(UNKNOWN_URI_LOG + uri);
         }
@@ -81,13 +73,6 @@ public abstract class AbstractScheduleProvider extends ContentProvider {
             case SCHEDULE_ID:
                 qb.setTables(SCHEDULE_TXT);
                 qb.appendWhereEscapeString("date=" + uri.getLastPathSegment());
-                break;
-            case STAFF:
-                qb.setTables(STAFF_TXT);
-                break;
-            case STAFF_ID:
-                qb.setTables(STAFF_TXT);
-                qb.appendWhereEscapeString("name=" + uri.getLastPathSegment());
                 break;
             default:
                 throw new UnsupportedOperationException(UNKNOWN_URI_LOG + uri);
@@ -120,18 +105,25 @@ public abstract class AbstractScheduleProvider extends ContentProvider {
                 finalSelection = getIDFromUriWithSelectionArgs("date='" + uri.getLastPathSegment() + "'", selection);
                 count = db.update(SCHEDULE_TXT, values, finalSelection, selectionArgs);
                 break;
-            case STAFF:
-                count = db.update(STAFF_TXT, values, selection, selectionArgs);
-                break;
-            case STAFF_ID:
-                finalSelection = getIDFromUriWithSelectionArgs("name='" + uri.getLastPathSegment() + "'", selection);
-                count = db.update(STAFF_TXT, values, finalSelection, selectionArgs);
-                break;
             default:
                 throw new UnsupportedOperationException(UNKNOWN_URI_LOG + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
         return count;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        // Validates the incoming URI. Only the full provider URI is allowed for inserts.
+        if (URIMATCHER.match(uri) != SCHEDULE) {
+            throw new IllegalArgumentException(UNKNOWN_URI_LOG + uri);
+        }
+
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        db.insertOrThrow(SCHEDULE_TXT, null, values);
+        getContext().getContentResolver().notifyChange(uri, null);
+        return Uri.withAppendedPath(uri, values.getAsString("title"));
     }
 
     /** {@inheritDoc} */
@@ -148,13 +140,6 @@ public abstract class AbstractScheduleProvider extends ContentProvider {
             case SCHEDULE_ID:
                 finalSelection = getIDFromUriWithSelectionArgs("date= '" + uri.getLastPathSegment() + "'", selection);
                 count = db.delete(SCHEDULE_TXT, finalSelection, selectionArgs);
-                break;
-            case STAFF:
-                count = db.delete(STAFF_TXT, selection, selectionArgs);
-                break;
-            case STAFF_ID:
-                finalSelection = getIDFromUriWithSelectionArgs("name= '" + uri.getLastPathSegment() + "'", selection);
-                count = db.delete(STAFF_TXT, finalSelection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException(UNKNOWN_URI_LOG + uri);
