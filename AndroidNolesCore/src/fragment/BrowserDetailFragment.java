@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ public class BrowserDetailFragment extends SherlockFragment {
         mWebView.getSettings().setBuiltInZoomControls(true);
 
         mWebView.setWebChromeClient(new WebChromeClient() {
+            // Set Progress Bar %
             public void onProgressChanged(WebView view, int newProgress) {
                 mProgressBar.setProgress(newProgress);
             }
@@ -84,11 +85,13 @@ public class BrowserDetailFragment extends SherlockFragment {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             }
 
+            // Visible Progress Bar
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 mProgressBar.setVisibility(View.VISIBLE);
             }
 
+            // Hide Progress Bar
             @Override
             public void onPageFinished(WebView view, String url) {
                 mProgressBar.setVisibility(View.GONE);
@@ -100,15 +103,13 @@ public class BrowserDetailFragment extends SherlockFragment {
 
     /**
      * Called when the overall system is running low on memory.
+     * Free Memory on WebView if it is not null
      */
     @Override
     public void onLowMemory() {
         super.onLowMemory();
 
         if (mWebView != null) {
-            /**
-             * Free memory on WebView
-             */
             mWebView.freeMemory();
         }
     }

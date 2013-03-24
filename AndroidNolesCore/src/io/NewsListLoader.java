@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,9 @@
 package com.itnoles.shared.io;
 
 import android.content.Context;
-import android.support.v4.content.AsyncTaskLoader;
 
-import com.itnoles.shared.util.News;
-import com.itnoles.shared.util.XMLParserConnection;
+import com.itnoles.shared.XMLParserConnection;
+import com.itnoles.shared.io.model.News;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -31,14 +30,9 @@ import java.util.*;
 /**
  * A custom Loader that loads all of the headlines.
  */
-public class NewsListLoader extends AsyncTaskLoader<List<News>> {
-    private List<News> mNews;
-
-    private final String mURL;
-
+public class NewsListLoader extends FeedListLoader<News> {
     public NewsListLoader(Context context, String url) {
-        super(context);
-        mURL = url;
+        super(context, url);
     }
 
     /**
@@ -48,101 +42,48 @@ public class NewsListLoader extends AsyncTaskLoader<List<News>> {
      */
     @Override
     public List<News> loadInBackground() {
-        final List<News> results = new ArrayList<News>();
+        final NewsList newsList = new NewsList();
         final XMLParserConnection connection = new XMLParserConnection(getContext());
-        connection.execute(mURL, 8192, new XMLParserConnection.XMLParserListener() {
-            public void onPostExecute(XmlPullParser parser) throws XmlPullParserException, IOException {
-                // The News that is currently being parsed
-                News currentNews = null;
-                // The current event returned by the parser
-                int eventType;
-                while ((eventType = parser.next()) != XmlPullParser.END_DOCUMENT) {
-                    String name = null;
-                    switch(eventType) {
-                        case XmlPullParser.START_TAG:
-                            name = parser.getName();
-                            if ("item".equals(name) || "entry".equals(name)) {
-                                currentNews = new News();
-                            } else if (currentNews != null) {
-                                if ("link".equals(name) && parser.getAttributeCount() > 0) {
-                                    final String url = parser.getAttributeValue(null, "url");
-                                    currentNews.setValue(name, url);
-                                } else {
-                                    currentNews.setValue(name, parser.nextText());
-                                }
+        connection.execute(mURL, newsList);
+        return newsList.getResults();
+    }
+
+    static class NewsList implements XMLParserConnection.XMLParserListener {
+        private List<News> mResults = new ArrayList<News>();
+
+        public void onPostExecute(XmlPullParser parser) throws XmlPullParserException, IOException {
+            // The News that is currently being parsed
+            News currentNews = null;
+
+            // The current event returned by the parser
+            int eventType;
+            while ((eventType = parser.next()) != XmlPullParser.END_DOCUMENT) {
+                final String name = parser.getName();
+                switch(eventType) {
+                    case XmlPullParser.START_TAG:
+                        if ("item".equals(name) || "entry".equals(name)) {
+                            currentNews = new News();
+                        } else if (currentNews != null) {
+                            if ("link".equals(name) && parser.getAttributeCount() > 0) {
+                                final String url = parser.getAttributeValue(null, "url");
+                                currentNews.setValue(name, url);
+                            } else {
+                                currentNews.setValue(name, parser.nextText());
                             }
-                            break;
-                        case XmlPullParser.END_TAG:
-                            name = parser.getName();
-                            if ("item".equals(name) || "entry".equals(name)) {
-                                results.add(currentNews);
-                            }
-                            break;
-                        default:
-                    }
+                        }
+                        break;
+                    case XmlPullParser.END_TAG:
+                        if ("item".equals(name) || "entry".equals(name)) {
+                            mResults.add(currentNews);
+                        }
+                        break;
+                    default:
                 }
             }
-        });
-        return results;
-    }
-
-    /**
-     * Called when there is new data to deliver to the client. The
-     * super class will take care of delivering it; the implementation
-     * here just adds a little more logic.
-     */
-    @Override
-    public void deliverResult(List<News> news) {
-        mNews = news;
-
-        if (isStarted()) {
-            // If the Loader is currently started, we can immediately
-            // deliver its results.
-            super.deliverResult(news);
-        }
-    }
-
-    /**
-     * Handles a request to start the Loader.
-     */
-    @Override
-    protected void onStartLoading() {
-        if (mNews != null) {
-            // If we currently have a result available, deliver it
-            // immediately.
-            deliverResult(mNews);
         }
 
-        if (mNews == null) {
-            // If the data has changed since the last time it was loaded
-            // or is not currently available, start a load.
-            forceLoad();
-        }
-    }
-
-    /**
-     * Handles a request to stop the Loader.
-     */
-    @Override
-    protected void onStopLoading() {
-        // Attempt to cancel the current load task if possible.
-        cancelLoad();
-    }
-
-    /**
-     * Handles a request to completely reset the Loader.
-     */
-    @Override
-    protected void onReset() {
-        super.onReset();
-
-        // Ensure the loader is stopped
-        onStopLoading();
-
-        // At this point we can release the resources associated with 'news'
-        // if needed.
-        if (mNews != null) {
-            mNews.clear();
+        List<News> getResults() {
+            return mResults;
         }
     }
 }

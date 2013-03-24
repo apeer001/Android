@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 package com.itnoles.shared.activities;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
@@ -33,12 +32,11 @@ import com.itnoles.shared.R;
 import java.util.ArrayList;
 
 public abstract class AbstractMainActivity extends SherlockFragmentActivity {
-    TabsAdapter mTabsAdapter;
+    private TabsAdapter mTabsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        final boolean SUPPORTS_GINGERBREAD = Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
-        if (BuildConfig.DEBUG && SUPPORTS_GINGERBREAD) {
+        if (BuildConfig.DEBUG) {
             StrictMode.enableDefaults();
         }
         super.onCreate(savedInstanceState);
@@ -50,12 +48,8 @@ public abstract class AbstractMainActivity extends SherlockFragmentActivity {
     }
 
     protected void onAddTab(String title, Class clzz, Bundle bundle) {
-        final ActionBar bar = getSupportActionBar();
-        mTabsAdapter.addTab(bar.newTab().setText(title), clzz, bundle);
-    }
-
-    protected Boolean hasHoneycomb() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
+        final ActionBar.Tab tab = getSupportActionBar().newTab().setText(title);
+        mTabsAdapter.addTab(tab, clzz, bundle);
     }
 
     /**

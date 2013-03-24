@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 public abstract class BaseSinglePaneActivity extends SherlockFragmentActivity {
-    private Fragment mFragment;
-
     // Called when the activity is first created.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +33,7 @@ public abstract class BaseSinglePaneActivity extends SherlockFragmentActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
-            mFragment = onCreatePane();
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, mFragment).commit();
+            getSupportFragmentManager().beginTransaction().add(android.R.id.content, onCreatePane()).commit();
         }
     }
 

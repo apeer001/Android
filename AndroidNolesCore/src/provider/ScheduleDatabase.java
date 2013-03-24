@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import static com.itnoles.shared.util.LogUtils.makeLogTag;
-import static com.itnoles.shared.util.LogUtils.LOGW;
+import static com.itnoles.shared.LogUtils.makeLogTag;
+import static com.itnoles.shared.LogUtils.LOGW;
 
 /**
  * Helper for managing {@link SQLiteDatabase} that stores data in
@@ -59,13 +59,6 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
             + "school TEXT,"
             + "sectiontitle TEXT,"
             + "updated TEXT)");
-
-        db.execSQL("CREATE TABLE staff ("
-            + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + "name TEXT,"
-            + "positions TEXT,"
-            + "url TEXT,"
-            + "updated TEXT)");
     }
 
     @Override
@@ -75,7 +68,6 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
 
             // Kills the table and existing data
             db.execSQL("DROP TABLE IF EXISTS schedule");
-            db.execSQL("DROP TABLE IF EXISTS staff");
 
             // Recreates the database with a new version
             onCreate(db);

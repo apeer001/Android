@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,6 @@
 
 package com.itnoles.knightfootball;
 
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.itnoles.shared.provider.AbstractScheduleProvider;
@@ -25,7 +23,6 @@ import com.itnoles.shared.provider.AbstractScheduleProvider;
 public class ScheduleProvider extends AbstractScheduleProvider {
     public static final String CONTENT_AUTHORITY = "com.itnoles.knightfootball.provider";
     public static final Uri SCHEDULE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY + "/schedule");
-    public static final Uri STAFF_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY + "/staff");
 
     /**
      * Allocate the UriMatcher object that catches all {@link Uri}
@@ -34,27 +31,5 @@ public class ScheduleProvider extends AbstractScheduleProvider {
     static {
         URIMATCHER.addURI(CONTENT_AUTHORITY, "schedule", SCHEDULE);
         URIMATCHER.addURI(CONTENT_AUTHORITY, "schedule/*", SCHEDULE_ID);
-
-        URIMATCHER.addURI(CONTENT_AUTHORITY, "staff", STAFF);
-        URIMATCHER.addURI(CONTENT_AUTHORITY, "staff/*", STAFF_ID);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Uri insert(Uri uri, ContentValues values) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        final int match = URIMATCHER.match(uri);
-        switch (match) {
-            case SCHEDULE:
-                db.insertOrThrow(SCHEDULE_TXT, null, values);
-                getContext().getContentResolver().notifyChange(uri, null);
-                return Uri.withAppendedPath(SCHEDULE_CONTENT_URI, values.getAsString("title"));
-            case STAFF:
-                db.insertOrThrow(STAFF_TXT, null, values);
-                getContext().getContentResolver().notifyChange(uri, null);
-                return Uri.withAppendedPath(STAFF_CONTENT_URI, values.getAsString("title"));
-            default:
-                throw new UnsupportedOperationException(UNKNOWN_URI_LOG + uri);
-        }
     }
 }

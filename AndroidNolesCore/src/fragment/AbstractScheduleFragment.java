@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -73,12 +74,11 @@ public abstract class AbstractScheduleFragment extends SherlockListFragment impl
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         final List<SimpleSectionedListAdapter.Section> sections = new ArrayList<SimpleSectionedListAdapter.Section>();
         cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
+        while (cursor.moveToNext()) {
             final String sectionTitle = cursor.getString(cursor.getColumnIndex("sectiontitle"));
-            if (sectionTitle != null && sectionTitle.length() != 0) { //API 9 String.isEmpty() 
+            if (!TextUtils.isEmpty(sectionTitle)) {
                 sections.add(new SimpleSectionedListAdapter.Section(cursor.getPosition(), sectionTitle));
             }
-            cursor.moveToNext();
         }
 
         mSimpleAdapter.swapCursor(cursor);

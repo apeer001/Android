@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Jonathan Steele
+ * Copyright (C) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ package com.itnoles.knightfootball;
 import android.os.Bundle;
 
 import com.itnoles.shared.activities.AbstractMainActivity;
+import com.itnoles.shared.fragment.RostersFragment;
 import com.itnoles.shared.io.RemoteExecutor;
 
 public class MainActivity extends AbstractMainActivity {
@@ -35,13 +36,16 @@ public class MainActivity extends AbstractMainActivity {
         onAddTab("News", KnightsHeadlinesFragment.class, headlines);
 
         onAddTab("Schedule", ScheduleFragment.class, null);
-        onAddTab("Staff", StaffFragment.class, null);
 
-        // Load and parse the XML worksheet from Google Spreadsheet
+        final Bundle rosters = new Bundle();
+        rosters.putString("schoolCode", "ucf");
+        onAddTab("Rosters", RostersFragment.class, rosters);
+
+        // Load and parse the schedule XML sheet from Google Spreadsheet
         new Thread(new Runnable() {
             public void run() {
                 final RemoteExecutor executor = new RemoteExecutor(MainActivity.this, getContentResolver());
-                executor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(executor), 4096);
+                executor.executeWithPullParser(WORKSHEET_URL, new WorksheetsHandler(executor));
             }
         }, "sync").start();
     }

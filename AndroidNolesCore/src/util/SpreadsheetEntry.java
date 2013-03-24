@@ -34,26 +34,9 @@ public class SpreadsheetEntry extends HashMap<String, String> {
 
     private static final Pattern CONTENT_PATTERN = Pattern.compile(
             "(?:^|, )([_a-zA-Z0-9]+): (.*?)(?=\\s*$|, [_a-zA-Z0-9]+: )", Pattern.DOTALL);
-    private static final Object LOCK = new Object();
-
-    private static Matcher sContentMatcher;
 
     private long mUpdated;
-
-    private static Matcher getContentMatcher(CharSequence input) {
-        synchronized (LOCK) {
-            if (sContentMatcher == null) {
-                sContentMatcher = CONTENT_PATTERN.matcher(input);
-            } else {
-                sContentMatcher.reset(input);
-            }
-        }
-        return sContentMatcher;
-    }
-
-    public long getUpdated() {
-        return mUpdated;
-    }
+    public long getUpdated() { return mUpdated; }
 
     public static SpreadsheetEntry fromParser(XmlPullParser parser) throws XmlPullParserException, IOException {
         final int depth = parser.getDepth();
@@ -67,15 +50,13 @@ public class SpreadsheetEntry extends HashMap<String, String> {
             } else if (type == END_TAG) {
                 tag = null;
             } else if (type == TEXT) {
+                final String text = parser.getText();
                 if ("updated".equals(tag)) {
-                    final String text = parser.getText();
                     entry.mUpdated = ParserUtils.parseTime(text);
                 } else if ("title".equals(tag)) {
-                    final String text = parser.getText();
                     entry.put("title", text);
                 } else if ("content".equals(tag)) {
-                    final String text = parser.getText();
-                    final Matcher matcher = getContentMatcher(text);
+                    final Matcher matcher = CONTENT_PATTERN.matcher(text);
                     while (matcher.find()) {
                         final String key = matcher.group(1);
                         final String value = matcher.group(2).trim();
