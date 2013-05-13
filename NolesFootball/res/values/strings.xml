@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
     <string name="app_name">Noles Football</string>
+    <string name="share_width">Share width</string>
+    <string name="search">Search</string>
     <string name="source">Source</string>
     <string name="athletics">Top Athletics Stories</string>
-    <string name="warchant">Warchant</string>
-    <string name="digest">Noles Digest</string>
+    <string name="rivals">Warchant</string>
+    <string name="scout">Noles Digest</string>
     <string name="tomahawk">Tomahawk Nation</string>
-    <string name="spirit">Spirit Blogs</string>
 </resources>
