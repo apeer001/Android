@@ -1,15 +1,5 @@
-<h1>What is AndroidNolesCore?</h1>
-<p>It is a library for Android that I will use in any sports team applications.</p>
-
-<h2>Are you going to develop this further?</h2>
-<p>Yes, I will continue to improve this library.</p>
-
-<h2>Project dependency</h2>
-<ul>
-   <li>ActionBarSherlock - https://github.com/JakeWharton/ActionBarSherlock</li>
-   <!--<li>HttpResponseCache - https://github.com/candrews/HttpResponseCache</li>
-   <li>DiskLruCache - https://github.com/JakeWharton/DiskLruCache</li>-->
-</ul>
+<h2>Improving App</h2>
+<p>I will improve any application in times go on</p>
 
 <h2>Mono Related Project</h2>
 <p>If you see any folder that contains Mono, it will not be released to the Play Store.</p>
