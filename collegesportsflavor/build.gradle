@@ -1,0 +1,73 @@
+//
+// A basic Android application that follows all the conventions
+//
+buildscript {
+    repositories.mavenCentral()
+    dependencies.classpath 'com.android.tools.build:gradle:0.4.2'
+}
+
+apply plugin: 'android'
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+
+repositories.mavenCentral()
+
+checkstyle {
+    configFile = file('../checkstyle.xml')
+    ignoreFailures = true
+}
+
+pmd {
+    ruleSetFiles = files('../pmd.xml')
+    ignoreFailures = true
+}
+
+dependencies {
+    compile project('volley')
+    compile 'com.android.support:support-v13:13.0.0'
+}
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion '17'
+
+    defaultConfig {
+        versionCode 1
+        versionName '1.1.0'
+        minSdkVersion 14
+        targetSdkVersion 17
+    }
+
+    productFlavors {
+        nolesfootball {
+            packageName "com.itnoles.nolesfootball"
+            buildConfig "public static final String SCHOOL_CODE = \"fsu\";", \
+                        "public static final String NEWS_URL = \"http://www.seminoles.com/headline-rss.xml\";", \
+                        "public static final String SCHEDULE_URL = \"\";"
+        }
+
+        knightsfootball {
+            packageName "com.itnoles.knightsfootball"
+            buildConfig "public static final String SCHOOL_CODE = \"ucf\";", \
+                        "public static final String NEWS_URL = \"http://www.ucfathletics.com/headline-rss.xml\";", \
+                        "public static final String SCHEDULE_URL = \"\";"
+        }
+    }
+
+    signingConfigs {
+        myConfig {
+            storeFile file(signingStoreLocation)
+            storePassword signingStorePassword
+            keyAlias signingKeyAlias
+            keyPassword signingKeyPassword
+        }
+    }
+
+    buildTypes {
+        release {
+            runProguard true
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+            signingConfig signingConfigs.myConfig
+        }
+    }
+}
