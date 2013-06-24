@@ -5,7 +5,7 @@
 <p>If you see any folder that contains Mono, it will not be released to the Play Store.</p>
 
 <h2>License</h2>
-<pre><code>Copyright (C) 2011 Jonathan Steele
+<pre><code>Copyright (C) 2013 Jonathan Steele
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
