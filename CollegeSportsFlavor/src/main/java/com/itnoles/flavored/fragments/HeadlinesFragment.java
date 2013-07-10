@@ -18,6 +18,7 @@ package com.itnoles.flavored.fragment;
 
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,7 @@ import com.android.volley.Response.Listener;
 //import com.android.volley.toolbox.NetworkImageView;
 import com.itnoles.flavored.activities.BrowserDetailActivity;
 import com.itnoles.flavored.R;
+import com.itnoles.flavored.UIUtils;
 import com.itnoles.flavored.VolleyHelper;
 import com.itnoles.flavored.XMLRequest;
 
@@ -48,41 +50,15 @@ public class HeadlinesFragment extends ListFragment {
 
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
+    private NewsListAdapter mAdapter;
 
     @Override
     public void onActivityCreated(Bundle savedState) {
         super.onActivityCreated(savedState);
 
         // Create an empty adapter we will use to display the loaded data.
-        final ArrayAdapter<News> adapter = new ArrayAdapter<News>(getActivity(), 0) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                // A ViewHolder keeps references to children views to avoid unneccessary calls
-                // to findViewById() on each row.
-                ViewHolder holder;
-
-                if (convertView == null) {
-                    convertView = getActivity().getLayoutInflater().inflate(R.layout.headlines_item, parent, false);
-
-                    holder = new ViewHolder();
-                    holder.title = (TextView) convertView.findViewById(R.id.title);
-                    holder.date = (TextView) convertView.findViewById(R.id.date);
-                    holder.desc = (TextView) convertView.findViewById(R.id.desc);
-
-                    convertView.setTag(holder);
-                } else {
-                    holder = (ViewHolder) convertView.getTag();
-                }
-
-                News news = getItem(position);
-                holder.title.setText(news.title);
-                holder.date.setText(news.pubDate);
-                holder.desc.setText(news.desc);
-
-                return convertView;
-            }
-        };
-        setListAdapter(adapter);
+        mAdapter = new NewsListAdapter(getActivity());
+        setListAdapter(mAdapter);
 
         // Determine whether we are in single-pane or dual-pane mode by testing the visibility
         // of the detail view.
@@ -96,15 +72,31 @@ public class HeadlinesFragment extends ListFragment {
             // In dual-pane mode, the list view highlights the selected item.
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Load the Data if ArrayAdapter is empty.
+        if (mAdapter.isEmpty()) {
+        	loadData();
+        }
+    }
+
+    private void loadData() {
         // Start default url load with Volley.
-        XMLRequest xr = new XMLRequest(NEWS_URL, new Listener<XmlPullParser>() {
+        XMLRequest xr = new XMLRequest(NEWS_URL, createMyReqSuccessListener());
+        VolleyHelper.getResultQueue().add(xr);
+    }
+
+    private Listener<XmlPullParser> createMyReqSuccessListener() {
+    	return new Listener<XmlPullParser>() {
             @Override
             public void onResponse(XmlPullParser response) {
-                adapter.addAll(getHeadlinesResult(response));
+                mAdapter.addAll(getHeadlinesResult(response));
             }
-        });
-        VolleyHelper.getResultQueue().add(xr);
+        };
     }
 
     private List<News> getHeadlinesResult(XmlPullParser parser) {
@@ -162,6 +154,39 @@ public class HeadlinesFragment extends ListFragment {
             Intent intent = new Intent(getActivity(), BrowserDetailActivity.class);
             intent.putExtra("url", urlString);
             startActivity(intent);
+        }
+    }
+
+    private class NewsListAdapter extends ArrayAdapter<News> {
+    	public NewsListAdapter(Context context) {
+    		super(context, 0);
+    	}
+
+    	@Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // A ViewHolder keeps references to children views to avoid unneccessary calls
+            // to findViewById() on each row.
+            ViewHolder holder;
+
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.headlines_item, parent, false);
+
+                holder = new ViewHolder();
+                holder.title = (TextView) convertView.findViewById(R.id.title);
+                holder.date = (TextView) convertView.findViewById(R.id.date);
+                holder.desc = (TextView) convertView.findViewById(R.id.desc);
+
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            News news = getItem(position);
+            holder.title.setText(news.title);
+            holder.date.setText(news.pubDate);
+            UIUtils.setTextMaybeHtml(holder.desc, news.desc);
+
+            return convertView;
         }
     }
 
