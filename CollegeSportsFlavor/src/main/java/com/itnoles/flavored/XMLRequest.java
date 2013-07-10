@@ -44,13 +44,14 @@ public class XMLRequest extends Request<XmlPullParser> {
 
 	public XMLRequest(String url, Response.Listener<XmlPullParser> listener) {
 		super(Method.GET, url, new Response.ErrorListener() {
-			@Override
+            @Override
             public void onErrorResponse(VolleyError error) {
-                Log.v(LOG_TAG, "VolleyError", error);
+                Log.e(LOG_TAG, "xml data failed to load", error);
             }
-		});
+        });
         mListener = listener;
 	}
+
 
     @Override
     protected void deliverResponse(XmlPullParser response) {

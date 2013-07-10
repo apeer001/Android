@@ -70,19 +70,18 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
             // In dual-pane mode, the list view highlights the selected item.
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
+    }
 
-        XMLRequest xr = new XMLRequest("http://grfx.cstv.com/schools/" + SCHOOL_CODE + "/data/xml/roster/m-footbl-2012.xml",
-            new Listener<XmlPullParser>() {
-                @Override
-                public void onResponse(XmlPullParser response) {
-                    getRostersResult(response);
-                    mAdapter.addSection("2012 Athlete Roster", new RostersListAdapter(getActivity(), playerRosters));
-                    mAdapter.addSection("2012 Coaches and Staff", new RostersListAdapter(getActivity(), staffRosters));
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-        );
-        VolleyHelper.getResultQueue().add(xr);
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Load the Data if SectionedListAdapter with Section is empty.
+        if (mAdapter.isEmpty()) {
+            XMLRequest xr = new XMLRequest("http://grfx.cstv.com/schools/" + SCHOOL_CODE + "/data/xml/roster/m-footbl-2012.xml",
+                createMyReqSuccessListener());
+            VolleyHelper.getResultQueue().add(xr);
+        }
     }
 
     private void getRostersResult(XmlPullParser parser) {
@@ -165,6 +164,18 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
             intent.putExtra("url", urlString);
             startActivity(intent);
         }
+    }
+
+    private Listener<XmlPullParser> createMyReqSuccessListener() {
+        return new Listener<XmlPullParser>() {
+            @Override
+            public void onResponse(XmlPullParser response) {
+                getRostersResult(response);
+                mAdapter.addSection("2012 Athlete Roster", new RostersListAdapter(getActivity(), playerRosters));
+                mAdapter.addSection("2012 Coaches and Staff", new RostersListAdapter(getActivity(), staffRosters));
+                mAdapter.notifyDataSetChanged();
+            }
+        };
     }
 
     private class RostersListAdapter extends ArrayAdapter<Rosters> {

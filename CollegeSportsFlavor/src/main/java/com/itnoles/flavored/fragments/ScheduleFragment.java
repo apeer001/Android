@@ -44,35 +44,52 @@ public class ScheduleFragment extends ListFragment {
     private static final String LOG_TAG = "ScheduleFragment";
 
     private String header;
+    private SectionedListAdapter mAdapter;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // The SectionedListAdapter is going to show schedule header for overall and conference records
-        final SectionedListAdapter adapter = new SectionedListAdapter(getActivity(), R.layout.list_section_header);
-        setListAdapter(adapter);
+        mAdapter = new SectionedListAdapter(getActivity(), R.layout.list_section_header);
+        setListAdapter(mAdapter);
 
         // If this is under tablet, hide detail view.
         View detailsFrame = getActivity().findViewById(R.id.fragment_details);
         if (detailsFrame != null) {
             detailsFrame.setVisibility(View.GONE);
         }
+    }
 
-        StringRequest sr = new StringRequest(SCHEDULE_URL, new Response.Listener<String>() {
+    @Override
+    public void onResume() {
+    	super.onResume();
+
+        // Load the Data if SectionedListAdapter with Section is empty.
+        if (mAdapter.isEmpty()) {
+            StringRequest sr = new StringRequest(SCHEDULE_URL, createMyReqSuccessListener(), createMyReqErrorListener());
+            VolleyHelper.getResultQueue().add(sr);
+        }
+    }
+
+    private Response.Listener<String> createMyReqSuccessListener() {
+        return new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 List<Schedule> data = getScheduleResult(response);
-                adapter.addSection(header, new ScheduleListAdapter(getActivity(), data));
-                adapter.notifyDataSetChanged();
+                mAdapter.addSection(header, new ScheduleListAdapter(getActivity(), data));
+                mAdapter.notifyDataSetChanged();
             }
-        }, new Response.ErrorListener() {
+        };
+    }
+
+    private Response.ErrorListener createMyReqErrorListener() {
+        return new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.v(LOG_TAG, "VolleyError", error);
+                Log.e(LOG_TAG, "json data failed to load", error);
             }
-        });
-        VolleyHelper.getResultQueue().add(sr);
+        };
     }
 
     private List<Schedule> getScheduleResult(String response) {

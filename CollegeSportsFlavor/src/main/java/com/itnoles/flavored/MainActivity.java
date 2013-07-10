@@ -16,11 +16,7 @@
 
 package com.itnoles.flavored;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.*; //ActionBar, Activity, Fragment, FragmentManager, FragmentTransaction
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.view.ViewPager;
