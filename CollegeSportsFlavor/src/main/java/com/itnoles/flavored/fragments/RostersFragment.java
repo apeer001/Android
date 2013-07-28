@@ -18,16 +18,19 @@ package com.itnoles.flavored.fragment;
 
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*; // Menu, MenuInflater, MenuItem, View and ViewGroup
-import android.widget.*; //ArrayAdapter, ListView, SearchView and TextView
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.SearchView;
 
 import com.android.volley.Response.Listener;
 import com.itnoles.flavored.activities.RostersDetailActivity;
-import com.itnoles.flavored.*; // R, Rosters, SectionedListAdapter, VolleyHelper and XMLRequest
+import com.itnoles.flavored.*; // R, Rosters, RostersListAdapter, SectionedListAdapter, VolleyHelper and XMLRequest
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -44,19 +47,18 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
     private SectionedListAdapter mAdapter;
-    private List<Rosters> staffRosters = new ArrayList<Rosters>();
-    private List<Rosters> playerRosters = new ArrayList<Rosters>();
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        setListShownNoAnimation(true);
 
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
         // The SectionedListAdapter has a header to group players and staff
         mAdapter = new SectionedListAdapter(getActivity(), R.layout.list_section_header);
-        setListAdapter(mAdapter);
 
         // Determine whether we are in single-pane or dual-pane mode by testing the visibility
         // of the detail view.
@@ -70,21 +72,14 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
             // In dual-pane mode, the list view highlights the selected item.
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Load the Data if SectionedListAdapter with Section is empty.
-        if (mAdapter.isEmpty()) {
-            XMLRequest xr = new XMLRequest("http://grfx.cstv.com/schools/" + SCHOOL_CODE + "/data/xml/roster/m-footbl-2012.xml",
-                createMyReqSuccessListener());
-            VolleyHelper.getResultQueue().add(xr);
-        }
+        XMLRequest xr = new XMLRequest("http://grfx.cstv.com/schools/" + SCHOOL_CODE + "/data/xml/roster/m-footbl-2012.xml", new RosterSuccess());
+        VolleyHelper.getResultQueue().add(xr);
     }
 
     private void getRostersResult(XmlPullParser parser) {
+        List<Rosters> playerRosters = new ArrayList<Rosters>();
+        List<Rosters> staffRosters = new ArrayList<Rosters>();
         try {
             // The Rosters that is currently being parsed
             Rosters currentRosters = null;
@@ -111,12 +106,21 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
         } catch (IOException ioe) {
             Log.w(LOG_TAG, "Problem on reading on file", ioe);
         }
+
+        mAdapter.addSection("2012 Athlete Roster", new RostersListAdapter(getActivity(), playerRosters));
+        mAdapter.addSection("2012 Coaches and Staff", new RostersListAdapter(getActivity(), staffRosters));
+        setListAdapter(mAdapter);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // inflate the menu
         inflater.inflate(R.menu.roster_fragment, menu);
+
+        // find the search item
         MenuItem searchViewMenuItem = menu.findItem(R.id.menu_search);
+
+        // Retrieve the Search View
         SearchView searchView = (SearchView) searchViewMenuItem.getActionView();
         searchView.setOnQueryTextListener(this);
     }
@@ -139,7 +143,7 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Rosters item = (Rosters) getListAdapter().getItem(position);
-        String urlString = item.details + "/" + item.bioId + ".xml";
+        String urlString = item.details + "/" + item.bioId + ".json";
         if (mDualPane) {
             // We can display everything in-place with fragments, so update
             // the list to highlight the selected item and show the data.
@@ -166,54 +170,13 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
         }
     }
 
-    private Listener<XmlPullParser> createMyReqSuccessListener() {
-        return new Listener<XmlPullParser>() {
-            @Override
-            public void onResponse(XmlPullParser response) {
-                getRostersResult(response);
-                mAdapter.addSection("2012 Athlete Roster", new RostersListAdapter(getActivity(), playerRosters));
-                mAdapter.addSection("2012 Coaches and Staff", new RostersListAdapter(getActivity(), staffRosters));
-                mAdapter.notifyDataSetChanged();
-            }
-        };
-    }
-
-    private class RostersListAdapter extends ArrayAdapter<Rosters> {
-        public RostersListAdapter(Context context, List<Rosters> data) {
-            super(context, 0, data);
-        }
-
-        /**
-         * Populate new items in the list.
-         */
+    class RosterSuccess implements Listener<XmlPullParser> {
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            // A ViewHolder keeps references to children views to avoid unneccessary calls
-            // to findViewById() on each row.
-            ViewHolder holder;
-
-            if (convertView == null) {
-                convertView = getActivity().getLayoutInflater().inflate(android.R.layout.simple_list_item_2, parent, false);
-
-                holder = new ViewHolder();
-                holder.fullName = (TextView) convertView.findViewById(android.R.id.text1);
-                holder.position = (TextView) convertView.findViewById(android.R.id.text2);
-
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
+        public void onResponse(XmlPullParser response) {
+            if (getActivity() == null) {
+                return;
             }
-
-            Rosters item = getItem(position);
-            holder.fullName.setText(item.lastName + ", " + item.firstName);
-            holder.position.setText(item.position);
-
-            return convertView;
+            getRostersResult(response);
         }
-    }
-
-    static class ViewHolder {
-        TextView fullName;
-        TextView position;
     }
 }

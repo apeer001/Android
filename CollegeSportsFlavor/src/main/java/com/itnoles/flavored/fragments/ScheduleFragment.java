@@ -26,15 +26,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.Response.Listener;
+import com.itnoles.flavored.JsonRequest;
 import com.itnoles.flavored.R;
 import com.itnoles.flavored.SectionedListAdapter;
 import com.itnoles.flavored.VolleyHelper;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,58 +41,30 @@ import static com.itnoles.flavored.BuildConfig.SCHEDULE_URL;
 public class ScheduleFragment extends ListFragment {
     private static final String LOG_TAG = "ScheduleFragment";
 
-    private String header;
-    private SectionedListAdapter mAdapter;
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // The SectionedListAdapter is going to show schedule header for overall and conference records
-        mAdapter = new SectionedListAdapter(getActivity(), R.layout.list_section_header);
-        setListAdapter(mAdapter);
+        setListShownNoAnimation(true);
 
         // If this is under tablet, hide detail view.
         View detailsFrame = getActivity().findViewById(R.id.fragment_details);
         if (detailsFrame != null) {
             detailsFrame.setVisibility(View.GONE);
         }
-    }
 
-    @Override
-    public void onResume() {
-    	super.onResume();
-
-        // Load the Data if SectionedListAdapter with Section is empty.
-        if (mAdapter.isEmpty()) {
-            StringRequest sr = new StringRequest(SCHEDULE_URL, createMyReqSuccessListener(), createMyReqErrorListener());
-            VolleyHelper.getResultQueue().add(sr);
-        }
-    }
-
-    private Response.Listener<String> createMyReqSuccessListener() {
-        return new Response.Listener<String>() {
+        JsonRequest jr = new JsonRequest(SCHEDULE_URL, new Listener<JsonReader>() {
             @Override
-            public void onResponse(String response) {
-                List<Schedule> data = getScheduleResult(response);
-                mAdapter.addSection(header, new ScheduleListAdapter(getActivity(), data));
-                mAdapter.notifyDataSetChanged();
+            public void onResponse(JsonReader response) {
+                getScheduleResult(response);
             }
-        };
+        });
+        VolleyHelper.getResultQueue().add(jr);
     }
 
-    private Response.ErrorListener createMyReqErrorListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(LOG_TAG, "json data failed to load", error);
-            }
-        };
-    }
-
-    private List<Schedule> getScheduleResult(String response) {
+    private void getScheduleResult(JsonReader reader) {
+        String header = null;
         List<Schedule> results = new ArrayList<Schedule>();
-        JsonReader reader = new JsonReader(new StringReader(response));
         try {
             reader.beginObject();
             while (reader.hasNext()) {
@@ -119,7 +89,11 @@ public class ScheduleFragment extends ListFragment {
                 Log.w(LOG_TAG, "Can't close JsonReader", ioe);
             }
         }
-        return results;
+
+        // The SectionedListAdapter is going to show schedule header for overall and conference records
+        SectionedListAdapter adapter = new SectionedListAdapter(getActivity(), R.layout.list_section_header);
+        adapter.addSection(header, new ScheduleListAdapter(getActivity(), results));
+        setListAdapter(adapter);
     }
 
     private Schedule readScheduleObject(JsonReader reader) throws IOException {
@@ -178,24 +152,27 @@ public class ScheduleFragment extends ListFragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            View view;
+
             // A ViewHolder keeps references to children views to avoid unneccessary calls
             // to findViewById() on each row.
             ViewHolder holder;
 
             if (convertView == null) {
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.schedule_item, parent, false);
+                view = getActivity().getLayoutInflater().inflate(R.layout.schedule_item, parent, false);
 
                 holder = new ViewHolder();
-                holder.date = (TextView) convertView.findViewById(R.id.date);
-                holder.at = (TextView) convertView.findViewById(R.id.away_team);
-                holder.as = (TextView) convertView.findViewById(R.id.away_score);
-                holder.ht = (TextView) convertView.findViewById(R.id.home_team);
-                holder.hs = (TextView) convertView.findViewById(R.id.home_score);
-                holder.status = (TextView) convertView.findViewById(R.id.status);
+                holder.date = (TextView) view.findViewById(R.id.date);
+                holder.at = (TextView) view.findViewById(R.id.away_team);
+                holder.as = (TextView) view.findViewById(R.id.away_score);
+                holder.ht = (TextView) view.findViewById(R.id.home_team);
+                holder.hs = (TextView) view.findViewById(R.id.home_score);
+                holder.status = (TextView) view.findViewById(R.id.status);
 
-                convertView.setTag(holder);
+                view.setTag(holder);
             } else {
-                holder = (ViewHolder) convertView.getTag();
+                view = convertView;
+                holder = (ViewHolder) view.getTag();
             }
 
             Schedule item = getItem(position);

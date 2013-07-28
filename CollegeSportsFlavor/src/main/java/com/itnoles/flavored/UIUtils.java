@@ -18,17 +18,17 @@ package com.itnoles.flavored;
 
 import android.text.Html;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 /**
  * An assortment of UI helpers.
  */
 public class UIUtils {
-	/**
+    private UIUtils() {}
+
+    /**
      * Populate the given {@link TextView} with the requested text, formatting
-     * through {@link Html#fromHtml(String)} when applicable. Also sets
-     * {@link TextView#setMovementMethod} so inline links are handled.
+     * through {@link Html#fromHtml(String)} when applicable.
      * Copy from http://code.google.com/p/iosched/source/browse/android/src/com/google/android/apps/iosched/util/UIUtils.java
      */
     public static void setTextMaybeHtml(TextView view, String text) {
@@ -38,7 +38,6 @@ public class UIUtils {
         }
         if (text.contains("<") && text.contains(">")) {
             view.setText(Html.fromHtml(text));
-            view.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             view.setText(text);
         }
