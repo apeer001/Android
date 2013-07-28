@@ -29,7 +29,9 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
 public class XMLRequest extends Request<XmlPullParser> {
-	private static final String LOG_TAG = "XMLRequest";
+    private static final String LOG_TAG = "XMLRequest";
+
+    private final Response.Listener<XmlPullParser> mListener;
 
     private static XmlPullParserFactory sXmlPullParserFactory;
     static {
@@ -39,18 +41,15 @@ public class XMLRequest extends Request<XmlPullParser> {
             Log.e(LOG_TAG, "Could not instantiate XmlPullParserFactory", e);
         }
     }
-
-    private final Response.Listener<XmlPullParser> mListener;
-
-	public XMLRequest(String url, Response.Listener<XmlPullParser> listener) {
-		super(Method.GET, url, new Response.ErrorListener() {
+    public XMLRequest(String url, Response.Listener<XmlPullParser> listener) {
+        super(Method.GET, url, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(LOG_TAG, "xml data failed to load", error);
             }
         });
         mListener = listener;
-	}
+    }
 
 
     @Override

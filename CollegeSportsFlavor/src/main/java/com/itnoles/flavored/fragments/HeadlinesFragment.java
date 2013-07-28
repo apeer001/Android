@@ -72,34 +72,22 @@ public class HeadlinesFragment extends ListFragment {
             // In dual-pane mode, the list view highlights the selected item.
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Load the Data if ArrayAdapter is empty.
-        if (mAdapter.isEmpty()) {
-        	loadData();
-        }
+        loadData();
     }
 
     private void loadData() {
         // Start default url load with Volley.
-        XMLRequest xr = new XMLRequest(NEWS_URL, createMyReqSuccessListener());
+        XMLRequest xr = new XMLRequest(NEWS_URL, new Listener<XmlPullParser>() {
+            @Override
+            public void onResponse(XmlPullParser response) {
+                getHeadlinesResult(response);
+            }
+        });
         VolleyHelper.getResultQueue().add(xr);
     }
 
-    private Listener<XmlPullParser> createMyReqSuccessListener() {
-    	return new Listener<XmlPullParser>() {
-            @Override
-            public void onResponse(XmlPullParser response) {
-                mAdapter.addAll(getHeadlinesResult(response));
-            }
-        };
-    }
-
-    private List<News> getHeadlinesResult(XmlPullParser parser) {
+    private void getHeadlinesResult(XmlPullParser parser) {
         List<News> results = new ArrayList<News>();
         try {
             // The News that is currently being parsed
@@ -125,7 +113,7 @@ public class HeadlinesFragment extends ListFragment {
         } catch (IOException ioe) {
             Log.w(LOG_TAG, "Problem on reading on file", ioe);
         }
-        return results;
+        mAdapter.addAll(results);
     }
 
     @Override
@@ -158,27 +146,30 @@ public class HeadlinesFragment extends ListFragment {
     }
 
     private class NewsListAdapter extends ArrayAdapter<News> {
-    	public NewsListAdapter(Context context) {
-    		super(context, 0);
-    	}
+        public NewsListAdapter(Context context) {
+            super(context, 0);
+        }
 
-    	@Override
+        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            View view;
+
             // A ViewHolder keeps references to children views to avoid unneccessary calls
             // to findViewById() on each row.
             ViewHolder holder;
 
             if (convertView == null) {
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.headlines_item, parent, false);
+                view = getActivity().getLayoutInflater().inflate(R.layout.headlines_item, parent, false);
 
                 holder = new ViewHolder();
-                holder.title = (TextView) convertView.findViewById(R.id.title);
-                holder.date = (TextView) convertView.findViewById(R.id.date);
-                holder.desc = (TextView) convertView.findViewById(R.id.desc);
+                holder.title = (TextView) view.findViewById(R.id.title);
+                holder.date = (TextView) view.findViewById(R.id.date);
+                holder.desc = (TextView) view.findViewById(R.id.desc);
 
-                convertView.setTag(holder);
+                view.setTag(holder);
             } else {
-                holder = (ViewHolder) convertView.getTag();
+                view = convertView;
+                holder = (ViewHolder) view.getTag();
             }
 
             News news = getItem(position);
@@ -186,7 +177,7 @@ public class HeadlinesFragment extends ListFragment {
             holder.date.setText(news.pubDate);
             UIUtils.setTextMaybeHtml(holder.desc, news.desc);
 
-            return convertView;
+            return view;
         }
     }
 

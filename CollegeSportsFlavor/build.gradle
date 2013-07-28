@@ -3,12 +3,11 @@
 //
 buildscript {
     repositories.mavenCentral()
-    dependencies.classpath 'com.android.tools.build:gradle:0.4.+'
+    dependencies.classpath 'com.android.tools.build:gradle:0.5.+'
 }
 
 apply plugin: 'android'
 apply plugin: 'checkstyle'
-apply plugin: 'pmd'
 
 repositories.mavenCentral()
 
@@ -17,25 +16,20 @@ checkstyle {
     ignoreFailures = true
 }
 
-pmd {
-    ruleSetFiles = files('../pmd.xml')
-    ignoreFailures = true
-}
-
 dependencies {
     compile project('volley')
-    compile 'com.android.support:support-v13:13.0.0'
+    compile 'com.android.support:support-v13:18.0.+'
 }
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion '17'
+    compileSdkVersion 18
+    buildToolsVersion "18.0.0"
 
     defaultConfig {
         versionCode 1
         versionName '1.1.0'
         minSdkVersion 14
-        targetSdkVersion 17
+        targetSdkVersion 18
     }
 
     productFlavors {

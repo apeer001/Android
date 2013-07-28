@@ -51,14 +51,12 @@ public class BrowserDetailFragment extends WebViewFragment {
         setHasOptionsMenu(true);
 
         WebView getWebView = getWebView();
-        if (getWebView != null) {
-            getWebView.getSettings().setBuiltInZoomControls(true);
-            getWebView.setWebViewClient(new MyWebViewClient());
-            getWebView.loadUrl(getArguments().getString("url"));
-        }
+        getWebView.getSettings().setBuiltInZoomControls(true);
+        getWebView.setWebViewClient(new MyWebViewClient());
+        getWebView.loadUrl(getArguments().getString("url"));
     }
 
-    private class MyWebViewClient extends WebViewClient {
+    private static class MyWebViewClient extends WebViewClient {
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 

@@ -21,6 +21,7 @@
 package com.itnoles.flavored;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A very simple adapter that adds sections to adapters written for {@link ListView}.
+ *
+ * Warning, There is a timing issue for this class that will crash by scrolling.
+ * Make sure you call setListAdapter AFTER addSection.
+ */
 public class SectionedListAdapter extends BaseAdapter {
     private static int TYPE_SECTION_HEADER;
 
@@ -55,10 +62,17 @@ public class SectionedListAdapter extends BaseAdapter {
 
     public void addSection(String caption, ListAdapter adapter) {
         mSections.add(new Section(caption, adapter));
-    }
+        adapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                notifyDataSetChanged();
+            }
 
-    public void clear() {
-        mSections.clear();
+            @Override
+            public void onInvalidated() {
+                notifyDataSetInvalidated();
+            }
+        });
     }
 
     public ListAdapter getListAdapter(int position) {
@@ -108,7 +122,7 @@ public class SectionedListAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        int typeOffset = TYPE_SECTION_HEADER + 1; // start counting from here
+        int typeOffset = 1; // start counting from here
 
         for (Section section : mSections) {
             if (position == 0) {

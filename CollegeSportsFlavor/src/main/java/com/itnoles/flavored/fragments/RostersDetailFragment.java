@@ -18,15 +18,14 @@ package com.itnoles.flavored.fragment;
 
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.android.volley.Response.Listener;
+import com.itnoles.flavored.JsonRequest;
 import com.itnoles.flavored.VolleyHelper;
-import com.itnoles.flavored.XMLRequest;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,38 +56,50 @@ public class RostersDetailFragment extends ListFragment {
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
         setListAdapter(adapter);
 
-        XMLRequest xr = new XMLRequest(getArguments().getString("url"), new Listener<XmlPullParser>() {
+        JsonRequest xr = new JsonRequest(getArguments().getString("url"), new Listener<JsonReader>() {
             @Override
-            public void onResponse(XmlPullParser response) {
+            public void onResponse(JsonReader response) {
                 adapter.addAll(getResult(response));
             }
         });
         VolleyHelper.getResultQueue().add(xr);
     }
 
-    private List<String> getResult(XmlPullParser parser) {
+    private List<String> getResult(JsonReader reader) {
         List<String> results = new ArrayList<String>();
         try {
-            while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                if (parser.getEventType() == XmlPullParser.START_TAG) {
-                    String name = parser.getName();
-                    if ("experience".equals(name)) {
-                        results.add("Experience: " + parser.nextText());
-                    } else if ("eligibility".equals(name)) {
-                        results.add("Class: " + parser.nextText());
-                    } else if ("height".equals(name)) {
-                        results.add("Height: " + parser.nextText());
-                    } else if ("weight".equals(name)) {
-                        results.add("Weight: " + parser.nextText());
-                    } else if ("hometown".equals(name)) {
-                        results.add("Hometown: " + parser.nextText());
-                    }
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String name = reader.nextName();
+                if (reader.peek() == JsonToken.NULL) {
+                    // Ignore null values
+                    reader.skipValue();
+                }
+                if ("experience".equals(name)) {
+                    results.add("Experience: " + reader.nextString());
+                } else if ("eligibility".equals(name)) {
+                    results.add("Class: " + reader.nextString());
+                } else if ("height".equals(name)) {
+                    results.add("Height: " + reader.nextString());
+                } else if ("weight".equals(name)) {
+                    results.add("Weight: " + reader.nextString());
+                } else if ("hometown".equals(name)) {
+                    results.add("Hometown: " + reader.nextString());
+                } else if ("position_event".equals(name)) {
+                    results.add(reader.nextString().replace("=>", ": "));
+                } else {
+                    reader.skipValue();
                 }
             }
-        } catch (XmlPullParserException e) {
-            Log.w(LOG_TAG, "Malformed response for ", e);
-        } catch (IOException ioe) {
-            Log.w(LOG_TAG, "Problem on reading on file", ioe);
+            reader.endObject();
+        } catch (IOException e) {
+            Log.w(LOG_TAG, "Problem on reading on file", e);
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException ioe) {
+                Log.w(LOG_TAG, "Can't close JsonReader", ioe);
+            }
         }
         return results;
     }

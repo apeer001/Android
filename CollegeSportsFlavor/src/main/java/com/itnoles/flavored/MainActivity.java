@@ -37,17 +37,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        VolleyHelper.getInstance(this);
+        VolleyHelper.init(this);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(new HomePagerAdapter(getFragmentManager()));
         mViewPager.setOnPageChangeListener(this);
 
-        final ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.addTab(actionBar.newTab().setText("News").setTabListener(this));
         //actionBar.addTab(actionBar.newTab().setText("Schedule").setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText("Rosters").setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText("Roster").setTabListener(this));
     }
 
     @Override
@@ -76,7 +76,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     public void onPageScrollStateChanged(int i) {
     }
 
-    private class HomePagerAdapter extends FragmentPagerAdapter {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        VolleyHelper.getResultQueue().cancelAll(this);
+    }
+
+    private static class HomePagerAdapter extends FragmentPagerAdapter {
         public HomePagerAdapter(FragmentManager fm) {
             super(fm);
         }

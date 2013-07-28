@@ -33,7 +33,7 @@ public class VolleyHelper {
 
     private VolleyHelper() {}
 
-    public static void getInstance(Context context) {
+    public static void init(Context context) {
         mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
         //mImageLoader = new ImageLoader(mRequestQueue, new BitmapLrcCache(IMAGECACHE_SIZE));
     }
@@ -42,13 +42,13 @@ public class VolleyHelper {
         if (mRequestQueue != null) {
             return mRequestQueue;
         }
-        throw new IllegalStateException("RequestQueue not initialized. Did you forget to call getInstance?");
+        throw new IllegalStateException("RequestQueue not initialized. Did you forget to call init?");
     }
 
     /*public static ImageLoader getImageLoader() {
         if (mImageLoader != null) {
             return mImageLoader;
         }
-        throw new IllegalStateException("ImageLoader not initialized. Did you forget to call getInstance?");
+        throw new IllegalStateException("ImageLoader not initialized. Did you forget to call init");
     }*/
 }
