@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.flavored;
+package com.itnoles.flavored.util;
 
 import android.util.Log;
 
@@ -26,12 +26,13 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.StringReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-public class XMLRequest extends Request<XmlPullParser> {
-    private static final String LOG_TAG = "XMLRequest";
+public abstract class AbstractXMLRequest<T> extends Request<T> {
+    private static final String LOG_TAG = "AbstractXMLRequest";
 
-    private final Response.Listener<XmlPullParser> mListener;
+    private final Response.Listener<T> mListener;
 
     private static XmlPullParserFactory sXmlPullParserFactory;
     static {
@@ -41,7 +42,7 @@ public class XMLRequest extends Request<XmlPullParser> {
             Log.e(LOG_TAG, "Could not instantiate XmlPullParserFactory", e);
         }
     }
-    public XMLRequest(String url, Response.Listener<XmlPullParser> listener) {
+    public AbstractXMLRequest(String url, Response.Listener<T> listener) {
         super(Method.GET, url, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -53,21 +54,25 @@ public class XMLRequest extends Request<XmlPullParser> {
 
 
     @Override
-    protected void deliverResponse(XmlPullParser response) {
+    protected void deliverResponse(T response) {
         mListener.onResponse(response);
     }
 
     @Override
-    protected Response<XmlPullParser> parseNetworkResponse(NetworkResponse response) {
+    protected Response<T> parseNetworkResponse(NetworkResponse response) {
         try {
             String xmlString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
             XmlPullParser parser = sXmlPullParserFactory.newPullParser();
             parser.setInput(new StringReader(xmlString));
-            return Response.success(parser, HttpHeaderParser.parseCacheHeaders(response));
+            return Response.success(onPostNetworkResponse(parser), HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         } catch (XmlPullParserException xmle) {
             return Response.error(new ParseError(xmle));
+        } catch (IOException ioe) {
+            return Response.error(new ParseError(ioe));
         }
     }
+
+    public abstract T onPostNetworkResponse(XmlPullParser parser) throws XmlPullParserException, IOException;
 }

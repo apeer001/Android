@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.flavored;
+package com.itnoles.flavored.util;
 
 import android.util.JsonReader;
 import android.util.Log;
@@ -22,15 +22,16 @@ import android.util.Log;
 import com.android.volley.*;
 import com.android.volley.toolbox.HttpHeaderParser;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
-public class JsonRequest extends Request<JsonReader> {
-    private static final String LOG_TAG = "JsonRequest";
+public abstract class AbstractJsonRequest<T> extends Request<T> {
+    private static final String LOG_TAG = "AbstractJsonRequest";
 
-    private final Response.Listener<JsonReader> mListener;
+    private final Response.Listener<T> mListener;
 
-    public JsonRequest(String url, Response.Listener<JsonReader> listener) {
+    public AbstractJsonRequest(String url, Response.Listener<T> listener) {
         super(Method.GET, url, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -42,18 +43,31 @@ public class JsonRequest extends Request<JsonReader> {
 
 
     @Override
-    protected void deliverResponse(JsonReader response) {
+    protected void deliverResponse(T response) {
         mListener.onResponse(response);
     }
 
     @Override
-    protected Response<JsonReader> parseNetworkResponse(NetworkResponse response) {
+    protected Response<T> parseNetworkResponse(NetworkResponse response) {
+        JsonReader reader = null;
         try {
             String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-            JsonReader reader = new JsonReader(new StringReader(jsonString));
-            return Response.success(reader, HttpHeaderParser.parseCacheHeaders(response));
+            reader = new JsonReader(new StringReader(jsonString));
+            return Response.success(onPostNetworkResponse(reader), HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
+        } catch (IOException ioe) {
+            return Response.error(new ParseError(ioe));
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException cioe) {
+                Log.w(LOG_TAG, "Can't close JsonReader", cioe);
+            }
         }
     }
+
+    public abstract T onPostNetworkResponse(JsonReader reader) throws IOException;
 }

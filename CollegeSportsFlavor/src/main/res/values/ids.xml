@@ -16,6 +16,11 @@
     <item type="id" name="home_score" />
     <item type="id" name="status" />
 
+    <!-- Roster -->
+    <item type="id" name="lastname" />
+    <item type="id" name="firstname" />
+    <item type="id" name="position" />
+
     <!-- Menu -->
     <item type="id" name="menu_search" />
     <item type="id" name="menu_share" />

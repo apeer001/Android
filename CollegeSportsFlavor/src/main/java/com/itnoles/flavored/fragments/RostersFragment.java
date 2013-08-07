@@ -20,7 +20,6 @@ import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,7 +29,9 @@ import android.widget.SearchView;
 
 import com.android.volley.Response.Listener;
 import com.itnoles.flavored.activities.RostersDetailActivity;
-import com.itnoles.flavored.*; // R, Rosters, RostersListAdapter, SectionedListAdapter, VolleyHelper and XMLRequest
+import com.itnoles.flavored.*; // R, Rosters, RostersListAdapter and SectionedListAdapter
+import com.itnoles.flavored.util.AbstractXMLRequest;
+import com.itnoles.flavored.util.VolleyHelper;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -42,8 +43,6 @@ import java.util.List;
 import static com.itnoles.flavored.BuildConfig.SCHOOL_CODE;
 
 public class RostersFragment extends ListFragment implements SearchView.OnQueryTextListener {
-    private static final String LOG_TAG = "RostersFragment";
-
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
     private SectionedListAdapter mAdapter;
@@ -73,43 +72,26 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
 
-        XMLRequest xr = new XMLRequest("http://grfx.cstv.com/schools/" + SCHOOL_CODE + "/data/xml/roster/m-footbl-2012.xml", new RosterSuccess());
-        VolleyHelper.getResultQueue().add(xr);
-    }
+        RosterRequests xr = new RosterRequests(new Listener<List<Rosters>>() {
+            @Override
+            public void onResponse(List<Rosters> response) {
+                List<Rosters> playerRosters = new ArrayList<Rosters>();
+                List<Rosters> staffRosters = new ArrayList<Rosters>();
 
-    private void getRostersResult(XmlPullParser parser) {
-        List<Rosters> playerRosters = new ArrayList<Rosters>();
-        List<Rosters> staffRosters = new ArrayList<Rosters>();
-        try {
-            // The Rosters that is currently being parsed
-            Rosters currentRosters = null;
-            while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                String name = parser.getName();
-                if (parser.getEventType() == XmlPullParser.START_TAG) {
-                    if ("player".equals(name) || "asst_coach_lev1".equals(name) || "asst_coach_lev2".equals(name) || "asst_coach_lev3".equals(name)
-                        || "head_coach".equals(name) || "other".equals(name)) {
-                        currentRosters = new Rosters();
-                    } else if (currentRosters != null) {
-                        currentRosters.setValue(name, parser.nextText());
-                    }
-                } else if (parser.getEventType() == XmlPullParser.END_TAG) {
-                    if ("asst_coach_lev1".equals(name) || "asst_coach_lev2".equals(name) || "asst_coach_lev3".equals(name)
-                        || "head_coach".equals(name) || "other".equals(name)) {
-                        staffRosters.add(currentRosters);
-                    } else if ("player".equals(name)) {
-                        playerRosters.add(currentRosters);
+                for (Rosters roster : response) {
+                    if (roster.isStaff) {
+                        staffRosters.add(roster);
+                    } else {
+                        playerRosters.add(roster);
                     }
                 }
-            }
-        } catch (XmlPullParserException e) {
-            Log.w(LOG_TAG, "Malformed response for ", e);
-        } catch (IOException ioe) {
-            Log.w(LOG_TAG, "Problem on reading on file", ioe);
-        }
 
-        mAdapter.addSection("2012 Athlete Roster", new RostersListAdapter(getActivity(), playerRosters));
-        mAdapter.addSection("2012 Coaches and Staff", new RostersListAdapter(getActivity(), staffRosters));
-        setListAdapter(mAdapter);
+                mAdapter.addSection("2012 Athlete Roster", new RostersListAdapter(getActivity(), playerRosters));
+                mAdapter.addSection("2012 Coaches and Staff", new RostersListAdapter(getActivity(), staffRosters));
+                setListAdapter(mAdapter);
+            }
+        });
+        VolleyHelper.getResultQueue().add(xr);
     }
 
     @Override
@@ -143,7 +125,6 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Rosters item = (Rosters) getListAdapter().getItem(position);
-        String urlString = item.details + "/" + item.bioId + ".json";
         if (mDualPane) {
             // We can display everything in-place with fragments, so update
             // the list to highlight the selected item and show the data.
@@ -152,7 +133,7 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
             if (mShownCheckPosition != position) {
                 // If we are not currently showing a fragment for the new
                 // position, we need to create and install a new one.
-                RostersDetailFragment rdf = RostersDetailFragment.newInstance(urlString);
+                RostersDetailFragment rdf = RostersDetailFragment.newInstance(item.getFullURL());
 
                 // Execute a transaction, replacing any existing fragment
                 // with this one inside the frame.
@@ -164,19 +145,39 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
             }
         } else {
             Intent intent = new Intent(getActivity(), RostersDetailActivity.class);
-            intent.putExtra("title", item.firstName + " " + item.lastName);
-            intent.putExtra("url", urlString);
+            intent.putExtra("url", item.getFullURL());
+            intent.putExtra("title", item.getFirstAndLastName());
             startActivity(intent);
         }
     }
 
-    class RosterSuccess implements Listener<XmlPullParser> {
+    static class RosterRequests extends AbstractXMLRequest<List<Rosters>> {
+        RosterRequests(Listener<List<Rosters>> listener) {
+            super("http://grfx.cstv.com/schools/" + SCHOOL_CODE + "/data/xml/roster/m-footbl-2012.xml", listener);
+        }
+
+
         @Override
-        public void onResponse(XmlPullParser response) {
-            if (getActivity() == null) {
-                return;
+        public List<Rosters> onPostNetworkResponse(XmlPullParser parser) throws XmlPullParserException, IOException {
+            List<Rosters> results = new ArrayList<Rosters>();
+            // The Rosters that is currently being parsed
+            Rosters currentRosters = null;
+            while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                String name = parser.getName();
+                if (parser.getEventType() == XmlPullParser.START_TAG) {
+                    if ("player".equals(name) || "asst_coach_lev1".equals(name) || "asst_coach_lev2".equals(name) || "asst_coach_lev3".equals(name)
+                        || "head_coach".equals(name) || "other".equals(name)) {
+                        currentRosters = new Rosters(!"player".equals(name));
+                    } else if (currentRosters != null) {
+                        currentRosters.setValue(name, parser.nextText());
+                    }
+                } else if (parser.getEventType() == XmlPullParser.END_TAG && "asst_coach_lev1".equals(name)
+                    || "asst_coach_lev2".equals(name) || "asst_coach_lev3".equals(name) || "head_coach".equals(name) || "other".equals(name)
+                    || "player".equals(name)) {
+                    results.add(currentRosters);
+                }
             }
-            getRostersResult(response);
+            return results;
         }
     }
 }

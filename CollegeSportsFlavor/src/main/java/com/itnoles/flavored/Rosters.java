@@ -17,11 +17,18 @@
 package com.itnoles.flavored;
 
 public class Rosters {
+    private String details;
+    private String bioId;
+
     public String firstName;
     public String lastName;
     public String position;
-    public String details;
-    public String bioId;
+
+    public boolean isStaff;
+
+    public Rosters(boolean staff) {
+        isStaff = staff;
+    }
 
     public void setValue(String key, String value) {
         if ("first_name".equals(key)) {
@@ -35,6 +42,21 @@ public class Rosters {
         } else if ("bio_id".equals(key)) {
             bioId =  value;
         }
+    }
+
+    public String getFullURL() {
+        StringBuffer temp = new StringBuffer(details);
+        temp.append("/");
+        temp.append(bioId);
+        temp.append(".json");
+        return temp.toString();
+    }
+
+    public String getFirstAndLastName() {
+        StringBuffer temp = new StringBuffer(firstName);
+        temp.append(" ");
+        temp.append(lastName);
+        return temp.toString();
     }
 
     @Override
