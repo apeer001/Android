@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.flavored;
+package com.itnoles.flavored.util;
 
 import android.content.Context;
 

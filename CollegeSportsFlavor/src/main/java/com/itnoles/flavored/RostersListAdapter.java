@@ -26,8 +26,6 @@ import android.widget.TextView;
 import java.util.List;
 
 public class RostersListAdapter extends ArrayAdapter<Rosters> {
-    private StringBuffer buffer = new StringBuffer();
-
     private final LayoutInflater mInflater;
 
     public RostersListAdapter(Context context, List<Rosters> data) {
@@ -47,11 +45,12 @@ public class RostersListAdapter extends ArrayAdapter<Rosters> {
         ViewHolder holder;
 
         if (convertView == null) {
-            view = mInflater.inflate(android.R.layout.simple_list_item_2, parent, false);
+            view = mInflater.inflate(R.layout.roster_item, parent, false);
 
             holder = new ViewHolder();
-            holder.fullName = (TextView) view.findViewById(android.R.id.text1);
-            holder.position = (TextView) view.findViewById(android.R.id.text2);
+            holder.lastname = (TextView) view.findViewById(R.id.lastname);
+            holder.firstname = (TextView) view.findViewById(R.id.firstname);
+            holder.position = (TextView) view.findViewById(R.id.position);
 
             view.setTag(holder);
         } else {
@@ -60,20 +59,16 @@ public class RostersListAdapter extends ArrayAdapter<Rosters> {
         }
 
         Rosters item = getItem(position);
-
-        buffer.setLength(0);
-        buffer.append(item.lastName);
-        buffer.append(", ");
-        buffer.append(item.firstName);
-        holder.fullName.setText(buffer.toString());
-
+        holder.lastname.setText(item.lastName);
+        holder.firstname.setText(item.firstName);
         holder.position.setText(item.position);
 
         return view;
     }
 
     static class ViewHolder {
-        TextView fullName;
+        TextView lastname;
+        TextView firstname;
         TextView position;
     }
 }

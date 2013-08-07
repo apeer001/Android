@@ -14,26 +14,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.flavored;
+package com.itnoles.flavored.activities;
 
 import android.app.*; //ActionBar, Activity, Fragment, FragmentManager, FragmentTransaction
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.view.ViewPager;
 import android.support.v13.app.FragmentPagerAdapter;
 
 import com.itnoles.flavored.fragment.HeadlinesFragment;
 import com.itnoles.flavored.fragment.RostersFragment;
 //import com.itnoles.flavored.fragment.ScheduleFragment;
+import com.itnoles.flavored.R;
+import com.itnoles.flavored.util.VolleyHelper;
 
 public class MainActivity extends Activity implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
     private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG) {
-            StrictMode.enableDefaults();
-        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -43,11 +41,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         mViewPager.setAdapter(new HomePagerAdapter(getFragmentManager()));
         mViewPager.setOnPageChangeListener(this);
 
-        ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.addTab(actionBar.newTab().setText("News").setTabListener(this));
-        //actionBar.addTab(actionBar.newTab().setText("Schedule").setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText("Roster").setTabListener(this));
+        final ActionBar bar = getActionBar();
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        bar.addTab(bar.newTab().setText("News").setTabListener(this));
+        //bar.addTab(bar.newTab().setText("Schedule").setTabListener(this));
+        bar.addTab(bar.newTab().setText("Roster").setTabListener(this));
     }
 
     @Override
@@ -79,7 +77,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     @Override
     public void onDestroy() {
         super.onDestroy();
-        VolleyHelper.getResultQueue().cancelAll(this);
+        VolleyHelper.getResultQueue().stop();
     }
 
     private static class HomePagerAdapter extends FragmentPagerAdapter {

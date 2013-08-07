@@ -20,17 +20,16 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.JsonReader;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.android.volley.Response.Listener;
-import com.itnoles.flavored.JsonRequest;
 import com.itnoles.flavored.R;
 import com.itnoles.flavored.SectionedListAdapter;
-import com.itnoles.flavored.VolleyHelper;
+import com.itnoles.flavored.util.AbstractJsonRequest;
+import com.itnoles.flavored.util.VolleyHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ import java.util.List;
 import static com.itnoles.flavored.BuildConfig.SCHEDULE_URL;
 
 public class ScheduleFragment extends ListFragment {
-    private static final String LOG_TAG = "ScheduleFragment";
+    String header;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -53,19 +52,25 @@ public class ScheduleFragment extends ListFragment {
             detailsFrame.setVisibility(View.GONE);
         }
 
-        JsonRequest jr = new JsonRequest(SCHEDULE_URL, new Listener<JsonReader>() {
+        ScheduleRequests sr = new ScheduleRequests(new Listener<List<Schedule>>() {
             @Override
-            public void onResponse(JsonReader response) {
-                getScheduleResult(response);
+            public void onResponse(List<Schedule> response) {
+                // The SectionedListAdapter is going to show schedule header for overall and conference records
+                SectionedListAdapter adapter = new SectionedListAdapter(getActivity(), R.layout.list_section_header);
+                adapter.addSection(header, new ScheduleListAdapter(getActivity(), response));
+                setListAdapter(adapter);
             }
         });
-        VolleyHelper.getResultQueue().add(jr);
+        VolleyHelper.getResultQueue().add(sr);
     }
 
-    private void getScheduleResult(JsonReader reader) {
-        String header = null;
-        List<Schedule> results = new ArrayList<Schedule>();
-        try {
+    class ScheduleRequests extends AbstractJsonRequest<List<Schedule>> {
+        ScheduleRequests(Listener<List<Schedule>> listener) {
+            super(SCHEDULE_URL, listener);
+        }
+
+        public List<Schedule> onPostNetworkResponse(JsonReader reader) throws IOException {
+            List<Schedule> results = new ArrayList<Schedule>();
             reader.beginObject();
             while (reader.hasNext()) {
                 String name = reader.nextName();
@@ -80,20 +85,8 @@ public class ScheduleFragment extends ListFragment {
                 }
             }
             reader.endObject();
-        } catch (IOException e) {
-           Log.w(LOG_TAG, "Problem on reading on file", e);
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException ioe) {
-                Log.w(LOG_TAG, "Can't close JsonReader", ioe);
-            }
+            return results;
         }
-
-        // The SectionedListAdapter is going to show schedule header for overall and conference records
-        SectionedListAdapter adapter = new SectionedListAdapter(getActivity(), R.layout.list_section_header);
-        adapter.addSection(header, new ScheduleListAdapter(getActivity(), results));
-        setListAdapter(adapter);
     }
 
     private Schedule readScheduleObject(JsonReader reader) throws IOException {

@@ -20,20 +20,17 @@ import android.app.ListFragment;
 import android.os.Bundle;
 import android.util.JsonReader;
 import android.util.JsonToken;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.android.volley.Response.Listener;
-import com.itnoles.flavored.JsonRequest;
-import com.itnoles.flavored.VolleyHelper;
+import com.itnoles.flavored.util.AbstractJsonRequest;
+import com.itnoles.flavored.util.VolleyHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RostersDetailFragment extends ListFragment {
-    private static final String LOG_TAG = "RostersDetailFragment";
-
     public static RostersDetailFragment newInstance(String urlString) {
         RostersDetailFragment f = new RostersDetailFragment();
 
@@ -56,34 +53,35 @@ public class RostersDetailFragment extends ListFragment {
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
         setListAdapter(adapter);
 
-        JsonRequest xr = new JsonRequest(getArguments().getString("url"), new Listener<JsonReader>() {
+        RostersDetailRequests rdr = new RostersDetailRequests(getArguments().getString("url"), new Listener<List<String>>() {
             @Override
-            public void onResponse(JsonReader response) {
-                adapter.addAll(getResult(response));
+            public void onResponse(List<String> response) {
+                adapter.addAll(response);
             }
         });
-        VolleyHelper.getResultQueue().add(xr);
+        VolleyHelper.getResultQueue().add(rdr);
     }
 
-    private List<String> getResult(JsonReader reader) {
-        List<String> results = new ArrayList<String>();
-        try {
+    static class RostersDetailRequests extends AbstractJsonRequest<List<String>> {
+        RostersDetailRequests(String url, Listener<List<String>> listener) {
+            super(url, listener);
+        }
+
+        public List<String> onPostNetworkResponse(JsonReader reader) throws IOException {
+            List<String> results = new ArrayList<String>();
             reader.beginObject();
             while (reader.hasNext()) {
                 String name = reader.nextName();
-                if (reader.peek() == JsonToken.NULL) {
-                    // Ignore null values
-                    reader.skipValue();
-                }
-                if ("experience".equals(name)) {
+                boolean notNull = reader.peek() != JsonToken.NULL;
+                if ("experience".equals(name) && notNull) {
                     results.add("Experience: " + reader.nextString());
-                } else if ("eligibility".equals(name)) {
+                } else if ("eligibility".equals(name) && notNull) {
                     results.add("Class: " + reader.nextString());
-                } else if ("height".equals(name)) {
+                } else if ("height".equals(name) && notNull) {
                     results.add("Height: " + reader.nextString());
-                } else if ("weight".equals(name)) {
+                } else if ("weight".equals(name) && notNull) {
                     results.add("Weight: " + reader.nextString());
-                } else if ("hometown".equals(name)) {
+                } else if ("hometown".equals(name) && notNull) {
                     results.add("Hometown: " + reader.nextString());
                 } else if ("position_event".equals(name)) {
                     results.add(reader.nextString().replace("=>", ": "));
@@ -92,15 +90,7 @@ public class RostersDetailFragment extends ListFragment {
                 }
             }
             reader.endObject();
-        } catch (IOException e) {
-            Log.w(LOG_TAG, "Problem on reading on file", e);
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException ioe) {
-                Log.w(LOG_TAG, "Can't close JsonReader", ioe);
-            }
+            return results;
         }
-        return results;
     }
 }

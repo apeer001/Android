@@ -21,7 +21,6 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -32,9 +31,9 @@ import com.android.volley.Response.Listener;
 //import com.android.volley.toolbox.NetworkImageView;
 import com.itnoles.flavored.activities.BrowserDetailActivity;
 import com.itnoles.flavored.R;
-import com.itnoles.flavored.UIUtils;
-import com.itnoles.flavored.VolleyHelper;
-import com.itnoles.flavored.XMLRequest;
+import com.itnoles.flavored.util.AbstractXMLRequest;
+import com.itnoles.flavored.util.UIUtils;
+import com.itnoles.flavored.util.VolleyHelper;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -46,8 +45,6 @@ import java.util.List;
 import static com.itnoles.flavored.BuildConfig.NEWS_URL;
 
 public class HeadlinesFragment extends ListFragment {
-    private static final String LOG_TAG = "HeadlinesFragment";
-
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
     private NewsListAdapter mAdapter;
@@ -78,18 +75,51 @@ public class HeadlinesFragment extends ListFragment {
 
     private void loadData() {
         // Start default url load with Volley.
-        XMLRequest xr = new XMLRequest(NEWS_URL, new Listener<XmlPullParser>() {
+        NewsRequests nr = new NewsRequests(new Listener<List<News>>() {
             @Override
-            public void onResponse(XmlPullParser response) {
-                getHeadlinesResult(response);
+            public void onResponse(List<News> response) {
+                mAdapter.addAll(response);
             }
         });
-        VolleyHelper.getResultQueue().add(xr);
+        VolleyHelper.getResultQueue().add(nr);
     }
 
-    private void getHeadlinesResult(XmlPullParser parser) {
-        List<News> results = new ArrayList<News>();
-        try {
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        News news = (News) getListAdapter().getItem(position);
+        if (mDualPane) {
+            // We can display everything in-place with fragments, so update
+            // the list to highlight the selected item and show the data.
+            getListView().setItemChecked(position, true);
+
+            if (mShownCheckPosition != position) {
+                // If we are not currently showing a fragment for the new
+                // position, we need to create and install a new one.
+                BrowserDetailFragment df = BrowserDetailFragment.newInstance(news.link);
+
+                // Execute a transaction, replacing any existing fragment
+                // with this one inside the frame.
+                getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_details, df)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
+                mShownCheckPosition = position;
+            }
+        } else {
+            Intent intent = new Intent(getActivity(), BrowserDetailActivity.class);
+            intent.putExtra("url", news.link);
+            startActivity(intent);
+        }
+    }
+
+    static class NewsRequests extends AbstractXMLRequest<List<News>> {
+        NewsRequests(Listener<List<News>> listener) {
+            super(NEWS_URL, listener);
+        }
+
+        @Override
+        public List<News> onPostNetworkResponse(XmlPullParser parser) throws XmlPullParserException, IOException {
+            List<News> results = new ArrayList<News>();
             // The News that is currently being parsed
             News currentNews = null;
             while (parser.next() != XmlPullParser.END_DOCUMENT) {
@@ -108,40 +138,7 @@ public class HeadlinesFragment extends ListFragment {
                     results.add(currentNews);
                 }
             }
-        } catch (XmlPullParserException e) {
-            Log.w(LOG_TAG, "Malformed response for ", e);
-        } catch (IOException ioe) {
-            Log.w(LOG_TAG, "Problem on reading on file", ioe);
-        }
-        mAdapter.addAll(results);
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        News news = (News) getListAdapter().getItem(position);
-        String urlString = news.link;
-        if (mDualPane) {
-            // We can display everything in-place with fragments, so update
-            // the list to highlight the selected item and show the data.
-            getListView().setItemChecked(position, true);
-
-            if (mShownCheckPosition != position) {
-                // If we are not currently showing a fragment for the new
-                // position, we need to create and install a new one.
-                BrowserDetailFragment df = BrowserDetailFragment.newInstance(urlString);
-
-                // Execute a transaction, replacing any existing fragment
-                // with this one inside the frame.
-                getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_details, df)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .commit();
-                mShownCheckPosition = position;
-            }
-        } else {
-            Intent intent = new Intent(getActivity(), BrowserDetailActivity.class);
-            intent.putExtra("url", urlString);
-            startActivity(intent);
+            return results;
         }
     }
 

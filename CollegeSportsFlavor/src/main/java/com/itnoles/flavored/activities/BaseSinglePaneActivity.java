@@ -18,6 +18,7 @@ package com.itnoles.flavored.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -38,7 +39,11 @@ abstract class BaseSinglePaneActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish();
+            // App icon in Action Bar clicked; go up
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Reuse the existing instance
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
