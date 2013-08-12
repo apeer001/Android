@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.itnoles.flavored.BuildConfig.SCHOOL_CODE;
+import static com.itnoles.flavored.BuildConfig.ROSTER_URL;
 
 public class RostersFragment extends ListFragment implements SearchView.OnQueryTextListener {
     private boolean mDualPane;
@@ -75,8 +75,8 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
         RosterRequests xr = new RosterRequests(new Listener<List<Rosters>>() {
             @Override
             public void onResponse(List<Rosters> response) {
-                List<Rosters> playerRosters = new ArrayList<Rosters>();
-                List<Rosters> staffRosters = new ArrayList<Rosters>();
+                List<Rosters> playerRosters = new ArrayList<Rosters>(108);
+                List<Rosters> staffRosters = new ArrayList<Rosters>(14);
 
                 for (Rosters roster : response) {
                     if (roster.isStaff) {
@@ -153,13 +153,13 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
 
     static class RosterRequests extends AbstractXMLRequest<List<Rosters>> {
         RosterRequests(Listener<List<Rosters>> listener) {
-            super("http://grfx.cstv.com/schools/" + SCHOOL_CODE + "/data/xml/roster/m-footbl-2012.xml", listener);
+            super(ROSTER_URL, listener);
         }
 
 
         @Override
         public List<Rosters> onPostNetworkResponse(XmlPullParser parser) throws XmlPullParserException, IOException {
-            List<Rosters> results = new ArrayList<Rosters>();
+            List<Rosters> results = new ArrayList<Rosters>(122);
             // The Rosters that is currently being parsed
             Rosters currentRosters = null;
             while (parser.next() != XmlPullParser.END_DOCUMENT) {

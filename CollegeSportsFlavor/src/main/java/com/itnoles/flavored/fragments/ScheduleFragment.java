@@ -44,8 +44,6 @@ public class ScheduleFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setListShownNoAnimation(true);
-
         // If this is under tablet, hide detail view.
         View detailsFrame = getActivity().findViewById(R.id.fragment_details);
         if (detailsFrame != null) {

@@ -34,15 +34,18 @@ public class VolleyHelper {
     private VolleyHelper() {}
 
     public static void init(Context context) {
+        if (mRequestQueue != null) {
+            return;
+        }
         mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
         //mImageLoader = new ImageLoader(mRequestQueue, new BitmapLrcCache(IMAGECACHE_SIZE));
     }
 
     public static RequestQueue getResultQueue() {
-        if (mRequestQueue != null) {
-            return mRequestQueue;
+        if (mRequestQueue == null) {
+            throw new IllegalStateException("RequestQueue not initialized. Did you forget to call init?");
         }
-        throw new IllegalStateException("RequestQueue not initialized. Did you forget to call init?");
+        return mRequestQueue;
     }
 
     /*public static ImageLoader getImageLoader() {
