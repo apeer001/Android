@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingTop="2dip"
+    android:paddingBottom="2dip"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
-    
-    android:padding="6dip">
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight">
 
     <TextView
         android:id="@id/lastname"
@@ -13,8 +14,7 @@
         android:layout_alignParentTop="true"
 
         android:paddingRight="5dip"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@id/firstname"
@@ -24,9 +24,7 @@
         android:layout_toRightOf="@id/lastname"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-
-        android:textSize="16sp" 
-        android:textStyle="bold" />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@id/position"
@@ -35,6 +33,5 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_below="@id/lastname"
-
-        android:textSize="14sp" />
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 </RelativeLayout>

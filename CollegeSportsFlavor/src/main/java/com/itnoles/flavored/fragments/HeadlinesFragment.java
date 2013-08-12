@@ -21,6 +21,7 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+//import android.os.StrictMode;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -32,7 +33,6 @@ import com.android.volley.Response.Listener;
 import com.itnoles.flavored.activities.BrowserDetailActivity;
 import com.itnoles.flavored.R;
 import com.itnoles.flavored.util.AbstractXMLRequest;
-import com.itnoles.flavored.util.UIUtils;
 import com.itnoles.flavored.util.VolleyHelper;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -172,7 +172,7 @@ public class HeadlinesFragment extends ListFragment {
             News news = getItem(position);
             holder.title.setText(news.title);
             holder.date.setText(news.pubDate);
-            UIUtils.setTextMaybeHtml(holder.desc, news.desc);
+            holder.desc.setText(news.desc);
 
             return view;
         }
@@ -193,7 +193,7 @@ public class HeadlinesFragment extends ListFragment {
             } else if ("link".equals(key)) {
                 link = value;
             } else if ("description".equals(key)) {
-                desc = value;
+                desc = value.replaceAll("\\<.*>","");
             } /*else if ("enclosure".equals(key)) {
                 imageURL = value;
             }*/

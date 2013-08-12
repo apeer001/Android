@@ -53,10 +53,7 @@ public class Rosters {
     }
 
     public String getFirstAndLastName() {
-        StringBuffer temp = new StringBuffer(firstName);
-        temp.append(" ");
-        temp.append(lastName);
-        return temp.toString();
+        return firstName.concat(" ").concat(lastName);
     }
 
     @Override

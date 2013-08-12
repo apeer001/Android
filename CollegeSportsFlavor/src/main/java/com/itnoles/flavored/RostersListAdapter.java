@@ -17,6 +17,7 @@
 package com.itnoles.flavored;
 
 import android.content.Context;
+import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,8 @@ public class RostersListAdapter extends ArrayAdapter<Rosters> {
             view = convertView;
             holder = (ViewHolder) view.getTag();
         }
+
+        StrictMode.noteSlowCall("RostersListAdapter#getView");
 
         Rosters item = getItem(position);
         holder.lastname.setText(item.lastName);

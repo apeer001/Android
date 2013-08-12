@@ -35,15 +35,15 @@ android {
     productFlavors {
         nolesfootball {
             packageName "com.itnoles.nolesfootball"
-            buildConfig "public static final String SCHOOL_CODE = \"fsu\";", \
-                        "public static final String NEWS_URL = \"http://www.seminoles.com/headline-rss.xml\";", \
+            buildConfig "public static final String NEWS_URL = \"http://www.seminoles.com/headline-rss.xml\";", \
+                        "public static final String ROSTER_URL = \"http://grfx.cstv.com/schools/fsu/data/xml/roster/m-footbl-2012.xml\";", \
                         "public static final String SCHEDULE_URL = \"\";"
         }
 
         knightsfootball {
             packageName "com.itnoles.knightsfootball"
-            buildConfig "public static final String SCHOOL_CODE = \"ucf\";", \
-                        "public static final String NEWS_URL = \"http://www.ucfathletics.com/headline-rss.xml\";", \
+            buildConfig "public static final String NEWS_URL = \"http://www.ucfathletics.com/headline-rss.xml\";", \
+                        "public static final String ROSTER_URL = \"http://grfx.cstv.com/schools/ucf/data/xml/roster/m-footbl-2012.xml\";", \
                         "public static final String SCHEDULE_URL = \"\";"
         }
     }
