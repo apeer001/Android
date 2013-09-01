@@ -14,15 +14,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.flavored.activities;
+package com.itnoles.flavored.model;
 
-import android.app.Fragment;
+public class News {
+    public String title;
+    public String link;
+    public String desc;
+    public String pubDate;
+    //public String imageURL;
 
-import com.itnoles.flavored.fragments.BrowserDetailFragment;
-
-public class BrowserDetailActivity extends BaseSinglePaneActivity {
-    @Override
-    Fragment onCreatePane() {
-        return new BrowserDetailFragment();
+    public void setValue(String key, String value) {
+        if ("title".equals(key)) {
+            title = value;
+        } else if ("pubDate".equals(key)) {
+            pubDate = value;
+        } else if ("link".equals(key)) {
+            link = value;
+        } else if ("description".equals(key)) {
+            desc = value.replaceAll("<.*>", "");
+        } /*else if ("enclosure".equals(key)) {
+            imageURL = value;
+        }*/
     }
 }

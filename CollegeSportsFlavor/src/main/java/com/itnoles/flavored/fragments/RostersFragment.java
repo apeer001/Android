@@ -14,35 +14,37 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.flavored.fragment;
+package com.itnoles.flavored.fragments;
 
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
+import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.util.Log;
+import android.view.*; // Menu, MenuInflater, MenuItem and View
 import android.widget.ListView;
 import android.widget.SearchView;
 
-import com.android.volley.Response.Listener;
 import com.itnoles.flavored.activities.RostersDetailActivity;
-import com.itnoles.flavored.*; // R, Rosters, RostersListAdapter and SectionedListAdapter
-import com.itnoles.flavored.util.AbstractXMLRequest;
-import com.itnoles.flavored.util.VolleyHelper;
+import com.itnoles.flavored.*;
+import com.itnoles.flavored.model.Rosters;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.itnoles.flavored.BuildConfig.ROSTER_URL;
 
-public class RostersFragment extends ListFragment implements SearchView.OnQueryTextListener {
+public class RostersFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<Rosters>>, SearchView.OnQueryTextListener {
+    private static final String LOG_TAG = "RostersFragment";
+
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
     private SectionedListAdapter mAdapter;
@@ -57,7 +59,7 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
         setHasOptionsMenu(true);
 
         // The SectionedListAdapter has a header to group players and staff
-        mAdapter = new SectionedListAdapter(getActivity(), R.layout.list_section_header);
+        mAdapter = new SectionedListAdapter(getActivity());
 
         // Determine whether we are in single-pane or dual-pane mode by testing the visibility
         // of the detail view.
@@ -72,26 +74,41 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
 
-        RosterRequests xr = new RosterRequests(new Listener<List<Rosters>>() {
+        // Prepare the loader. Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(20, null, this);
+    }
+
+    @Override
+    public Loader<List<Rosters>> onCreateLoader(int id, Bundle args) {
+        // This is called when a new Loader needs to be created.
+        return new RostersLoader(getActivity());
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Rosters>> loader, List<Rosters> data) {
+        // Set the new data in the adapter.
+        List<Rosters> playerRosters = filter(new Predicate<Rosters>() {
             @Override
-            public void onResponse(List<Rosters> response) {
-                List<Rosters> playerRosters = new ArrayList<Rosters>(108);
-                List<Rosters> staffRosters = new ArrayList<Rosters>(14);
-
-                for (Rosters roster : response) {
-                    if (roster.isStaff) {
-                        staffRosters.add(roster);
-                    } else {
-                        playerRosters.add(roster);
-                    }
-                }
-
-                mAdapter.addSection("2012 Athlete Roster", new RostersListAdapter(getActivity(), playerRosters));
-                mAdapter.addSection("2012 Coaches and Staff", new RostersListAdapter(getActivity(), staffRosters));
-                setListAdapter(mAdapter);
+            public boolean apply(Rosters rosters) {
+                return !rosters.isStaff;
             }
-        });
-        VolleyHelper.getResultQueue().add(xr);
+        }, data);
+        mAdapter.addSection("2012 Athlete Roster", new RostersListAdapter(getActivity(), playerRosters));
+
+        List<Rosters> staffRosters = filter(new Predicate<Rosters>() {
+        	public boolean apply(Rosters rosters) {
+        		return rosters.isStaff;
+        	}
+        }, data);
+        mAdapter.addSection("2012 Coaches and Staff", new RostersListAdapter(getActivity(), staffRosters));
+        setListAdapter(mAdapter);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Rosters>> loader) {
+        // Clear the data in the adapter.
+        mAdapter.clear();
     }
 
     @Override
@@ -151,33 +168,58 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
         }
     }
 
-    static class RosterRequests extends AbstractXMLRequest<List<Rosters>> {
-        RosterRequests(Listener<List<Rosters>> listener) {
-            super(ROSTER_URL, listener);
+    private static List<Rosters> filter(Predicate<Rosters> predicate, List<Rosters> source) {
+        List<Rosters> destiny = new ArrayList<Rosters>();
+        for (Rosters item : source) {
+            if (predicate.apply(item)) {
+                destiny.add(item);
+            }
+        }
+        return destiny;
+    }
+
+    static class RostersLoader extends AbstractContentListLoader<Rosters> {
+        RostersLoader(Context context) {
+            super(context);
         }
 
-
+        /**
+         * This is where the bulk of our work is done. This function is
+         * called in a background thread and should generate a new set of
+         * data to be published by the loader.
+         */
         @Override
-        public List<Rosters> onPostNetworkResponse(XmlPullParser parser) throws XmlPullParserException, IOException {
-            List<Rosters> results = new ArrayList<Rosters>(122);
-            // The Rosters that is currently being parsed
-            Rosters currentRosters = null;
-            while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                String name = parser.getName();
-                if (parser.getEventType() == XmlPullParser.START_TAG) {
-                    if ("player".equals(name) || "asst_coach_lev1".equals(name) || "asst_coach_lev2".equals(name) || "asst_coach_lev3".equals(name)
-                        || "head_coach".equals(name) || "other".equals(name)) {
-                        currentRosters = new Rosters(!"player".equals(name));
-                    } else if (currentRosters != null) {
-                        currentRosters.setValue(name, parser.nextText());
+        public List<Rosters> loadInBackground() {
+            mResults = new ArrayList<Rosters>();
+            InputStreamReader reader = null;
+            try {
+                reader = Utils.openUrlConnection(ROSTER_URL);
+                XmlPullParser parser = XMLUtils.parseXML(reader);
+                // The Rosters that is currently being parsed
+                Rosters currentRosters = null;
+                while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                    String name = parser.getName();
+                    if (parser.getEventType() == XmlPullParser.START_TAG) {
+                            if ("player".equals(name) || "asst_coach_lev1".equals(name) || "asst_coach_lev2".equals(name)
+                                || "asst_coach_lev3".equals(name) || "head_coach".equals(name) || "other".equals(name)) {
+                                currentRosters = new Rosters(!"player".equals(name));
+                            } else if (currentRosters != null) {
+                                currentRosters.setValue(name, parser.nextText());
+                            }
+                    } else if (parser.getEventType() == XmlPullParser.END_TAG && "asst_coach_lev1".equals(name)
+                        || "asst_coach_lev2".equals(name) || "asst_coach_lev3".equals(name) || "head_coach".equals(name)
+                        || "other".equals(name) || "player".equals(name)) {
+                        mResults.add(currentRosters);
                     }
-                } else if (parser.getEventType() == XmlPullParser.END_TAG && "asst_coach_lev1".equals(name)
-                    || "asst_coach_lev2".equals(name) || "asst_coach_lev3".equals(name) || "head_coach".equals(name) || "other".equals(name)
-                    || "player".equals(name)) {
-                    results.add(currentRosters);
                 }
+            } catch (XmlPullParserException xppe) {
+                Log.w(LOG_TAG, "Problem on parsing xml file", xppe);
+            } catch (IOException ioe) {
+                Log.w(LOG_TAG, "Problem on xml file", ioe);
+            } finally {
+                Utils.ignoreQuietly(reader);
             }
-            return results;
+            return mResults;
         }
     }
 }

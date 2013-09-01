@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.flavored.fragment;
+package com.itnoles.flavored.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,7 +31,7 @@ import com.itnoles.flavored.R;
 /**
  * A fragment that displays a WebView.
  *
- * The WebView is automically paused or resumed when the Fragment is paused or resumed.
+ * The WebView is automatically paused or resumed when the Fragment is paused or resumed.
  */
 public class BrowserDetailFragment extends WebViewFragment {
     public static BrowserDetailFragment newInstance(String urlString) {

@@ -12,17 +12,11 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Orginal Source in http://java.dzone.com/articles/getting-rid-boilerplate-code
  */
+package com.itnoles.flavored;
 
-package com.itnoles.flavored.activities;
-
-import android.app.Fragment;
-
-import com.itnoles.flavored.fragments.BrowserDetailFragment;
-
-public class BrowserDetailActivity extends BaseSinglePaneActivity {
-    @Override
-    Fragment onCreatePane() {
-        return new BrowserDetailFragment();
-    }
+public interface Predicate<T> {
+    boolean apply(T t);
 }

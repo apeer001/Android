@@ -17,9 +17,13 @@ checkstyle {
 }
 
 dependencies {
-    compile project('volley')
+    compile 'com.squareup.okhttp:okhttp:1.2.0'
     compile 'com.android.support:support-v13:18.0.+'
 }
+
+/*tasks.withType(Compile) {
+    options.compilerArgs << "-Xlint:unchecked"
+}*/
 
 android {
     compileSdkVersion 18
@@ -37,14 +41,14 @@ android {
             packageName "com.itnoles.nolesfootball"
             buildConfig "public static final String NEWS_URL = \"http://www.seminoles.com/headline-rss.xml\";", \
                         "public static final String ROSTER_URL = \"http://grfx.cstv.com/schools/fsu/data/xml/roster/m-footbl-2012.xml\";", \
-                        "public static final String SCHEDULE_URL = \"\";"
+                        "public static final String SCHEDULE_URL = \"http://cbs-amp2.silverchalice.co/cbs/api/events?schoolCode=fsu&sportCode=m-footbl\";"
         }
 
         knightsfootball {
             packageName "com.itnoles.knightsfootball"
             buildConfig "public static final String NEWS_URL = \"http://www.ucfathletics.com/headline-rss.xml\";", \
                         "public static final String ROSTER_URL = \"http://grfx.cstv.com/schools/ucf/data/xml/roster/m-footbl-2012.xml\";", \
-                        "public static final String SCHEDULE_URL = \"\";"
+                        "public static final String SCHEDULE_URL = \"http://cbs-amp2.silverchalice.co/cbs/api/events?schoolCode=ucf&sportCode=m-footbl\";"
         }
     }
 

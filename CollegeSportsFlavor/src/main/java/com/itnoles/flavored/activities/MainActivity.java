@@ -23,24 +23,23 @@ import android.support.v4.view.ViewPager;
 import android.support.v13.app.FragmentPagerAdapter;
 
 import com.itnoles.flavored.BuildConfig;
-import com.itnoles.flavored.fragment.HeadlinesFragment;
-import com.itnoles.flavored.fragment.RostersFragment;
-//import com.itnoles.flavored.fragment.ScheduleFragment;
+import com.itnoles.flavored.fragments.HeadlinesFragment;
+import com.itnoles.flavored.fragments.RostersFragment;
+import com.itnoles.flavored.fragments.ScheduleFragment;
 import com.itnoles.flavored.R;
-import com.itnoles.flavored.util.VolleyHelper;
 
 public class MainActivity extends Activity implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
     private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Enable Strict Mode under debug mode
         if (BuildConfig.DEBUG) {
             StrictMode.enableDefaults();
         }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        VolleyHelper.init(this);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(new HomePagerAdapter(getFragmentManager()));
@@ -49,7 +48,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         final ActionBar bar = getActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.addTab(bar.newTab().setText("News").setTabListener(this));
-        //bar.addTab(bar.newTab().setText("Schedule").setTabListener(this));
+        bar.addTab(bar.newTab().setText("Schedule").setTabListener(this));
         bar.addTab(bar.newTab().setText("Roster").setTabListener(this));
     }
 
@@ -79,12 +78,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     public void onPageScrollStateChanged(int i) {
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        VolleyHelper.getResultQueue().stop();
-    }
-
     private static class HomePagerAdapter extends FragmentPagerAdapter {
         public HomePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -96,8 +89,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
                 case 0:
                     return new HeadlinesFragment();
                 case 1:
-                    //return new ScheduleFragment();
-                //case 2:
+                    return new ScheduleFragment();
+               case 2:
                     return new RostersFragment();
                 default:
                     return null;
@@ -106,7 +99,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
     }
 }

@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.itnoles.flavored;
+package com.itnoles.flavored.model;
 
 public class Rosters {
     private String details;
@@ -24,7 +24,7 @@ public class Rosters {
     public String lastName;
     public String position;
 
-    public boolean isStaff;
+    public final boolean isStaff;
 
     public Rosters(boolean staff) {
         isStaff = staff;
@@ -45,11 +45,7 @@ public class Rosters {
     }
 
     public String getFullURL() {
-        StringBuffer temp = new StringBuffer(details);
-        temp.append("/");
-        temp.append(bioId);
-        temp.append(".json");
-        return temp.toString();
+        return details + "/" + bioId + ".json";
     }
 
     public String getFirstAndLastName() {

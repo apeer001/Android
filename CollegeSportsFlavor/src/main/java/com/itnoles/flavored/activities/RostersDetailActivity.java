@@ -18,7 +18,7 @@ package com.itnoles.flavored.activities;
 
 import android.app.Fragment;
 
-import com.itnoles.flavored.fragment.RostersDetailFragment;
+import com.itnoles.flavored.fragments.RostersDetailFragment;
 
 public class RostersDetailActivity extends BaseSinglePaneActivity {
     @Override

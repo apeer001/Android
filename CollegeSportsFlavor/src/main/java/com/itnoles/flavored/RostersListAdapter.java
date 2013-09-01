@@ -17,21 +17,19 @@
 package com.itnoles.flavored;
 
 import android.content.Context;
-import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.itnoles.flavored.model.Rosters;
+
 import java.util.List;
 
 public class RostersListAdapter extends ArrayAdapter<Rosters> {
-    private final LayoutInflater mInflater;
-
     public RostersListAdapter(Context context, List<Rosters> data) {
         super(context, 0, data);
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     /**
@@ -39,39 +37,38 @@ public class RostersListAdapter extends ArrayAdapter<Rosters> {
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view;
-
         // A ViewHolder keeps references to children views to avoid unneccessary calls
         // to findViewById() on each row.
-        ViewHolder holder;
-
-        if (convertView == null) {
-            view = mInflater.inflate(R.layout.roster_item, parent, false);
-
-            holder = new ViewHolder();
-            holder.lastname = (TextView) view.findViewById(R.id.lastname);
-            holder.firstname = (TextView) view.findViewById(R.id.firstname);
-            holder.position = (TextView) view.findViewById(R.id.position);
-
-            view.setTag(holder);
-        } else {
-            view = convertView;
-            holder = (ViewHolder) view.getTag();
-        }
-
-        StrictMode.noteSlowCall("RostersListAdapter#getView");
+        ViewHolder holder = ViewHolder.get(convertView, parent);
 
         Rosters item = getItem(position);
-        holder.lastname.setText(item.lastName);
         holder.firstname.setText(item.firstName);
+        holder.lastname.setText(item.lastName);
         holder.position.setText(item.position);
 
-        return view;
+        return holder.root;
     }
 
     static class ViewHolder {
-        TextView lastname;
-        TextView firstname;
-        TextView position;
+        public final View root;
+        public final TextView firstname;
+        public final TextView lastname;
+        public final TextView position;
+
+        private ViewHolder(ViewGroup parent) {
+            root = LayoutInflater.from(parent.getContext()).inflate(R.layout.rosters_item, parent, false);
+            root.setTag(this);
+
+            firstname = (TextView) root.findViewById(R.id.first_name);
+            lastname = (TextView) root.findViewById(R.id.last_name);
+            position = (TextView) root.findViewById(R.id.position);
+        }
+
+        public static ViewHolder get(View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                return new ViewHolder(parent);
+            }
+            return (ViewHolder) convertView.getTag();
+        }
     }
 }

@@ -18,34 +18,19 @@ package com.itnoles.flavored.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 
 abstract class BaseSinglePaneActivity extends Activity {
     // Called when the activity is first created.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             Fragment pane = onCreatePane();
             pane.setArguments(getIntent().getExtras());
             getFragmentManager().beginTransaction().add(android.R.id.content, pane).commit();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            // App icon in Action Bar clicked; go up
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Reuse the existing instance
-            startActivity(intent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**

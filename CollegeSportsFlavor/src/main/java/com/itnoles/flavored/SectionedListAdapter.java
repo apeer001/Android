@@ -33,26 +33,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A very simple adapter that adds sections to adapters written for {@link ListView}.
+ * A very simple adapter that adds sections to adapters written for ListView.
  *
  * Warning, There is a timing issue for this class that will crash by scrolling.
  * Make sure you call setListAdapter AFTER addSection.
  */
 public class SectionedListAdapter extends BaseAdapter {
-    private static int TYPE_SECTION_HEADER;
+    private static final int TYPE_SECTION_HEADER = 0;
 
-    private int mSectionResourceId;
-    private LayoutInflater mLayoutInflater;
-    private List<Section> mSections = new ArrayList<Section>();
+    private final LayoutInflater mLayoutInflater;
+    private final List<Section> mSections = new ArrayList<Section>();
 
-    public SectionedListAdapter(Context context, int sectionResourceId) {
+    public SectionedListAdapter(Context context) {
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mSectionResourceId = sectionResourceId;
     }
 
     static class Section {
-        String caption;
-        ListAdapter adapter;
+        final String caption;
+        final ListAdapter adapter;
 
         Section(String headerCaption, ListAdapter listAdapter) {
             caption = headerCaption;
@@ -84,6 +82,10 @@ public class SectionedListAdapter extends BaseAdapter {
             position -= size;
         }
         return null;
+    }
+
+    public void clear() {
+        mSections.clear();
     }
 
     @Override
@@ -157,7 +159,7 @@ public class SectionedListAdapter extends BaseAdapter {
             if (position == 0) {
                 TextView view = (TextView) convertView;
                 if (view == null) {
-                    view = (TextView) mLayoutInflater.inflate(mSectionResourceId, parent, false);
+                    view = (TextView) mLayoutInflater.inflate(R.layout.list_section_header, parent, false);
                 }
                 view.setText(section.caption);
                 return view;
