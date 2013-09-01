@@ -23,16 +23,25 @@ import android.support.v4.view.ViewPager;
 import android.support.v13.app.FragmentPagerAdapter;
 
 import com.itnoles.flavored.BuildConfig;
+<<<<<<< HEAD
 import com.itnoles.flavored.fragments.HeadlinesFragment;
 import com.itnoles.flavored.fragments.RostersFragment;
 import com.itnoles.flavored.fragments.ScheduleFragment;
 import com.itnoles.flavored.R;
+=======
+import com.itnoles.flavored.fragment.HeadlinesFragment;
+import com.itnoles.flavored.fragment.RostersFragment;
+//import com.itnoles.flavored.fragment.ScheduleFragment;
+import com.itnoles.flavored.R;
+import com.itnoles.flavored.util.VolleyHelper;
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
 
 public class MainActivity extends Activity implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
     private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+<<<<<<< HEAD
         // Enable Strict Mode under debug mode
         if (BuildConfig.DEBUG) {
             StrictMode.enableDefaults();
@@ -41,6 +50,16 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+=======
+        if (BuildConfig.DEBUG) {
+            StrictMode.enableDefaults();
+        }
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+
+        VolleyHelper.init(this);
+
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(new HomePagerAdapter(getFragmentManager()));
         mViewPager.setOnPageChangeListener(this);
@@ -48,7 +67,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
         final ActionBar bar = getActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.addTab(bar.newTab().setText("News").setTabListener(this));
+<<<<<<< HEAD
         bar.addTab(bar.newTab().setText("Schedule").setTabListener(this));
+=======
+        //bar.addTab(bar.newTab().setText("Schedule").setTabListener(this));
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
         bar.addTab(bar.newTab().setText("Roster").setTabListener(this));
     }
 
@@ -78,6 +101,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
     public void onPageScrollStateChanged(int i) {
     }
 
+<<<<<<< HEAD
+=======
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        VolleyHelper.getResultQueue().stop();
+    }
+
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
     private static class HomePagerAdapter extends FragmentPagerAdapter {
         public HomePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -89,8 +121,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
                 case 0:
                     return new HeadlinesFragment();
                 case 1:
+<<<<<<< HEAD
                     return new ScheduleFragment();
                case 2:
+=======
+                    //return new ScheduleFragment();
+                //case 2:
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
                     return new RostersFragment();
                 default:
                     return null;
@@ -99,7 +136,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
 
         @Override
         public int getCount() {
+<<<<<<< HEAD
             return 3;
+=======
+            return 2;
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
         }
     }
 }

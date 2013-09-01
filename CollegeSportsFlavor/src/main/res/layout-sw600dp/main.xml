@@ -11,7 +11,11 @@
 
     <FrameLayout
         android:id="@id/fragment_details"
+<<<<<<< HEAD
         android:layout_width="0dp"
+=======
+        android:layout_width="match_parent"
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
         android:layout_height="0dp"
         android:layout_weight="1" />
 </LinearLayout>

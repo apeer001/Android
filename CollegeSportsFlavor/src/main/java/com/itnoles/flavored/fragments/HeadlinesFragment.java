@@ -14,6 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 package com.itnoles.flavored.fragments;
 
 import android.app.FragmentTransaction;
@@ -25,39 +26,73 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+=======
+package com.itnoles.flavored.fragment;
+
+import android.app.FragmentTransaction;
+import android.app.ListFragment;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+//import android.os.StrictMode;
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+<<<<<<< HEAD
 import com.itnoles.flavored.*;
 import com.itnoles.flavored.activities.BrowserDetailActivity;
 import com.itnoles.flavored.model.News;
+=======
+import com.android.volley.Response.Listener;
+//import com.android.volley.toolbox.NetworkImageView;
+import com.itnoles.flavored.activities.BrowserDetailActivity;
+import com.itnoles.flavored.R;
+import com.itnoles.flavored.util.AbstractXMLRequest;
+import com.itnoles.flavored.util.VolleyHelper;
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+<<<<<<< HEAD
 import java.io.InputStreamReader;
+=======
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.itnoles.flavored.BuildConfig.NEWS_URL;
 
+<<<<<<< HEAD
 public class HeadlinesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
     private static final String LOG_TAG = "HeadlinesFragment";
 
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
+=======
+public class HeadlinesFragment extends ListFragment {
+    private boolean mDualPane;
+    private int mShownCheckPosition = -1;
+    private NewsListAdapter mAdapter;
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
 
     @Override
     public void onActivityCreated(Bundle savedState) {
         super.onActivityCreated(savedState);
 
         // Create an empty adapter we will use to display the loaded data.
+<<<<<<< HEAD
         NewsListAdapter adapter = new NewsListAdapter(getActivity());
         setListAdapter(adapter);
+=======
+        mAdapter = new NewsListAdapter(getActivity());
+        setListAdapter(mAdapter);
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
 
         // Determine whether we are in single-pane or dual-pane mode by testing the visibility
         // of the detail view.
@@ -72,6 +107,7 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
 
+<<<<<<< HEAD
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
@@ -93,6 +129,20 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
     public void onLoaderReset(Loader<List<News>> loader) {
         // Clear the data in the adapter.
         ((NewsListAdapter) getListAdapter()).clear();
+=======
+        loadData();
+    }
+
+    private void loadData() {
+        // Start default url load with Volley.
+        NewsRequests nr = new NewsRequests(new Listener<List<News>>() {
+            @Override
+            public void onResponse(List<News> response) {
+                mAdapter.addAll(response);
+            }
+        });
+        VolleyHelper.getResultQueue().add(nr);
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
     }
 
     @Override
@@ -123,6 +173,7 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
         }
     }
 
+<<<<<<< HEAD
     static class NewsLoader extends AbstractContentListLoader<News> {
         NewsLoader(Context context) {
             super(context);
@@ -166,6 +217,35 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
                 Utils.ignoreQuietly(reader);
             }
             return mResults;
+=======
+    static class NewsRequests extends AbstractXMLRequest<List<News>> {
+        NewsRequests(Listener<List<News>> listener) {
+            super(NEWS_URL, listener);
+        }
+
+        @Override
+        public List<News> onPostNetworkResponse(XmlPullParser parser) throws XmlPullParserException, IOException {
+            List<News> results = new ArrayList<News>();
+            // The News that is currently being parsed
+            News currentNews = null;
+            while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                if (parser.getEventType() == XmlPullParser.START_TAG) {
+                    String name = parser.getName();
+                    if ("item".equals(name)) {
+                        currentNews = new News();
+                    } else if (currentNews != null) {
+                        //if ("enclosure".equals(name)) {
+                            //currentNews.setValue("enclosure", parser.getAttributeValue(null, "url"));
+                        //} else {
+                            currentNews.setValue(name, parser.nextText());
+                        //}
+                    }
+                } else if (parser.getEventType() == XmlPullParser.END_TAG && "item".equals(parser.getName())) {
+                    results.add(currentNews);
+                }
+            }
+            return results;
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
         }
     }
 
@@ -176,15 +256,38 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+<<<<<<< HEAD
             // A ViewHolder keeps references to children views to avoid unnecessary calls
             // to findViewById() on each row.
             ViewHolder holder = ViewHolder.get(convertView, parent);
+=======
+            View view;
+
+            // A ViewHolder keeps references to children views to avoid unneccessary calls
+            // to findViewById() on each row.
+            ViewHolder holder;
+
+            if (convertView == null) {
+                view = getActivity().getLayoutInflater().inflate(R.layout.headlines_item, parent, false);
+
+                holder = new ViewHolder();
+                holder.title = (TextView) view.findViewById(R.id.title);
+                holder.date = (TextView) view.findViewById(R.id.date);
+                holder.desc = (TextView) view.findViewById(R.id.desc);
+
+                view.setTag(holder);
+            } else {
+                view = convertView;
+                holder = (ViewHolder) view.getTag();
+            }
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
 
             News news = getItem(position);
             holder.title.setText(news.title);
             holder.date.setText(news.pubDate);
             holder.desc.setText(news.desc);
 
+<<<<<<< HEAD
             return holder.root;
         }
     }
@@ -210,5 +313,38 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
             }
             return (ViewHolder) convertView.getTag();
         }
+=======
+            return view;
+        }
+    }
+
+    static class News {
+        public String title;
+        public String link;
+        public String desc;
+        public String pubDate;
+        //public String imageURL;
+
+        void setValue(String key, String value) {
+            if ("title".equals(key)) {
+                title = value;
+            } else if ("pubDate".equals(key)) {
+                pubDate = value;
+            } else if ("link".equals(key)) {
+                link = value;
+            } else if ("description".equals(key)) {
+                desc = value.replaceAll("\\<.*>","");
+            } /*else if ("enclosure".equals(key)) {
+                imageURL = value;
+            }*/
+        }
+    }
+
+    static class ViewHolder {
+        TextView title;
+        TextView date;
+        TextView desc;
+        //NetworkImageView thumbnail;
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
     }
 }

@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<<<<<<< HEAD
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+=======
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
     android:minHeight="?android:attr/listPreferredItemHeight">
 
     <TextView

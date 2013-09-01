@@ -14,6 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
 package com.itnoles.flavored.fragments;
 
 import android.app.ListFragment;
@@ -39,6 +40,25 @@ public class RostersDetailFragment extends ListFragment implements LoaderManager
 
     private ArrayAdapter<String> mAdapter;
 
+=======
+package com.itnoles.flavored.fragment;
+
+import android.app.ListFragment;
+import android.os.Bundle;
+import android.util.JsonReader;
+import android.util.JsonToken;
+import android.widget.ArrayAdapter;
+
+import com.android.volley.Response.Listener;
+import com.itnoles.flavored.util.AbstractJsonRequest;
+import com.itnoles.flavored.util.VolleyHelper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RostersDetailFragment extends ListFragment {
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
     public static RostersDetailFragment newInstance(String urlString) {
         RostersDetailFragment f = new RostersDetailFragment();
 
@@ -58,6 +78,7 @@ public class RostersDetailFragment extends ListFragment implements LoaderManager
             getActivity().getActionBar().setTitle(title);
         }
 
+<<<<<<< HEAD
         mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
         setListAdapter(mAdapter);
 
@@ -137,6 +158,49 @@ public class RostersDetailFragment extends ListFragment implements LoaderManager
                 reader.close();
             }
             return mResults;
+=======
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+        setListAdapter(adapter);
+
+        RostersDetailRequests rdr = new RostersDetailRequests(getArguments().getString("url"), new Listener<List<String>>() {
+            @Override
+            public void onResponse(List<String> response) {
+                adapter.addAll(response);
+            }
+        });
+        VolleyHelper.getResultQueue().add(rdr);
+    }
+
+    static class RostersDetailRequests extends AbstractJsonRequest<List<String>> {
+        RostersDetailRequests(String url, Listener<List<String>> listener) {
+            super(url, listener);
+        }
+
+        public List<String> onPostNetworkResponse(JsonReader reader) throws IOException {
+            List<String> results = new ArrayList<String>();
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String name = reader.nextName();
+                boolean notNull = reader.peek() != JsonToken.NULL;
+                if ("experience".equals(name) && notNull) {
+                    results.add("Experience: " + reader.nextString());
+                } else if ("eligibility".equals(name) && notNull) {
+                    results.add("Class: " + reader.nextString());
+                } else if ("height".equals(name) && notNull) {
+                    results.add("Height: " + reader.nextString());
+                } else if ("weight".equals(name) && notNull) {
+                    results.add("Weight: " + reader.nextString());
+                } else if ("hometown".equals(name) && notNull) {
+                    results.add("Hometown: " + reader.nextString());
+                } else if ("position_event".equals(name)) {
+                    results.add(reader.nextString().replace("=>", ": "));
+                } else {
+                    reader.skipValue();
+                }
+            }
+            reader.endObject();
+            return results;
+>>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
         }
     }
 }

@@ -1,11 +1,5 @@
 <h2>Improving App</h2>
-<p>I will improve on any application in times go on</p>
-
-<h2>Project dependencies</h2>
-<ul>
-    <li>latest Android SDK</li>
-    <li>Gradle Build System with Android Plugin</li>
-</ul>
+<p>I will improve any application in times go on</p>
 
 <h2>Mono Related Project</h2>
 <p>If you see any folder that contains Mono, it will not be released to the Play Store.</p>
