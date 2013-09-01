@@ -28,11 +28,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.itnoles.flavored.AbstractContentListLoader;
+import com.itnoles.flavored.*;
 import com.itnoles.flavored.model.Event;
-import com.itnoles.flavored.R;
-import com.itnoles.flavored.Utils;
-import com.itnoles.flavored.XMLUtils;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -117,6 +114,7 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
                             currentEvents = new Event(parser.getAttributeValue(null, "date"));
                         } else if ("event".equals(name)) {
                             currentEvents.setFullDate(parser.getAttributeValue(null, "eastern_time"));
+                            //currentEvents.id = parser.getAttributeValue(null, "id");
                             currentEvents.hn = parser.getAttributeValue(null, "hn");
                             currentEvents.hs = parser.getAttributeValue(null, "hs");
                             currentEvents.vn = parser.getAttributeValue(null, "vn");
@@ -146,60 +144,40 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // A ViewHolder keeps references to children views to avoid unneccessary calls
-            // to findViewById() on each row.
-            ViewHolder holder = ViewHolder.get(convertView, parent);
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.schedule_item, parent, false);
+            }
 
             Event item = getItem(position);
-            holder.date.setText(sdf.format(item.fullDate));
-            holder.awayTeam.setText(item.vn);
 
+            TextView date = ViewHolder.get(convertView, R.id.date);
+            date.setText(sdf.format(item.fullDate));
+
+            TextView awayTeam = ViewHolder.get(convertView, R.id.away_team);
+            awayTeam.setText(item.vn);
+
+            TextView awayScore = ViewHolder.get(convertView, R.id.away_score);
             String vs = item.vs;
-            if (vs != null) {
-                holder.awayScore.setText(vs);
-                holder.awayScore.setVisibility(View.VISIBLE);
+            if (vs == null) {
+            	awayScore.setVisibility(View.GONE);
             } else {
-                holder.awayScore.setVisibility(View.GONE);
+                awayScore.setText(vs);
+                awayScore.setVisibility(View.VISIBLE);
             }
 
-            holder.homeTeam.setText(item.hn);
+            TextView homeTeam = ViewHolder.get(convertView, R.id.home_team);
+            homeTeam.setText(item.hn);
 
+            TextView homeScore = ViewHolder.get(convertView, R.id.home_score);
             String hs = item.hs;
-            if (hs != null) {
-                holder.homeScore.setText(hs);
-                holder.homeScore.setVisibility(View.VISIBLE);
+            if (hs == null) {
+            	homeScore.setVisibility(View.GONE);
             } else {
-                holder.homeScore.setVisibility(View.GONE);
+                homeScore.setText(hs);
+                homeScore.setVisibility(View.VISIBLE);
             }
 
-            return holder.root;
-        }
-    }
-
-    static class ViewHolder {
-        public final View root;
-        public final TextView date;
-        public final TextView awayTeam;
-        public final TextView awayScore;
-        public final TextView homeTeam;
-        public final TextView homeScore;
-
-        private ViewHolder(ViewGroup parent) {
-            root = LayoutInflater.from(parent.getContext()).inflate(R.layout.schedule_item, parent, false);
-            root.setTag(this);
-
-            date = (TextView) root.findViewById(R.id.date);
-            awayTeam = (TextView) root.findViewById(R.id.away_team);
-            awayScore = (TextView) root.findViewById(R.id.away_score);
-            homeTeam = (TextView) root.findViewById(R.id.home_team);
-            homeScore  = (TextView) root.findViewById(R.id.home_score);
-        }
-
-        public static ViewHolder get(View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                return new ViewHolder(parent);
-            }
-            return (ViewHolder) convertView.getTag();
+            return convertView;
         }
     }
 }

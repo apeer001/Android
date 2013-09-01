@@ -17,7 +17,7 @@ checkstyle {
 }
 
 dependencies {
-    compile 'com.squareup.okhttp:okhttp:1.2.0'
+    compile 'com.squareup.okhttp:okhttp:1.2.+'
     compile 'com.android.support:support-v13:18.0.+'
 }
 

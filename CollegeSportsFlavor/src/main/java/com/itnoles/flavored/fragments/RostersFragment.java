@@ -97,9 +97,10 @@ public class RostersFragment extends ListFragment implements LoaderManager.Loade
         mAdapter.addSection("2012 Athlete Roster", new RostersListAdapter(getActivity(), playerRosters));
 
         List<Rosters> staffRosters = filter(new Predicate<Rosters>() {
-        	public boolean apply(Rosters rosters) {
-        		return rosters.isStaff;
-        	}
+            @Override
+            public boolean apply(Rosters rosters) {
+                return rosters.isStaff;
+            }
         }, data);
         mAdapter.addSection("2012 Coaches and Staff", new RostersListAdapter(getActivity(), staffRosters));
         setListAdapter(mAdapter);

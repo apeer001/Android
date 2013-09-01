@@ -176,39 +176,22 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // A ViewHolder keeps references to children views to avoid unnecessary calls
-            // to findViewById() on each row.
-            ViewHolder holder = ViewHolder.get(convertView, parent);
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.headlines_item, parent, false);
+            }
 
             News news = getItem(position);
-            holder.title.setText(news.title);
-            holder.date.setText(news.pubDate);
-            holder.desc.setText(news.desc);
 
-            return holder.root;
-        }
-    }
+            TextView title = ViewHolder.get(convertView, R.id.title);
+            title.setText(news.title);
 
-    static class ViewHolder {
-        public final View root;
-        public final TextView title;
-        public final TextView date;
-        public final TextView desc;
+            TextView date = ViewHolder.get(convertView, R.id.date);
+            date.setText(news.pubDate);
 
-        private ViewHolder(ViewGroup parent) {
-            root = LayoutInflater.from(parent.getContext()).inflate(R.layout.headlines_item, parent, false);
-            root.setTag(this);
+            TextView desc = ViewHolder.get(convertView, R.id.desc);
+            desc.setText(news.desc);
 
-            title = (TextView) root.findViewById(R.id.title);
-            date = (TextView) root.findViewById(R.id.date);
-            desc = (TextView) root.findViewById(R.id.desc);
-        }
-
-        public static ViewHolder get(View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                return new ViewHolder(parent);
-            }
-            return (ViewHolder) convertView.getTag();
+            return convertView;
         }
     }
 }

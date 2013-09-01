@@ -23,7 +23,6 @@ public class Rosters {
     public String firstName;
     public String lastName;
     public String position;
-
     public boolean isStaff;
 
     public Rosters(boolean staff) {

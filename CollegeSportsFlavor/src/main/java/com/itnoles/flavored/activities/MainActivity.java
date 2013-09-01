@@ -18,11 +18,9 @@ package com.itnoles.flavored.activities;
 
 import android.app.*; //ActionBar, Activity, Fragment, FragmentManager, FragmentTransaction
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.view.ViewPager;
 import android.support.v13.app.FragmentPagerAdapter;
 
-import com.itnoles.flavored.BuildConfig;
 import com.itnoles.flavored.fragments.HeadlinesFragment;
 import com.itnoles.flavored.fragments.RostersFragment;
 import com.itnoles.flavored.fragments.ScheduleFragment;
@@ -33,11 +31,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Vie
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Enable Strict Mode under debug mode
-        if (BuildConfig.DEBUG) {
-            StrictMode.enableDefaults();
-        }
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
