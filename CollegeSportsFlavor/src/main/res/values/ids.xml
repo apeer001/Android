@@ -14,20 +14,11 @@
     <item type="id" name="away_score" />
     <item type="id" name="home_team" />
     <item type="id" name="home_score" />
-<<<<<<< HEAD
 
     <!-- Roster -->
     <item type="id" name="last_name" />
     <item type="id" name="position" />
     <item type="id" name="first_name" />
-=======
-    <item type="id" name="status" />
-
-    <!-- Roster -->
-    <item type="id" name="lastname" />
-    <item type="id" name="firstname" />
-    <item type="id" name="position" />
->>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
 
     <!-- Menu -->
     <item type="id" name="menu_search" />

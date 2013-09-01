@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-<<<<<<< HEAD
     android:layout_height="wrap_content">
 
     <TextView
@@ -56,61 +55,4 @@
         android:layout_below="@id/home_score"
         android:singleLine="true"
         android:layout_marginLeft="2dip" />
-=======
-    android:layout_height="match_parent"
-    
-    android:padding="6dip">
-
-    <TextView
-        android:id="@id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@id/away_team"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/date"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    <TextView
-        android:id="@id/away_score"
-        android:ellipsize="none"
-        android:gravity="right"
-
-        android:layout_gravity="center_vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/away_team"
-        android:layout_alignParentRight="true"
-        android:layout_alignWithParentIfMissing="true"
-
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@id/home_team"
-        android:layout_gravity="center_vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/away_team"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    <TextView
-        android:id="@id/home_score"
-        android:ellipsize="none"
-        android:gravity="right"
-
-        android:layout_gravity="center_vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/home_team"
-        android:layout_alignParentRight="true"
-        android:layout_alignWithParentIfMissing="true"
-
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-     <TextView
-        android:id="@id/status"
-        android:layout_below="@id/home_team"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
->>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
 </RelativeLayout>

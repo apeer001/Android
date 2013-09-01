@@ -17,7 +17,6 @@ checkstyle {
 }
 
 dependencies {
-<<<<<<< HEAD
     compile 'com.squareup.okhttp:okhttp:1.2.0'
     compile 'com.android.support:support-v13:18.0.+'
 }
@@ -26,12 +25,6 @@ dependencies {
     options.compilerArgs << "-Xlint:unchecked"
 }*/
 
-=======
-    compile project('volley')
-    compile 'com.android.support:support-v13:18.0.+'
-}
-
->>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
 android {
     compileSdkVersion 18
     buildToolsVersion "18.0.1"
@@ -48,22 +41,14 @@ android {
             packageName "com.itnoles.nolesfootball"
             buildConfig "public static final String NEWS_URL = \"http://www.seminoles.com/headline-rss.xml\";", \
                         "public static final String ROSTER_URL = \"http://grfx.cstv.com/schools/fsu/data/xml/roster/m-footbl-2012.xml\";", \
-<<<<<<< HEAD
                         "public static final String SCHEDULE_URL = \"http://cbs-amp2.silverchalice.co/cbs/api/events?schoolCode=fsu&sportCode=m-footbl\";"
-=======
-                        "public static final String SCHEDULE_URL = \"\";"
->>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
         }
 
         knightsfootball {
             packageName "com.itnoles.knightsfootball"
             buildConfig "public static final String NEWS_URL = \"http://www.ucfathletics.com/headline-rss.xml\";", \
                         "public static final String ROSTER_URL = \"http://grfx.cstv.com/schools/ucf/data/xml/roster/m-footbl-2012.xml\";", \
-<<<<<<< HEAD
                         "public static final String SCHEDULE_URL = \"http://cbs-amp2.silverchalice.co/cbs/api/events?schoolCode=ucf&sportCode=m-footbl\";"
-=======
-                        "public static final String SCHEDULE_URL = \"\";"
->>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
         }
     }
 

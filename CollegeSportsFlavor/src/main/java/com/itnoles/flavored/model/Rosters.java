@@ -24,7 +24,7 @@ public class Rosters {
     public String lastName;
     public String position;
 
-    public final boolean isStaff;
+    public boolean isStaff;
 
     public Rosters(boolean staff) {
         isStaff = staff;

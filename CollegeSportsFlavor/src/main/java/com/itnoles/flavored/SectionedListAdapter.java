@@ -33,17 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-<<<<<<< HEAD
  * A very simple adapter that adds sections to adapters written for ListView.
-=======
- * A very simple adapter that adds sections to adapters written for {@link ListView}.
->>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
  *
  * Warning, There is a timing issue for this class that will crash by scrolling.
  * Make sure you call setListAdapter AFTER addSection.
  */
 public class SectionedListAdapter extends BaseAdapter {
-<<<<<<< HEAD
     private static final int TYPE_SECTION_HEADER = 0;
 
     private final LayoutInflater mLayoutInflater;
@@ -54,25 +49,8 @@ public class SectionedListAdapter extends BaseAdapter {
     }
 
     static class Section {
-        final String caption;
-        final ListAdapter adapter;
-=======
-    private static int TYPE_SECTION_HEADER;
-
-    private int mSectionResourceId;
-    private LayoutInflater mLayoutInflater;
-    private List<Section> mSections = new ArrayList<Section>();
-
-    public SectionedListAdapter(Context context, int sectionResourceId) {
-        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mSectionResourceId = sectionResourceId;
-    }
-
-    static class Section {
         String caption;
         ListAdapter adapter;
->>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
-
         Section(String headerCaption, ListAdapter listAdapter) {
             caption = headerCaption;
             adapter = listAdapter;
@@ -105,13 +83,10 @@ public class SectionedListAdapter extends BaseAdapter {
         return null;
     }
 
-<<<<<<< HEAD
     public void clear() {
         mSections.clear();
     }
 
-=======
->>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
     @Override
     public Object getItem(int position) {
         for (Section section : mSections) {
@@ -183,11 +158,7 @@ public class SectionedListAdapter extends BaseAdapter {
             if (position == 0) {
                 TextView view = (TextView) convertView;
                 if (view == null) {
-<<<<<<< HEAD
                     view = (TextView) mLayoutInflater.inflate(R.layout.list_section_header, parent, false);
-=======
-                    view = (TextView) mLayoutInflater.inflate(mSectionResourceId, parent, false);
->>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
                 }
                 view.setText(section.caption);
                 return view;

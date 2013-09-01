@@ -1,13 +1,4 @@
-<<<<<<< HEAD
 <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
-=======
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
-	<android.support.v4.view.ViewPager
-    android:id="@id/pager"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
-</merge>
->>>>>>> 2286f96e013c12e773d943ea08e6cf4abeeb1511
