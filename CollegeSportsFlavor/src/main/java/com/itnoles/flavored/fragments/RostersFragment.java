@@ -19,32 +19,31 @@ package com.itnoles.flavored.fragments;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*; // Menu, MenuInflater, MenuItem and View
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.itnoles.flavored.activities.RostersDetailActivity;
-import com.itnoles.flavored.*;
 import com.itnoles.flavored.model.Rosters;
+import com.itnoles.flavored.R;
+import com.itnoles.flavored.Predicate;
+import com.itnoles.flavored.RostersListAdapter;
+import com.itnoles.flavored.SectionedListAdapter;
+import com.itnoles.flavored.XMLContentLoader;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.itnoles.flavored.BuildConfig.ROSTER_URL;
 
 public class RostersFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<Rosters>>, SearchView.OnQueryTextListener {
-    private static final String LOG_TAG = "RostersFragment";
-
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
     private SectionedListAdapter mAdapter;
@@ -82,7 +81,7 @@ public class RostersFragment extends ListFragment implements LoaderManager.Loade
     @Override
     public Loader<List<Rosters>> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created.
-        return new RostersLoader(getActivity());
+        return new XMLContentLoader<Rosters>(getActivity(), ROSTER_URL, new RostersLoader());
     }
 
     @Override
@@ -179,48 +178,28 @@ public class RostersFragment extends ListFragment implements LoaderManager.Loade
         return destiny;
     }
 
-    static class RostersLoader extends AbstractContentListLoader<Rosters> {
-        RostersLoader(Context context) {
-            super(context);
-        }
-
-        /**
-         * This is where the bulk of our work is done. This function is
-         * called in a background thread and should generate a new set of
-         * data to be published by the loader.
-         */
+    static class RostersLoader implements XMLContentLoader.ResponseListener<Rosters> {
         @Override
-        public List<Rosters> loadInBackground() {
-            mResults = new ArrayList<Rosters>();
-            InputStreamReader reader = null;
-            try {
-                reader = Utils.openUrlConnection(ROSTER_URL);
-                XmlPullParser parser = XMLUtils.parseXML(reader);
-                // The Rosters that is currently being parsed
-                Rosters currentRosters = null;
-                while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                    String name = parser.getName();
-                    if (parser.getEventType() == XmlPullParser.START_TAG) {
-                            if ("player".equals(name) || "asst_coach_lev1".equals(name) || "asst_coach_lev2".equals(name)
-                                || "asst_coach_lev3".equals(name) || "head_coach".equals(name) || "other".equals(name)) {
-                                currentRosters = new Rosters(!"player".equals(name));
-                            } else if (currentRosters != null) {
-                                currentRosters.setValue(name, parser.nextText());
-                            }
-                    } else if (parser.getEventType() == XmlPullParser.END_TAG && "asst_coach_lev1".equals(name)
+        public List<Rosters> onPostExecute(XmlPullParser parser) throws XmlPullParserException, IOException {
+            List<Rosters> results = new ArrayList<Rosters>();
+            // The Rosters that is currently being parsed
+            Rosters currentRosters = null;
+            while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                String name = parser.getName();
+                if (parser.getEventType() == XmlPullParser.START_TAG) {
+                    if ("player".equals(name) || "asst_coach_lev1".equals(name) || "asst_coach_lev2".equals(name)
+                            || "asst_coach_lev3".equals(name) || "head_coach".equals(name) || "other".equals(name)) {
+                        currentRosters = new Rosters(!"player".equals(name));
+                    } else if (currentRosters != null) {
+                        currentRosters.setValue(name, parser.nextText());
+                    }
+                } else if (parser.getEventType() == XmlPullParser.END_TAG && "asst_coach_lev1".equals(name)
                         || "asst_coach_lev2".equals(name) || "asst_coach_lev3".equals(name) || "head_coach".equals(name)
                         || "other".equals(name) || "player".equals(name)) {
-                        mResults.add(currentRosters);
-                    }
+                    results.add(currentRosters);
                 }
-            } catch (XmlPullParserException xppe) {
-                Log.w(LOG_TAG, "Problem on parsing xml file", xppe);
-            } catch (IOException ioe) {
-                Log.w(LOG_TAG, "Problem on xml file", ioe);
-            } finally {
-                Utils.ignoreQuietly(reader);
             }
-            return mResults;
+            return results;
         }
     }
 }

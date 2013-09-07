@@ -19,11 +19,9 @@ package com.itnoles.flavored.fragments;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,23 +29,22 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.itnoles.flavored.*;
 import com.itnoles.flavored.activities.BrowserDetailActivity;
+import com.itnoles.flavored.R;
 import com.itnoles.flavored.model.News;
+import com.itnoles.flavored.ViewHolder;
+import com.itnoles.flavored.XMLContentLoader;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.itnoles.flavored.BuildConfig.NEWS_URL;
 
 public class HeadlinesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
-    private static final String LOG_TAG = "HeadlinesFragment";
-
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
 
@@ -56,7 +53,7 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
         super.onActivityCreated(savedState);
 
         // Create an empty adapter we will use to display the loaded data.
-        NewsListAdapter adapter = new NewsListAdapter(getActivity());
+        NewsListAdapter adapter = new NewsListAdapter();
         setListAdapter(adapter);
 
         // Determine whether we are in single-pane or dual-pane mode by testing the visibility
@@ -80,7 +77,7 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created.
-        return new NewsLoader(getActivity());
+        return new XMLContentLoader<News>(getActivity(), NEWS_URL, new NewsLoader());
     }
 
     @Override
@@ -123,61 +120,41 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
         }
     }
 
-    static class NewsLoader extends AbstractContentListLoader<News> {
-        NewsLoader(Context context) {
-            super(context);
-        }
-
-        /**
-         * This is where the bulk of our work is done. This function is
-         * called in a background thread and should generate a new set of
-         * data to be published by the loader.
-         */
+    static class NewsLoader implements XMLContentLoader.ResponseListener<News> {
         @Override
-        public List<News> loadInBackground() {
-            mResults = new ArrayList<News>();
-            InputStreamReader reader = null;
-            try {
-                reader = Utils.openUrlConnection(NEWS_URL);
-                XmlPullParser parser = XMLUtils.parseXML(reader);
-                // The News that is currently being parsed
-                News currentNews = null;
-                while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                    if (parser.getEventType() == XmlPullParser.START_TAG) {
-                        String name = parser.getName();
-                        if ("item".equals(name)) {
-                            currentNews = new News();
-                        } else if (currentNews != null) {
-                            //if ("enclosure".equals(name)) {
-                                //currentNews.setValue("enclosure", parser.getAttributeValue(null, "url"));
-                            //} else {
-                                currentNews.setValue(name, parser.nextText());
-                            //}
-                        }
-                    } else if (parser.getEventType() == XmlPullParser.END_TAG && "item".equals(parser.getName())) {
-                        mResults.add(currentNews);
+        public List<News> onPostExecute(XmlPullParser parser) throws IOException, XmlPullParserException {
+            List<News> results = new ArrayList<News>();
+            // The News that is currently being parsed
+            News currentNews = null;
+            while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                if (parser.getEventType() == XmlPullParser.START_TAG) {
+                    String name = parser.getName();
+                    if ("item".equals(name)) {
+                        currentNews = new News();
+                    } else if (currentNews != null) {
+                        //if ("enclosure".equals(name)) {
+                        //currentNews.setValue("enclosure", parser.getAttributeValue(null, "url"));
+                        //} else {
+                        currentNews.setValue(name, parser.nextText());
+                        //}
                     }
+                } else if (parser.getEventType() == XmlPullParser.END_TAG && "item".equals(parser.getName())) {
+                    results.add(currentNews);
                 }
-            } catch (XmlPullParserException xppe) {
-                Log.w(LOG_TAG, "Problem on parsing xml file", xppe);
-            } catch (IOException ioe) {
-                Log.w(LOG_TAG, "Problem on xml file", ioe);
-            } finally {
-                Utils.ignoreQuietly(reader);
             }
-            return mResults;
+            return results;
         }
     }
 
     private class NewsListAdapter extends ArrayAdapter<News> {
-        public NewsListAdapter(Context context) {
-            super(context, 0);
+        public NewsListAdapter() {
+            super(getActivity(), 0);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.headlines_item, parent, false);
+                convertView = LayoutInflater.from(getActivity()).inflate(R.layout.headlines_item, parent, false);
             }
 
             News news = getItem(position);

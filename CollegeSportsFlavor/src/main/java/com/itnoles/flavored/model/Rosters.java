@@ -44,7 +44,7 @@ public class Rosters {
     }
 
     public String getFullURL() {
-        return details + "/" + bioId + ".json";
+        return details + '/' + bioId + ".json";
     }
 
     public String getFirstAndLastName() {

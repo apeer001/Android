@@ -29,13 +29,6 @@ android {
     compileSdkVersion 18
     buildToolsVersion "18.0.1"
 
-    defaultConfig {
-        versionCode 1
-        versionName '1.1.0'
-        minSdkVersion 14
-        targetSdkVersion 18
-    }
-
     productFlavors {
         nolesfootball {
             packageName "com.itnoles.nolesfootball"
@@ -54,10 +47,10 @@ android {
 
     signingConfigs {
         myConfig {
-            storeFile file(signingStoreLocation)
-            storePassword signingStorePassword
-            keyAlias signingKeyAlias
-            keyPassword signingKeyPassword
+            storeFile file(project.signingStoreLocation)
+            storePassword project.signingStorePassword
+            keyAlias project.signingKeyAlias
+            keyPassword project.signingKeyPassword
         }
     }
 

@@ -13,11 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Took some idea from
- * http://code.google.com/p/dailyburndroid/source/browse/branches/ui_changes/src/com/commonsware/android/listview/SectionedAdapter.java
- * https://github.com/commonsguy/cwac-merge/blob/master/src/com/commonsware/cwac/merge/MergeAdapter.java
- */
+
 package com.itnoles.flavored;
 
 import android.content.Context;

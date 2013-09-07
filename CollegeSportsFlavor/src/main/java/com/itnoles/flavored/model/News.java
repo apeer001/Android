@@ -16,7 +16,11 @@
 
 package com.itnoles.flavored.model;
 
+import java.util.regex.Pattern;
+
 public class News {
+    private static final Pattern COMPILE = Pattern.compile("<.*>");
+
     public String title;
     public String link;
     public String desc;
@@ -31,7 +35,7 @@ public class News {
         } else if ("link".equals(key)) {
             link = value;
         } else if ("description".equals(key)) {
-            desc = value.replaceAll("<.*>", "");
+            desc = COMPILE.matcher(value).replaceAll("");
         } /*else if ("enclosure".equals(key)) {
             imageURL = value;
         }*/
