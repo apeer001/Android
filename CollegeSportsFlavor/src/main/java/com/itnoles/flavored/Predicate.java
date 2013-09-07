@@ -13,6 +13,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ * Original Source in http://java.dzone.com/articles/getting-rid-boilerplate-code
+ */
 
 package com.itnoles.flavored;
 
