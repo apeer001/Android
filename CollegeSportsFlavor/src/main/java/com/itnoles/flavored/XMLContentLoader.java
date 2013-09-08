@@ -30,7 +30,6 @@ import java.util.List;
 public class XMLContentLoader<T> extends AbstractContentListLoader<T> {
     private static final String LOG_TAG = "XmlContentLoader";
 
-    private final String mURL;
     private final ResponseListener<T> mListener;
 
     private static XmlPullParserFactory sXmlPullParserFactory;
@@ -43,8 +42,7 @@ public class XMLContentLoader<T> extends AbstractContentListLoader<T> {
     }
 
     public XMLContentLoader(Context context, String url, ResponseListener<T> listener) {
-        super(context);
-        mURL = url;
+        super(context, url);
         mListener = listener;
     }
 

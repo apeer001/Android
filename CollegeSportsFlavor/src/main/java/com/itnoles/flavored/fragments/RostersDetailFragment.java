@@ -84,12 +84,9 @@ public class RostersDetailFragment extends ListFragment implements LoaderManager
         mAdapter.clear();
     }
 
-    static class RostersDetailLoader extends AbstractContentListLoader<String> {
-        private final String mURL;
-
+    private static class RostersDetailLoader extends AbstractContentListLoader<String> {
         RostersDetailLoader(Context context, String url) {
-            super(context);
-            mURL = url;
+            super(context, url);
         }
 
         /**
@@ -110,24 +107,24 @@ public class RostersDetailFragment extends ListFragment implements LoaderManager
         }
 
         private List<String> readRosters(JsonReader reader) throws IOException {
-            mResults = new ArrayList<String>();
+            List<String> results = new ArrayList<String>();
             try {
                 reader.beginObject();
                 while (reader.hasNext()) {
                     String name = reader.nextName();
                     boolean notNull = reader.peek() != JsonToken.NULL;
                     if ("experience".equals(name) && notNull) {
-                        mResults.add("Experience: " + reader.nextString());
+                        results.add("Experience: " + reader.nextString());
                     } else if ("eligibility".equals(name) && notNull) {
-                        mResults.add("Class: " + reader.nextString());
+                        results.add("Class: " + reader.nextString());
                     } else if ("height".equals(name) && notNull) {
-                       mResults.add("Height: " + reader.nextString());
+                       results.add("Height: " + reader.nextString());
                     } else if ("weight".equals(name) && notNull) {
-                        mResults.add("Weight: " + reader.nextString());
+                        results.add("Weight: " + reader.nextString());
                     } else if ("hometown".equals(name) && notNull) {
-                       mResults.add("Hometown: " + reader.nextString());
+                       results.add("Hometown: " + reader.nextString());
                     } else if ("position_event".equals(name)) {
-                        mResults.add(reader.nextString().replace("=>", ": "));
+                        results.add(reader.nextString().replace("=>", ": "));
                     } else {
                         reader.skipValue();
                     }
@@ -136,7 +133,7 @@ public class RostersDetailFragment extends ListFragment implements LoaderManager
             } finally {
                 reader.close();
             }
-            return mResults;
+            return results;
         }
     }
 }

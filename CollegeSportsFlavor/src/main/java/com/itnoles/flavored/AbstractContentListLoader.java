@@ -25,10 +25,12 @@ import java.util.List;
  * A custom Loader that loads all of the content.
  */
 public abstract class AbstractContentListLoader<T> extends AsyncTaskLoader<List<T>> {
-    protected List<T> mResults;
+    private List<T> mResults;
+    protected final String mURL;
 
-    public AbstractContentListLoader(Context context) {
+    public AbstractContentListLoader(Context context, String url) {
         super(context);
+        mURL = url;
     }
 
     /**
