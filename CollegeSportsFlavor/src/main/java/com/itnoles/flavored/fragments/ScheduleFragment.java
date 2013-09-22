@@ -40,8 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static com.itnoles.flavored.BuildConfig.SCHEDULE_URL;
-
 public class ScheduleFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<Event>> {
     private static final String YEAR = "2013";
 
@@ -61,13 +59,13 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
-        getLoaderManager().initLoader(10, null, this);
+        getLoaderManager().initLoader(10, getArguments(), this);
     }
 
     @Override
     public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created.
-        return new XMLContentLoader<Event>(getActivity(), SCHEDULE_URL, new ScheduleLoader());
+        return new XMLContentLoader<Event>(getActivity(), args.getString("url"), new ScheduleLoader());
     }
 
     @Override
@@ -82,7 +80,7 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
         ((ScheduleListAdapter) getListAdapter()).clear();
     }
 
-    static class ScheduleLoader implements XMLContentLoader.ResponseListener<Event> {
+    private static class ScheduleLoader implements XMLContentLoader.ResponseListener<Event> {
         @Override
         public List<Event> onPostExecute(XmlPullParser parser) throws IOException, XmlPullParserException {
             List<Event> results = new ArrayList<Event>();
@@ -114,7 +112,7 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
     }
 
     private class ScheduleListAdapter extends ArrayAdapter<Event> {
-        private final SimpleDateFormat sdf = new SimpleDateFormat("MMM dd 'at' hh:mm", Locale.US);
+        private final SimpleDateFormat sdf = new SimpleDateFormat("MMM dd 'at' hh:mma", Locale.US);
 
         public ScheduleListAdapter() {
             super(getActivity(), 0);
@@ -137,7 +135,7 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
             TextView awayScore = ViewHolder.get(convertView, R.id.away_score);
             String vs = item.vs;
             if (vs == null) {
-            	awayScore.setVisibility(View.GONE);
+                awayScore.setVisibility(View.GONE);
             } else {
                 awayScore.setText(vs);
                 awayScore.setVisibility(View.VISIBLE);
@@ -149,7 +147,7 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
             TextView homeScore = ViewHolder.get(convertView, R.id.home_score);
             String hs = item.hs;
             if (hs == null) {
-            	homeScore.setVisibility(View.GONE);
+                homeScore.setVisibility(View.GONE);
             } else {
                 homeScore.setText(hs);
                 homeScore.setVisibility(View.VISIBLE);

@@ -22,9 +22,9 @@
         android:id="@id/away_score"
         android:singleLine="true"
         android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/away_team"
         android:layout_marginTop="2dp"
-        android:layout_marginBottom="12dip" />
+        android:layout_marginBottom="12dip"
+        android:layout_alignRight="@id/away_team"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,7 +44,8 @@
         android:layout_alignParentRight="true"
         android:singleLine="true"
         android:layout_marginBottom="12dip"
-        android:layout_toRightOf="@id/home_team" />
+        android:layout_alignRight="@id/home_team"
+        android:layout_below="@id/away_score"/>
 
     <TextView
         android:layout_width="wrap_content"

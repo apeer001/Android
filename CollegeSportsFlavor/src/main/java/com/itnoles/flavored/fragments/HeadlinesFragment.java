@@ -42,8 +42,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.itnoles.flavored.BuildConfig.NEWS_URL;
-
 public class HeadlinesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
@@ -71,13 +69,13 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, getArguments(), this);
     }
 
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created.
-        return new XMLContentLoader<News>(getActivity(), NEWS_URL, new NewsLoader());
+        return new XMLContentLoader<News>(getActivity(), args.getString("url"), new NewsLoader());
     }
 
     @Override
@@ -120,7 +118,7 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
         }
     }
 
-    static class NewsLoader implements XMLContentLoader.ResponseListener<News> {
+    private static class NewsLoader implements XMLContentLoader.ResponseListener<News> {
         @Override
         public List<News> onPostExecute(XmlPullParser parser) throws IOException, XmlPullParserException {
             List<News> results = new ArrayList<News>();

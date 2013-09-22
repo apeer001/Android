@@ -18,6 +18,7 @@ package com.itnoles.flavored;
 
 import com.squareup.okhttp.OkHttpClient;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -36,10 +37,10 @@ public class Utils {
         return new InputStreamReader(connection.getInputStream());
     }
 
-    public static void ignoreQuietly(InputStreamReader reader) {
+    public static void closeQuietly(Closeable closeable) {
         try {
-            if (reader != null) {
-                reader.close();
+            if (closeable != null) {
+                closeable.close();
             }
         } catch (IOException ignored) {}
     }

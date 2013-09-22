@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <com.itnoles.flavored.RostersTextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@id/first_name"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:id="@id/position"
-        android:layout_below="@id/first_name"
+        android:id="@id/fullName"
         android:singleLine="true" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@id/last_name"
-        android:layout_toRightOf="@id/first_name"
-        android:layout_marginLeft="11dp" />
-</RelativeLayout>
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@id/position"
+        android:singleLine="true" />
+</LinearLayout>

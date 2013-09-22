@@ -59,7 +59,7 @@ public class XMLContentLoader<T> extends AbstractContentListLoader<T> {
         } catch (IOException ioe) {
             Log.w(LOG_TAG, "Problem on xml file", ioe);
         } finally {
-            Utils.ignoreQuietly(reader);
+            Utils.closeQuietly(reader);
         }
 
         return null;

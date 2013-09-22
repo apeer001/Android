@@ -84,8 +84,8 @@ public class RostersDetailFragment extends ListFragment implements LoaderManager
         mAdapter.clear();
     }
 
-    private static class RostersDetailLoader extends AbstractContentListLoader<String> {
-        RostersDetailLoader(Context context, String url) {
+    private class RostersDetailLoader extends AbstractContentListLoader<String> {
+        public RostersDetailLoader(Context context, String url) {
             super(context, url);
         }
 
@@ -96,43 +96,42 @@ public class RostersDetailFragment extends ListFragment implements LoaderManager
          */
         @Override
         public List<String> loadInBackground() {
+            JsonReader jsonReader = null;
             try {
                 InputStreamReader reader = Utils.openUrlConnection(mURL);
-                JsonReader jsonReader = new JsonReader(reader);
+                jsonReader = new JsonReader(reader);
                 return readRosters(jsonReader);
             } catch (IOException ioe) {
                 Log.w(LOG_TAG, "Problem on i/o", ioe);
+            } finally {
+                Utils.closeQuietly(jsonReader);
             }
             return null;
         }
 
         private List<String> readRosters(JsonReader reader) throws IOException {
             List<String> results = new ArrayList<String>();
-            try {
-                reader.beginObject();
-                while (reader.hasNext()) {
-                    String name = reader.nextName();
-                    boolean notNull = reader.peek() != JsonToken.NULL;
-                    if ("experience".equals(name) && notNull) {
-                        results.add("Experience: " + reader.nextString());
-                    } else if ("eligibility".equals(name) && notNull) {
-                        results.add("Class: " + reader.nextString());
-                    } else if ("height".equals(name) && notNull) {
-                       results.add("Height: " + reader.nextString());
-                    } else if ("weight".equals(name) && notNull) {
-                        results.add("Weight: " + reader.nextString());
-                    } else if ("hometown".equals(name) && notNull) {
-                       results.add("Hometown: " + reader.nextString());
-                    } else if ("position_event".equals(name)) {
-                        results.add(reader.nextString().replace("=>", ": "));
-                    } else {
-                        reader.skipValue();
-                    }
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String name = reader.nextName();
+                boolean notNull = reader.peek() != JsonToken.NULL;
+                if ("experience".equals(name) && notNull) {
+                    results.add("Experience: " + reader.nextString());
+                } else if ("eligibility".equals(name) && notNull) {
+                    results.add("Class: " + reader.nextString());
+                } else if ("height".equals(name) && notNull) {
+                    results.add("Height: " + reader.nextString());
+                } else if ("weight".equals(name) && notNull) {
+                    results.add("Weight: " + reader.nextString());
+                } else if ("hometown".equals(name) && notNull) {
+                    results.add("Hometown: " + reader.nextString());
+                } else if ("position_event".equals(name)) {
+                    results.add(reader.nextString().replace("=>", ": "));
+                } else {
+                    reader.skipValue();
                 }
-                reader.endObject();
-            } finally {
-                reader.close();
             }
+            reader.endObject();
             return results;
         }
     }

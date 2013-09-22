@@ -19,6 +19,7 @@ checkstyle {
 dependencies {
     compile 'com.squareup.okhttp:okhttp:1.2.+'
     compile 'com.android.support:support-v13:18.0.+'
+    /*compile 'com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'*/
 }
 
 /*tasks.withType(Compile) {
@@ -27,7 +28,7 @@ dependencies {
 
 android {
     compileSdkVersion 18
-    buildToolsVersion "18.0.1"
+    buildToolsVersion "18.1"
 
     productFlavors {
         nolesfootball {
