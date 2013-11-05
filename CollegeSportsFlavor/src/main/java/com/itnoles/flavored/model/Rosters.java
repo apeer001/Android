@@ -19,48 +19,34 @@ package com.itnoles.flavored.model;
 public class Rosters {
     private String details;
     private String bioId;
-    private String firstName;
-    private String lastName;
-    private String position;
 
-    private final boolean isStaff;
-
-    public Rosters(boolean staff) {
-        isStaff = staff;
-    }
+    public String firstName;
+    public String lastName;
+    public String position;
 
     public void setValue(String key, String value) {
-        if ("bio_id".equals(key)) {
-            bioId = value;
-        } else if ("details".equals(key)) {
-            details = value;
-        } else if ("first_name".equals(key)) {
-            firstName = value;
-        } else if ("last_name".equals(key)) {
-            lastName = value;
-        } else if ("position".equals(key)) {
-            position = value;
+        switch (key) {
+            case "bio_id":
+                bioId = value;
+                break;
+            case "details":
+                details = value;
+                break;
+            case "first_name":
+                firstName = value;
+                break;
+            case "last_name":
+                lastName = value;
+                break;
+            case "position":
+                position = value;
+                break;
+            default:
         }
     }
 
-    public boolean isThisStaff() {
-        return isStaff;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
     public String getFullURL() {
-        return details + '/' + bioId + ".json";
+        return details + '/' + bioId + ".xml";
     }
 
     public String getFirstAndLastName() {

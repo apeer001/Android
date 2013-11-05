@@ -1,25 +1,21 @@
-//
-// A basic Android application that follows all the conventions
-//
 buildscript {
-    repositories.mavenCentral()
-    dependencies.classpath 'com.android.tools.build:gradle:0.5.+'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.6.+'
+    }
 }
-
 apply plugin: 'android'
 apply plugin: 'checkstyle'
 
-repositories.mavenCentral()
+repositories {
+    mavenCentral()
+}
 
 checkstyle {
     configFile = file('../checkstyle.xml')
     ignoreFailures = true
-}
-
-dependencies {
-    compile 'com.squareup.okhttp:okhttp:1.2.+'
-    compile 'com.android.support:support-v13:18.0.+'
-    /*compile 'com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'*/
 }
 
 /*tasks.withType(Compile) {
@@ -27,8 +23,18 @@ dependencies {
 }*/
 
 android {
-    compileSdkVersion 18
-    buildToolsVersion "18.1"
+    compileSdkVersion 19
+    buildToolsVersion "19.0.0"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 19
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 
     productFlavors {
         nolesfootball {
@@ -62,4 +68,9 @@ android {
             signingConfig signingConfigs.myConfig
         }
     }
+}
+
+dependencies {
+    compile 'com.android.support:support-v13:18.0.+'
+    /*compile 'com.koushikdutta.urlimageviewhelper:urlimageviewhelper:1.0.4'*/
 }

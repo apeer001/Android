@@ -18,25 +18,19 @@ package com.itnoles.flavored.fragments;
 
 import android.app.ListFragment;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
-import android.util.JsonReader;
-import android.util.JsonToken;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 
-import com.itnoles.flavored.AbstractContentListLoader;
-import com.itnoles.flavored.Utils;
+import com.itnoles.flavored.XMLContentLoader;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RostersDetailFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<String>> {
-    private static final String LOG_TAG = "RostersDetailFragment";
-
     private ArrayAdapter<String> mAdapter;
 
     public static RostersDetailFragment newInstance(String urlString) {
@@ -58,18 +52,18 @@ public class RostersDetailFragment extends ListFragment implements LoaderManager
             getActivity().getActionBar().setTitle(title);
         }
 
-        mAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+        mAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
         setListAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
-        getLoaderManager().initLoader(21, getArguments(), this);
+        getLoaderManager().initLoader(21, getArguments(), this).forceLoad();
     }
 
     @Override
     public Loader<List<String>> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created.
-        return new RostersDetailLoader(getActivity(), args.getString("url"));
+        return new XMLContentLoader<>(getActivity(), args.getString("url"), new RostersLoader());
     }
 
     @Override
@@ -84,55 +78,34 @@ public class RostersDetailFragment extends ListFragment implements LoaderManager
         mAdapter.clear();
     }
 
-    private class RostersDetailLoader extends AbstractContentListLoader<String> {
-        public RostersDetailLoader(Context context, String url) {
-            super(context, url);
-        }
-
-        /**
-         * This is where the bulk of our work is done. This function is
-         * called in a background thread and should generate a new set of
-         * data to be published by the loader.
-         */
+    private static class RostersLoader implements XMLContentLoader.ResponseListener<String> {
         @Override
-        public List<String> loadInBackground() {
-            JsonReader jsonReader = null;
-            try {
-                InputStreamReader reader = Utils.openUrlConnection(mURL);
-                jsonReader = new JsonReader(reader);
-                return readRosters(jsonReader);
-            } catch (IOException ioe) {
-                Log.w(LOG_TAG, "Problem on i/o", ioe);
-            } finally {
-                Utils.closeQuietly(jsonReader);
-            }
-            return null;
-        }
-
-        private List<String> readRosters(JsonReader reader) throws IOException {
-            List<String> results = new ArrayList<String>();
-            reader.beginObject();
-            while (reader.hasNext()) {
-                String name = reader.nextName();
-                boolean notNull = reader.peek() != JsonToken.NULL;
-                if ("experience".equals(name) && notNull) {
-                    results.add("Experience: " + reader.nextString());
-                } else if ("eligibility".equals(name) && notNull) {
-                    results.add("Class: " + reader.nextString());
-                } else if ("height".equals(name) && notNull) {
-                    results.add("Height: " + reader.nextString());
-                } else if ("weight".equals(name) && notNull) {
-                    results.add("Weight: " + reader.nextString());
-                } else if ("hometown".equals(name) && notNull) {
-                    results.add("Hometown: " + reader.nextString());
-                } else if ("position_event".equals(name)) {
-                    results.add(reader.nextString().replace("=>", ": "));
-                } else {
-                    reader.skipValue();
+        public void onPostExecute(XmlPullParser parser, List<String> results) throws IOException, XmlPullParserException {
+            while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                if (parser.getEventType() == XmlPullParser.START_TAG) {
+                    switch (parser.getName()) {
+                        case "experience":
+                            results.add("Experience: " + parser.nextText());
+                            break;
+                        case "eligibility":
+                            results.add("Class: " + parser.nextText());
+                            break;
+                        case "height":
+                            results.add("Height: " + parser.nextText());
+                            break;
+                        case "weight":
+                            results.add("Weight: " +  parser.nextText());
+                            break;
+                        case "hometown":
+                            results.add("Hometown: " + parser.nextText());
+                            break;
+                        case "position_event":
+                            results.add(parser.nextText().replace("=>", ": "));
+                            break;
+                        default:
+                    }
                 }
             }
-            reader.endObject();
-            return results;
         }
     }
 }

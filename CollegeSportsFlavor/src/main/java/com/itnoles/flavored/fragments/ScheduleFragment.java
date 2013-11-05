@@ -16,40 +16,52 @@
 
 package com.itnoles.flavored.fragments;
 
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.TextView;
 
-import com.itnoles.flavored.model.Event;
 import com.itnoles.flavored.R;
 import com.itnoles.flavored.ViewHolder;
 import com.itnoles.flavored.XMLContentLoader;
+import com.itnoles.flavored.model.Event;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ScheduleFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<Event>> {
+import static com.itnoles.flavored.BuildConfig.SCHEDULE_URL;
+
+public class ScheduleFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Event>> {
     private static final String YEAR = "2013";
+
+    private GridView mGridView;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.schedule_layout, container, false);
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // Create an empty adapter we will use to display the loaded data.
-        ScheduleListAdapter adapter = new ScheduleListAdapter();
-        setListAdapter(adapter);
+        ScheduleListAdapter adapter = new ScheduleListAdapter(getActivity());
+
+        mGridView = (GridView) getView().findViewById(R.id.schedule_grid);
+        mGridView.setAdapter(adapter);
 
         // If this is under tablet, hide detail view.
         View detailsFrame = getActivity().findViewById(R.id.fragment_details);
@@ -59,31 +71,30 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
-        getLoaderManager().initLoader(10, getArguments(), this);
+        getLoaderManager().initLoader(10, null, this).forceLoad();
     }
 
     @Override
     public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created.
-        return new XMLContentLoader<Event>(getActivity(), args.getString("url"), new ScheduleLoader());
+        return new XMLContentLoader<>(getActivity(), SCHEDULE_URL, new ScheduleLoader());
     }
 
     @Override
     public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
         // Set the new data in the adapter.
-        ((ScheduleListAdapter) getListAdapter()).addAll(data);
+        ((ScheduleListAdapter) mGridView.getAdapter()).addAll(data);
     }
 
     @Override
     public void onLoaderReset(Loader<List<Event>> loader) {
         // Clear the data in the adapter.
-        ((ScheduleListAdapter) getListAdapter()).clear();
+        ((ScheduleListAdapter) mGridView.getAdapter()).clear();
     }
 
     private static class ScheduleLoader implements XMLContentLoader.ResponseListener<Event> {
         @Override
-        public List<Event> onPostExecute(XmlPullParser parser) throws IOException, XmlPullParserException {
-            List<Event> results = new ArrayList<Event>();
+        public void onPostExecute(XmlPullParser parser, List<Event> results) throws IOException, XmlPullParserException {
             // The Event that is currently being parsed
             Event currentEvents = null;
             while (parser.next() != XmlPullParser.END_DOCUMENT) {
@@ -97,7 +108,6 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
                         currentEvents = new Event(parser.getAttributeValue(null, "date"));
                     } else if ("event".equals(name) && currentEvents != null) {
                         currentEvents.setFullDate(parser.getAttributeValue(null, "eastern_time"));
-                        //currentEvents.id = parser.getAttributeValue(null, "id");
                         currentEvents.hn = parser.getAttributeValue(null, "hn");
                         currentEvents.hs = parser.getAttributeValue(null, "hs");
                         currentEvents.vn = parser.getAttributeValue(null, "vn");
@@ -107,21 +117,20 @@ public class ScheduleFragment extends ListFragment implements LoaderManager.Load
                     results.add(currentEvents);
                 }
             }
-            return results;
         }
     }
 
     private class ScheduleListAdapter extends ArrayAdapter<Event> {
         private final SimpleDateFormat sdf = new SimpleDateFormat("MMM dd 'at' hh:mma", Locale.US);
 
-        public ScheduleListAdapter() {
-            super(getActivity(), 0);
+        public ScheduleListAdapter(Context context) {
+            super(context, 0);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = LayoutInflater.from(getActivity()).inflate(R.layout.schedule_item, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.schedule_item, parent, false);
             }
 
             Event item = getItem(position);

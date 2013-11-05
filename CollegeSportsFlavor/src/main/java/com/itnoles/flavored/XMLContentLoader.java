@@ -16,6 +16,7 @@
 
 package com.itnoles.flavored;
 
+import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
 
@@ -25,12 +26,18 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-public class XMLContentLoader<T> extends AbstractContentListLoader<T> {
+public class XMLContentLoader<T> extends AsyncTaskLoader<List<T>> {
     private static final String LOG_TAG = "XmlContentLoader";
 
     private final ResponseListener<T> mListener;
+    private final String mURL;
+
+    private List<T> mResults;
 
     private static XmlPullParserFactory sXmlPullParserFactory;
     static {
@@ -42,30 +49,55 @@ public class XMLContentLoader<T> extends AbstractContentListLoader<T> {
     }
 
     public XMLContentLoader(Context context, String url, ResponseListener<T> listener) {
-        super(context, url);
+        super(context);
         mListener = listener;
+        mURL = url;
     }
 
     @Override
     public List<T> loadInBackground() {
-        InputStreamReader reader = null;
-        try {
-            reader = Utils.openUrlConnection(mURL);
-            XmlPullParser parser = sXmlPullParserFactory.newPullParser();
-            parser.setInput(reader);
-            return mListener.onPostExecute(parser);
-        } catch (XmlPullParserException xppe) {
-            Log.w(LOG_TAG, "Problem on parsing xml file", xppe);
-        } catch (IOException ioe) {
-            Log.w(LOG_TAG, "Problem on xml file", ioe);
-        } finally {
-            Utils.closeQuietly(reader);
+        if (mResults == null) {
+            mResults = new ArrayList<>();
         }
 
-        return null;
+        InputStreamReader reader = null;
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(mURL).openConnection();
+            reader = new InputStreamReader(connection.getInputStream());
+            XmlPullParser parser = sXmlPullParserFactory.newPullParser();
+            parser.setInput(reader);
+            mListener.onPostExecute(parser, mResults);
+        } catch (IOException | XmlPullParserException e) {
+            Log.e(LOG_TAG, Log.getStackTraceString(e));
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch(IOException ignored) {}
+        }
+
+        return mResults;
+    }
+
+    /**
+     * Handles a request to completely reset the Loader.
+     */
+    @Override
+    protected void onReset() {
+        super.onReset();
+
+        // Ensure the loader is stopped
+        cancelLoad();
+
+        // At this point we can release the resources associated with 'result'
+        // if needed.
+        if (mResults != null) {
+            mResults = null;
+        }
     }
 
     public interface ResponseListener<T> {
-        List<T> onPostExecute(XmlPullParser parser) throws IOException, XmlPullParserException;
+       void onPostExecute(XmlPullParser parser, List<T> results) throws IOException, XmlPullParserException;
     }
 }

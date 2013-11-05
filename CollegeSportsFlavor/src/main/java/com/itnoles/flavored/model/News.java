@@ -28,16 +28,23 @@ public class News {
     //public String imageURL;
 
     public void setValue(String key, String value) {
-        if ("title".equals(key)) {
-            title = value;
-        } else if ("pubDate".equals(key)) {
-            pubDate = value;
-        } else if ("link".equals(key)) {
-            link = value;
-        } else if ("description".equals(key)) {
-            desc = COMPILE.matcher(value).replaceAll("");
-        } /*else if ("enclosure".equals(key)) {
-            imageURL = value;
-        }*/
+        switch (key) {
+            case "title":
+                title = value;
+                break;
+            case "pubDate":
+                pubDate = value;
+                break;
+            case "link":
+                link = value;
+                break;
+            case "description":
+                desc = COMPILE.matcher(value).replaceAll("");
+                break;
+            /*case "enclosure":
+                imageURL = value;
+                break;*/
+            default:
+        }
     }
 }

@@ -29,7 +29,6 @@ public class Event {
 
     private final String date;
 
-    //public String id;
     public String hn;
     public String vn;
     public String hs;

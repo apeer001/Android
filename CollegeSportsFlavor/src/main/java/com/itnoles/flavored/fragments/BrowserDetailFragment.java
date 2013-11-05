@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebViewFragment;
@@ -50,10 +51,12 @@ public class BrowserDetailFragment extends WebViewFragment {
 
         setHasOptionsMenu(true);
 
-        WebView getWebView = getWebView();
-        getWebView.getSettings().setBuiltInZoomControls(true);
-        getWebView.setWebViewClient(new MyWebViewClient());
-        getWebView.loadUrl(getArguments().getString("url"));
+        WebSettings settings = getWebView().getSettings();
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setBuiltInZoomControls(true);
+        getWebView().setWebViewClient(new MyWebViewClient());
+        getWebView().loadUrl(getArguments().getString("url"));
     }
 
     private static class MyWebViewClient extends WebViewClient {

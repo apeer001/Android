@@ -19,6 +19,7 @@ package com.itnoles.flavored.fragments;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
@@ -29,18 +30,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.itnoles.flavored.activities.BrowserDetailActivity;
 import com.itnoles.flavored.R;
-import com.itnoles.flavored.model.News;
 import com.itnoles.flavored.ViewHolder;
 import com.itnoles.flavored.XMLContentLoader;
+import com.itnoles.flavored.activities.BrowserDetailActivity;
+import com.itnoles.flavored.model.News;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.itnoles.flavored.BuildConfig.NEWS_URL;
 
 public class HeadlinesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<News>> {
     private boolean mDualPane;
@@ -51,7 +53,7 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
         super.onActivityCreated(savedState);
 
         // Create an empty adapter we will use to display the loaded data.
-        NewsListAdapter adapter = new NewsListAdapter();
+        NewsListAdapter adapter = new NewsListAdapter(getActivity());
         setListAdapter(adapter);
 
         // Determine whether we are in single-pane or dual-pane mode by testing the visibility
@@ -69,13 +71,13 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
-        getLoaderManager().initLoader(0, getArguments(), this);
+        getLoaderManager().initLoader(0, null, this).forceLoad();
     }
 
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created.
-        return new XMLContentLoader<News>(getActivity(), args.getString("url"), new NewsLoader());
+        return new XMLContentLoader<>(getActivity(), NEWS_URL, new NewsLoader());
     }
 
     @Override
@@ -120,8 +122,7 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
 
     private static class NewsLoader implements XMLContentLoader.ResponseListener<News> {
         @Override
-        public List<News> onPostExecute(XmlPullParser parser) throws IOException, XmlPullParserException {
-            List<News> results = new ArrayList<News>();
+        public void onPostExecute(XmlPullParser parser, List<News> results) throws IOException, XmlPullParserException {
             // The News that is currently being parsed
             News currentNews = null;
             while (parser.next() != XmlPullParser.END_DOCUMENT) {
@@ -140,19 +141,18 @@ public class HeadlinesFragment extends ListFragment implements LoaderManager.Loa
                     results.add(currentNews);
                 }
             }
-            return results;
         }
     }
 
     private class NewsListAdapter extends ArrayAdapter<News> {
-        public NewsListAdapter() {
-            super(getActivity(), 0);
+        public NewsListAdapter(Context context) {
+            super(context, 0);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                convertView = LayoutInflater.from(getActivity()).inflate(R.layout.headlines_item, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.headlines_item, parent, false);
             }
 
             News news = getItem(position);

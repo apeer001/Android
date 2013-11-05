@@ -1,144 +1,118 @@
-/*
- * Copyright (C) 2013 Jonathan Steele
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.itnoles.flavored.activities;
 
-import android.app.*; //ActionBar, Activity, Fragment, FragmentManager, FragmentTransaction
-import android.content.Context;
+import android.app.*;
 import android.os.Bundle;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v13.app.FragmentPagerAdapter;
 
-import com.itnoles.flavored.BuildConfig;
+import com.itnoles.flavored.R;
 import com.itnoles.flavored.fragments.HeadlinesFragment;
 import com.itnoles.flavored.fragments.RostersFragment;
 import com.itnoles.flavored.fragments.ScheduleFragment;
-import com.itnoles.flavored.R;
 
-import java.util.ArrayList;
-import java.util.List;
+public class MainActivity extends Activity implements ActionBar.TabListener {
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    private ViewPager mViewPager;
 
-public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.activity_main);
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        // Set up the action bar.
+        final ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        final ActionBar bar = getActionBar();
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the app. If this become too memory intensive, it would be best
+        // to switch to FragmentStatePagerAdapter than FragmentPagerAdapter.
+       SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
-        TabsAdapter tabsAdapter = new TabsAdapter(this, viewPager);
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(sectionsPagerAdapter);
 
-        Bundle headlines = new Bundle();
-        headlines.putString("url", BuildConfig.NEWS_URL);
-        tabsAdapter.addTab(bar.newTab().setText("News"), HeadlinesFragment.class, headlines);
+        // When swiping between different sections, select the corresponding
+        // tab. We can also use ActionBar.Tab#select() to do this if we have
+        // a reference to the Tab.
+        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                actionBar.setSelectedNavigationItem(position);
+            }
+        });
 
-        Bundle schedule = new Bundle();
-        schedule.putString("url", BuildConfig.SCHEDULE_URL);
-        tabsAdapter.addTab(bar.newTab().setText("Schedule"), ScheduleFragment.class, schedule);
+        // For each of the sections in the app, add a tab to the action bar.
+        for (int i = 0; i < sectionsPagerAdapter.getCount(); i++) {
+            // Create a tab with text corresponding to the page title defined by
+            // the adapter. Also specify this Activity object, which implements
+            // the TabListener interface, as the callback (listener) for when
+            // this tab is selected.
+            actionBar.addTab(
+                    actionBar.newTab()
+                            .setText(sectionsPagerAdapter.getPageTitle(i))
+                            .setTabListener(this));
+        }
+    }
 
-        Bundle roster = new Bundle();
-        roster.putString("url", BuildConfig.ROSTER_URL);
-        tabsAdapter.addTab(bar.newTab().setText("Rosters"), RostersFragment.class, roster);
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        // When the given tab is selected, switch to the corresponding page in
+        // the ViewPager.
+        mViewPager.setCurrentItem(tab.getPosition(), true);
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
     /**
-     * This is a helper class that implements the management of tabs and all
-     * details of connecting a ViewPager with associated TabHost. It relies on a
-     * trick. Normally a tab host has a simple API for supplying a View or
-     * Intent that each tab will show. This is not sufficient for switching
-     * between pages. So instead we make the content part of the tab host
-     * 0dp high (it is not shown) and the TabsAdapter supplies its own dummy
-     * view to show as the tab content. It listens to changes in tabs, and takes
-     * care of switch to the correct paged in the ViewPager whenever the selected
-     * tab changes.
+     * A {@link FragmentStatePagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
      */
-    private static class TabsAdapter extends FragmentPagerAdapter
-            implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
-        private final Context mContext;
-        private final ActionBar mActionBar;
-        private final ViewPager mViewPager;
-        private final List<TabInfo> mTabs = new ArrayList<TabInfo>();
-
-        static final class TabInfo {
-            private final Class<?> clss;
-            private final Bundle args;
-
-            TabInfo(Class<?> _class, Bundle _args) {
-                clss = _class;
-                args = _args;
-            }
-        }
-
-        public TabsAdapter(Activity activity, ViewPager pager) {
-            super(activity.getFragmentManager());
-            mContext = activity;
-            mActionBar = activity.getActionBar();
-            mViewPager = pager;
-            mViewPager.setAdapter(this);
-            mViewPager.setOnPageChangeListener(this);
-        }
-
-        public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
-            TabInfo info = new TabInfo(clss, args);
-            tab.setTabListener(this);
-            mTabs.add(info);
-            mActionBar.addTab(tab);
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getCount() {
-            return mTabs.size();
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            TabInfo info = mTabs.get(position);
-            return Fragment.instantiate(mContext, info.clss.getName(), info.args);
+            switch (position) {
+                case 0:
+                    return new HeadlinesFragment();
+                case 1:
+                    return new ScheduleFragment();
+                case 2:
+                    return new RostersFragment();
+                default:
+                    return null;
+            }
         }
 
         @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        public int getCount() {
+            // Show 3 total pages.
+            return 3;
         }
 
         @Override
-        public void onPageSelected(int position) {
-            mActionBar.setSelectedNavigationItem(position);
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-        }
-
-        @Override
-        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-            // When the tab is selected, switch to the corresponding page in the ViewPager.
-            // TODO: if I put true in the second parameter, would it reduce overflow and hardware layer?
-            mViewPager.setCurrentItem(tab.getPosition());
-        }
-
-        @Override
-        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-        }
-
-        @Override
-        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "News";
+                case 1:
+                    return "Schedule";
+                case 2:
+                    return "Rosters";
+                default:
+                    return null;
+            }
         }
     }
 }

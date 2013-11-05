@@ -23,8 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.*; // Menu, MenuInflater, MenuItem and View
+import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -34,35 +33,27 @@ import com.itnoles.flavored.*;
 import com.itnoles.flavored.activities.RostersDetailActivity;
 import com.itnoles.flavored.model.Rosters;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.SAXException;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
+
+import static com.itnoles.flavored.BuildConfig.ROSTER_URL;
 
 public class RostersFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<Rosters>>, SearchView.OnQueryTextListener {
-    private static final String LOG_TAG = "RostersFragment";
-
     private boolean mDualPane;
     private int mShownCheckPosition = -1;
-    private SectionedListAdapter mAdapter;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setListShownNoAnimation(true);
-
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
-        // The SectionedListAdapter has a header to group players and staff
-        mAdapter = new SectionedListAdapter(getActivity());
+        RostersListAdapter adapter = new RostersListAdapter(getActivity());
+        setListAdapter(adapter);
 
         // Determine whether we are in single-pane or dual-pane mode by testing the visibility
         // of the detail view.
@@ -79,38 +70,25 @@ public class RostersFragment extends ListFragment implements LoaderManager.Loade
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
-        getLoaderManager().initLoader(20, getArguments(), this);
+        getLoaderManager().initLoader(20, null, this).forceLoad();
     }
 
     @Override
     public Loader<List<Rosters>> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created.
-        return new RostersLoader(getActivity(), args.getString("url"));
+        return new XMLContentLoader<>(getActivity(), ROSTER_URL, new RostersLoader());
     }
 
     @Override
     public void onLoadFinished(Loader<List<Rosters>> loader, List<Rosters> data) {
         // Set the new data in the adapter.
-        List<Rosters> playerRosters = new ArrayList<Rosters>();
-        List<Rosters> staffRosters = new ArrayList<Rosters>();
-
-        for (Rosters roster : data) {
-            if (roster.isThisStaff()) {
-                staffRosters.add(roster);
-            } else {
-                playerRosters.add(roster);
-            }
-        }
-
-        mAdapter.addSection("2012 Athlete Roster", new RostersListAdapter(getActivity(), playerRosters));
-        mAdapter.addSection("2012 Coaches and Staff", new RostersListAdapter(getActivity(), staffRosters));
-        setListAdapter(mAdapter);
+        ((RostersListAdapter) getListAdapter()).addAll(data);
     }
 
     @Override
     public void onLoaderReset(Loader<List<Rosters>> loader) {
         // Clear the data in the adapter.
-        mAdapter.clear();
+        ((RostersListAdapter) getListAdapter()).clear();
     }
 
     @Override
@@ -130,8 +108,7 @@ public class RostersFragment extends ListFragment implements LoaderManager.Loade
     public boolean onQueryTextChange(String newText) {
         // Called when the action bar search text has changed. Since this
         // is a simple array adapter, we can just have it do the filtering.
-        ((RostersListAdapter) mAdapter.getListAdapter(0)).getFilter().filter(newText);
-        ((RostersListAdapter) mAdapter.getListAdapter(1)).getFilter().filter(newText);
+        ((RostersListAdapter) getListAdapter()).getFilter().filter(newText);
         return true;
     }
 
@@ -170,47 +147,32 @@ public class RostersFragment extends ListFragment implements LoaderManager.Loade
         }
     }
 
-    private class RostersLoader extends AbstractContentListLoader<Rosters> {
-        public RostersLoader(Context context, String url) {
-            super(context, url);
-        }
-
-        /**
-         * This is where the bulk of our work is done. This function is
-         * called in a background thread and should generate a new set of
-         * data to be published by the loader.
-         */
+    private static class RostersLoader implements XMLContentLoader.ResponseListener<Rosters> {
         @Override
-        public List<Rosters> loadInBackground() {
-            InputStreamReader reader = null;
-            try {
-                reader = Utils.openUrlConnection(mURL);
-                // create a XMLReader from SAXParser
-                XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-                // Create a RostersHandler
-                RostersHandler handler = new RostersHandler();
-                // Store handler in XMLReader
-                xmlReader.setContentHandler(handler);
-                // the process starts with a character stream
-                xmlReader.parse(new InputSource(reader));
-                // Get Results
-                return handler.getResults();
-            } catch (IOException ioe) {
-                Log.w(LOG_TAG, "Problem on I/O", ioe);
-            } catch (SAXException saxe) {
-                Log.w(LOG_TAG, "Problem on SAX parsing", saxe);
-            } catch (ParserConfigurationException pce) {
-                // Ignore
-            } finally {
-                Utils.closeQuietly(reader);
+        public void onPostExecute(XmlPullParser parser, List<Rosters> results) throws IOException, XmlPullParserException {
+            // The Rosters that is currently being parsed
+            Rosters currentRosters = null;
+            while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                String name = parser.getName();
+                if (parser.getEventType() == XmlPullParser.START_TAG) {
+                    if ("player".equals(name) || "asst_coach_lev1".equals(name) || "asst_coach_lev2".equals(name)
+                            || "asst_coach_lev3".equals(name) || "head_coach".equals(name) || "other".equals(name)) {
+                        currentRosters = new Rosters();
+                    } else if (currentRosters != null) {
+                        currentRosters.setValue(name, parser.nextText());
+                    }
+                } else if (parser.getEventType() == XmlPullParser.END_TAG && "asst_coach_lev1".equals(name) || "asst_coach_lev2".equals(name)
+                    || "asst_coach_lev3".equals(name) || "head_coach".equals(name)
+                    || "other".equals(name) || "player".equals(name)) {
+                    results.add(currentRosters);
+                }
             }
-            return null;
         }
     }
 
     private class RostersListAdapter extends ArrayAdapter<Rosters> {
-        public RostersListAdapter(Context context, List<Rosters> data) {
-            super(context, 0, data);
+        public RostersListAdapter(Context context) {
+            super(context, 0);
         }
 
         /**
@@ -224,11 +186,11 @@ public class RostersFragment extends ListFragment implements LoaderManager.Loade
 
             Rosters item = getItem(position);
 
-            RostersTextView fullname = ViewHolder.get(convertView, R.id.fullName);
-            fullname.setText(item.getFirstName(), item.getLastName());
+            RostersTextView full_name = ViewHolder.get(convertView, android.R.id.text1);
+            full_name.setText(item.firstName, item.lastName);
 
-            TextView rosterPos = ViewHolder.get(convertView, R.id.position);
-            rosterPos.setText(item.getPosition());
+            TextView rosterPos = ViewHolder.get(convertView, android.R.id.text2);
+            rosterPos.setText(item.position);
 
             return convertView;
         }

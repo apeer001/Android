@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Jonathan Steele
+ * Copyright (c) 2013 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,59 +10,57 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * Orginal Source Code from http://prasanta-paul.blogspot.com/2010/05/android-custom-textview.html
- */
+
 package com.itnoles.flavored;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.widget.TextView;
 
 public class RostersTextView extends TextView {
     private static final int pad = 5;
 
-    private final Paint mPaint = new Paint();
-    private final Paint mPaintB = new Paint();
+    private String mFirstText;
+    private String mLastText;
 
-    private String firstText;
-    private String lastText;
-
-    public RostersTextView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-
-        firstText = "";
-        lastText = "";
-
-        //setPadding(3, 0, 0, 0); // Left, Top, Right, Bottom
-
-        // set Size
-        mPaint.setTextSize(18);
-        mPaintB.setTextSize(18);
-
-        // set Color
-        mPaint.setColor(Color.BLACK);
-        mPaintB.setColor(Color.BLACK);
-    }
-
-    public RostersTextView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+    private Paint mFirstPaint;
+    private Paint mLastPaint;
 
     public RostersTextView(Context context) {
         super(context);
+        init();
+    }
+
+    public RostersTextView(Context context, AttributeSet attrs) {
+        super(context, attrs, android.R.attr.textAppearanceMedium);
+        init();
+    }
+
+    private void init() {
+        float pixel = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, getTextSize(),
+                getResources().getDisplayMetrics());
+
+        mFirstPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mFirstPaint.setTextSize(pixel);
+        mFirstPaint.setColor(getCurrentTextColor());
+
+        mLastPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mLastPaint.setTextSize(pixel);
+        mLastPaint.setColor(getCurrentTextColor());
     }
 
     public void setText(String first, String last) {
-        firstText = first;
-        lastText = last;
-        // request for re-draw- calls draw()
+        mFirstText = first;
+        mLastText = last;
+
         invalidate();
     }
 
@@ -70,28 +68,17 @@ public class RostersTextView extends TextView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        int reqWidth;
-        int reqHeight;
+        // width & height mode
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
 
         // find out Width based on widthMode
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        if (widthMode == MeasureSpec.EXACTLY) {
-            // set user specified Width
-            reqWidth = MeasureSpec.getSize(widthMeasureSpec);
-        } else {
-            // find out the total pixel size required for first and last text
-            reqWidth = (int) (mPaint.measureText(firstText) + mPaintB.measureText(lastText) + 3 * pad);
-        }
+        int reqWidth = (widthMode == MeasureSpec.EXACTLY) ? MeasureSpec.getSize(widthMeasureSpec)
+        : (int) (mFirstPaint.measureText(mFirstText) + mLastPaint.measureText(mLastText) + 3 * pad);
 
         // find out Height based on heightMode
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        if (heightMode == MeasureSpec.EXACTLY) {
-            // set user specified Height
-            reqHeight = MeasureSpec.getSize(heightMeasureSpec);
-        } else {
-            // get the default height of the Font
-            reqHeight = (int) mPaintB.getTextSize();
-        }
+        int reqHeight = (heightMode == MeasureSpec.EXACTLY) ? MeasureSpec.getSize(heightMeasureSpec)
+        : (int) (mLastPaint.descent() - mLastPaint.ascent());
 
         // set the calculated width and height of your drawing area
         setMeasuredDimension(reqWidth, reqHeight);
@@ -101,14 +88,15 @@ public class RostersTextView extends TextView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        int x = getLeft();
-        int y = getTop();
+        int height = this.getMeasuredHeight() -3;
 
-        canvas.drawText(firstText, x, y, mPaint);
+        if (!TextUtils.isEmpty(mFirstText)) {
+            canvas.drawText(mFirstText, 0, height, mFirstPaint);
+        }
 
-        // shift to next word position = (width of the first text) + padding
-        x += mPaint.measureText(firstText) + pad;
-
-        canvas.drawText(lastText, x, y, mPaintB);
+        if (!TextUtils.isEmpty(mLastText)) {
+            float width = mFirstPaint.measureText(mFirstText) + pad;
+            canvas.drawText(mLastText, width, height, mLastPaint);
+        }
     }
 }
