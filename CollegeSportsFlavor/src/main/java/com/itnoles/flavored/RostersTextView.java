@@ -22,7 +22,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.widget.TextView;
 
 public class RostersTextView extends TextView {
@@ -45,15 +44,12 @@ public class RostersTextView extends TextView {
     }
 
     private void init() {
-        float pixel = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, getTextSize(),
-                getResources().getDisplayMetrics());
-
         mFirstPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mFirstPaint.setTextSize(pixel);
+        mFirstPaint.setTextSize(getTextSize());
         mFirstPaint.setColor(getCurrentTextColor());
 
         mLastPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mLastPaint.setTextSize(pixel);
+        mLastPaint.setTextSize(getTextSize());
         mLastPaint.setColor(getCurrentTextColor());
     }
 
