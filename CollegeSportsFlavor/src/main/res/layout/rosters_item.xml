@@ -5,18 +5,15 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
 
-    <view
+    <com.itnoles.flavored.RostersTextView android:id="@android:id/text1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        class="com.itnoles.flavored.RostersTextView"
-        android:id="@android:id/text1"
-        android:layout_marginLeft="?android:attr/listPreferredItemPaddingLeft"
-        android:layout_marginTop="6dip"/>
+        android:layout_marginTop="8dip"
+        android:layout_marginLeft="?android:attr/listPreferredItemPaddingLeft"/>
 
-    <TextView
+    <TextView android:id="@android:id/text2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:id="@android:id/text2"
         tools:text="Head Coach" />
 </LinearLayout>

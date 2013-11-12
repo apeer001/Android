@@ -18,7 +18,9 @@
 package com.itnoles.flavored;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -27,6 +29,8 @@ import android.widget.TextView;
 public class RostersTextView extends TextView {
     private static final int pad = 5;
 
+    private static final int[] ATTRS = {android.R.attr.textSize};
+
     private String mFirstText;
     private String mLastText;
 
@@ -34,23 +38,26 @@ public class RostersTextView extends TextView {
     private Paint mLastPaint;
 
     public RostersTextView(Context context) {
-        super(context);
-        init();
+        super(context, null);
     }
 
     public RostersTextView(Context context, AttributeSet attrs) {
-        super(context, attrs, android.R.attr.textAppearanceMedium);
-        init();
-    }
+        super(context, attrs);
 
-    private void init() {
         mFirstPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mFirstPaint.setTextSize(getTextSize());
-        mFirstPaint.setColor(getCurrentTextColor());
-
         mLastPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mLastPaint.setTextSize(getTextSize());
-        mLastPaint.setColor(getCurrentTextColor());
+
+        TypedArray a = context.obtainStyledAttributes(android.R.attr.textAppearanceListItem, ATTRS);
+        int textSize = a.getDimensionPixelSize(0, 0);
+        if (textSize != 0) {
+            // textSize is already expressed in pixels
+            mFirstPaint.setTextSize(textSize);
+            mLastPaint.setTextSize(textSize);
+        }
+        a.recycle();
+
+        mFirstPaint.setColor(Color.BLACK);
+        mLastPaint.setColor(Color.BLACK);
     }
 
     public void setText(String first, String last) {
