@@ -1,0 +1,164 @@
+/*
+ * Copyright (C) 2013 Jonathan Steele
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.github.itnoles.collegesports.ui;
+
+import android.app.Fragment;
+import android.app.LoaderManager;
+import android.content.Context;
+import android.content.Loader;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.TextView;
+
+import com.github.itnoles.collegesports.R;
+import com.github.itnoles.collegesports.ViewHolder;
+import com.github.itnoles.collegesports.XMLContentLoader;
+import com.github.itnoles.collegesports.model.Event;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.List;
+
+import static com.github.itnoles.collegesports.BuildConfig.SCHEDULE_URL;
+
+class ScheduleFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Event>> {
+    private static final String YEAR = "2013";
+
+    private GridView mGridView;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.schedule_layout, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // Create an empty adapter we will use to display the loaded data.
+        ScheduleListAdapter adapter = new ScheduleListAdapter(getActivity());
+
+        mGridView = (GridView) getView().findViewById(R.id.schedule_grid);
+        mGridView.setAdapter(adapter);
+
+        // If this is under tablet, hide detail view.
+        View detailsFrame = getActivity().findViewById(R.id.fragment_details);
+        if (detailsFrame != null) {
+            detailsFrame.setVisibility(View.GONE);
+        }
+
+        // Prepare the loader. Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(10, null, this).forceLoad();
+    }
+
+    @Override
+    public Loader<List<Event>> onCreateLoader(int id, Bundle args) {
+        // This is called when a new Loader needs to be created.
+        return new XMLContentLoader<>(getActivity(), SCHEDULE_URL, new ScheduleLoader());
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Event>> loader, List<Event> data) {
+        // Set the new data in the adapter.
+        ((ScheduleListAdapter) mGridView.getAdapter()).addAll(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Event>> loader) {
+        // Clear the data in the adapter.
+        ((ScheduleListAdapter) mGridView.getAdapter()).clear();
+    }
+
+    private static class ScheduleLoader implements XMLContentLoader.ResponseListener<Event> {
+        @Override
+        public void onPostExecute(XmlPullParser parser, List<Event> results) throws IOException, XmlPullParserException {
+            // The Event that is currently being parsed
+            Event currentEvents = null;
+            while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                String name = parser.getName();
+                if (parser.getEventType() == XmlPullParser.START_TAG) {
+                    if ("current_events".equals(name) && !YEAR.equals(parser.getAttributeValue(null, "academicYear"))) {
+                        break;
+                    }
+
+                    if ("event_date".equals(name)) {
+                        currentEvents = new Event(parser.getAttributeValue(null, "date"));
+                    } else if ("event".equals(name) && currentEvents != null) {
+                        currentEvents.setTime(parser.getAttributeValue(null, "eastern_time"));
+                        currentEvents.setHomeTeam(parser.getAttributeValue(null, "hn"));
+                        currentEvents.setHomeScore(parser.getAttributeValue(null, "hs"));
+                        currentEvents.setAwayTeam(parser.getAttributeValue(null, "vn"));
+                        currentEvents.setAwayScore(parser.getAttributeValue(null, "vs"));
+                    }
+                } else if (parser.getEventType() == XmlPullParser.END_TAG && "event_date".equals(name)) {
+                    results.add(currentEvents);
+                }
+            }
+        }
+    }
+
+    private class ScheduleListAdapter extends ArrayAdapter<Event> {
+        public ScheduleListAdapter(Context context) {
+            super(context, 0);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.schedule_item, parent, false);
+            }
+
+            Event item = getItem(position);
+
+            TextView date = ViewHolder.get(convertView, R.id.date);
+            date.setText(item.getTime());
+
+            TextView awayTeam = ViewHolder.get(convertView, R.id.away_team);
+            awayTeam.setText(item.getAwayTeam());
+
+            TextView awayScore = ViewHolder.get(convertView, R.id.away_score);
+            String vs = item.getAwayScore();
+            if (vs == null) {
+                awayScore.setVisibility(View.GONE);
+            } else {
+                awayScore.setText(vs);
+                awayScore.setVisibility(View.VISIBLE);
+            }
+
+            TextView homeTeam = ViewHolder.get(convertView, R.id.home_team);
+            homeTeam.setText(item.getHomeTeam());
+
+            TextView homeScore = ViewHolder.get(convertView, R.id.home_score);
+            String hs = item.getHomeScore();
+            if (hs == null) {
+                homeScore.setVisibility(View.GONE);
+            } else {
+                homeScore.setText(hs);
+                homeScore.setVisibility(View.VISIBLE);
+            }
+
+            return convertView;
+        }
+    }
+}
