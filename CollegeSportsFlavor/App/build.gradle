@@ -24,7 +24,7 @@ android {
     signingConfigs {
         myConfig {
             storeFile file(project.signingStoreLocation)
-            storePassword project.signingKeyPassword
+            storePassword project.signingStorePassword
             keyAlias project.signingKeyAlias
             keyPassword project.signingKeyPassword
         }
