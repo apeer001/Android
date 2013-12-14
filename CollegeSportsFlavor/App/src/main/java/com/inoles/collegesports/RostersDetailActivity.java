@@ -14,26 +14,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.itnoles.collegesports;
+package com.inoles.collegesports;
 
-import android.util.SparseArray;
-import android.view.View;
+import android.app.Fragment;
 
-public class ViewHolder {
-    private ViewHolder() {}
-
-    @SuppressWarnings("unchecked")
-    public static <T extends View> T get(View view, int id) {
-        SparseArray<View> viewHolder = (SparseArray<View>) view.getTag();
-        if (viewHolder == null) {
-            viewHolder = new SparseArray<>();
-            view.setTag(viewHolder);
-        }
-        View res = viewHolder.get(id);
-        if (res == null) {
-            res = view.findViewById(id);
-            viewHolder.put(id, res);
-        }
-        return (T) res;
+public class RostersDetailActivity extends BaseSinglePaneActivity {
+    @Override
+    Fragment onCreatePane() {
+        return new RostersDetailFragment();
     }
 }

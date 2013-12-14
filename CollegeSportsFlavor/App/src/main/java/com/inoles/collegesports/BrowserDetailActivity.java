@@ -14,27 +14,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.itnoles.collegesports.ui;
+package com.inoles.collegesports;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.os.Bundle;
 
-abstract class BaseSinglePaneActivity extends Activity {
-    // Called when the activity is first created.
+public class BrowserDetailActivity extends BaseSinglePaneActivity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            Fragment pane = onCreatePane();
-            pane.setArguments(getIntent().getExtras());
-            getFragmentManager().beginTransaction().add(android.R.id.content, pane).commit();
-        }
+    Fragment onCreatePane() {
+        return new BrowserDetailFragment();
     }
-
-    /**
-     * Called in onCreate when the fragment constituting this activity is needed.
-     */
-    abstract Fragment onCreatePane();
 }

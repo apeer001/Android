@@ -14,7 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.itnoles.collegesports.ui;
+package com.inoles.collegesports;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,14 +27,12 @@ import android.webkit.WebViewClient;
 import android.webkit.WebViewFragment;
 import android.widget.ShareActionProvider;
 
-import com.github.itnoles.collegesports.R;
-
 /**
  * A fragment that displays a WebView.
  *
  * The WebView is automatically paused or resumed when the Fragment is paused or resumed.
  */
-class BrowserDetailFragment extends WebViewFragment {
+public class BrowserDetailFragment extends WebViewFragment {
     public static BrowserDetailFragment newInstance(String urlString) {
         BrowserDetailFragment f = new BrowserDetailFragment();
 
@@ -51,12 +49,23 @@ class BrowserDetailFragment extends WebViewFragment {
 
         setHasOptionsMenu(true);
 
+        if (getWebView() == null) {
+            return;
+        }
+
         WebSettings settings = getWebView().getSettings();
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setBuiltInZoomControls(true);
         getWebView().setWebViewClient(new MyWebViewClient());
-        getWebView().loadUrl(getArguments().getString("url"));
+        getWebView().loadUrl(getURL());
+    }
+
+    private String getURL() {
+        if (getArguments() == null) {
+            return null;
+        }
+        return getArguments().getString("url");
     }
 
     private static class MyWebViewClient extends WebViewClient {
@@ -79,12 +88,18 @@ class BrowserDetailFragment extends WebViewFragment {
 
         // Locate MenuItem with ShareActionProvider
         MenuItem menuItem = menu.findItem(R.id.menu_share);
+        if (menuItem == null) {
+            return;
+        }
 
         // Set the share intent
         ShareActionProvider actionProvider = (ShareActionProvider) menuItem.getActionProvider();
+        if (actionProvider == null) {
+            return;
+        }
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, getArguments().getString("url"));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getURL());
         actionProvider.setShareIntent(shareIntent);
     }
 }

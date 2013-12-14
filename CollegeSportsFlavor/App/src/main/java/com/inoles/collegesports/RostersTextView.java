@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.itnoles.collegesports;
+package com.inoles.collegesports;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -25,8 +25,11 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+
 public class RostersTextView extends TextView {
-    private static final int pad = 5;
+    private static final int PAD = 5;
+    private static final int THREE = 3;
 
     private String mFirstText;
     private String mLastText;
@@ -63,37 +66,17 @@ public class RostersTextView extends TextView {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        // width & height mode
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-
-        // find out Width based on widthMode
-        int reqWidth = (widthMode == MeasureSpec.EXACTLY) ? MeasureSpec.getSize(widthMeasureSpec)
-        : (int) (mFirstPaint.measureText(mFirstText) + mLastPaint.measureText(mLastText) + 3 * pad);
-
-        // find out Height based on heightMode
-        int reqHeight = (heightMode == MeasureSpec.EXACTLY) ? MeasureSpec.getSize(heightMeasureSpec)
-        : (int) (mLastPaint.descent() - mLastPaint.ascent());
-
-        // set the calculated width and height of your drawing area
-        setMeasuredDimension(reqWidth, reqHeight);
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NotNull Canvas canvas) {
         super.onDraw(canvas);
 
-        int height = getMeasuredHeight() - 3;
+        int height = getMeasuredHeight() - THREE;
 
         if (!TextUtils.isEmpty(mFirstText)) {
             canvas.drawText(mFirstText, 0, height, mFirstPaint);
         }
 
         if (!TextUtils.isEmpty(mLastText)) {
-            float width = mFirstPaint.measureText(mFirstText) + pad;
+            float width = mFirstPaint.measureText(mFirstText) + PAD;
             canvas.drawText(mLastText, width, height, mLastPaint);
         }
     }

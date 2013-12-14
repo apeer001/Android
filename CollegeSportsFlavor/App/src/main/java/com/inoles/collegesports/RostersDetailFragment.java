@@ -14,23 +14,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.itnoles.collegesports.ui;
+package com.inoles.collegesports;
 
 import android.app.ListFragment;
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 
-import com.github.itnoles.collegesports.XMLContentLoader;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
-class RostersDetailFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<String>> {
+public class RostersDetailFragment extends ListFragment {
+    private static final String LOG_TAG = "RostersDetailFragment";
+
     private ArrayAdapter<String> mAdapter;
 
     public static RostersDetailFragment newInstance(String urlString) {
@@ -47,40 +51,27 @@ class RostersDetailFragment extends ListFragment implements LoaderManager.Loader
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        String title = getArguments().getString("title");
-        if (title != null) {
-            getActivity().getActionBar().setTitle(title);
+        if (getActivity() != null) {
+            mAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
+            setListAdapter(mAdapter);
         }
 
-        mAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
-        setListAdapter(mAdapter);
-
-        // Prepare the loader. Either re-connect with an existing one,
-        // or start a new one.
-        getLoaderManager().initLoader(21, getArguments(), this).forceLoad();
+        if (getArguments() != null) {
+            Ion.with(getActivity(), getArguments().getString("url")).asString()
+                    .setCallback(new FutureCallback<String>() {
+                        @Override
+                        public void onCompleted(Exception e, String s) {
+                            load(s);
+                        }
+                    });
+        }
     }
 
-    @Override
-    public Loader<List<String>> onCreateLoader(int id, Bundle args) {
-        // This is called when a new Loader needs to be created.
-        return new XMLContentLoader<>(getActivity(), args.getString("url"), new RostersLoader());
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<String>> loader, List<String> data) {
-        // Set the new data in the adapter.
-        mAdapter.addAll(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<String>> loader) {
-        // Clear the data in the adapter.
-        mAdapter.clear();
-    }
-
-    private static class RostersLoader implements XMLContentLoader.ResponseListener<String> {
-        @Override
-        public void onPostExecute(XmlPullParser parser, List<String> results) throws IOException, XmlPullParserException {
+    private void load(String xmlString) {
+        StringReader sr = new StringReader(xmlString);
+        try {
+            XmlPullParser parser = ParserUtils.newPullParser(sr);
+            List<String> results = new ArrayList<>();
             while (parser.next() != XmlPullParser.END_DOCUMENT) {
                 if (parser.getEventType() == XmlPullParser.START_TAG) {
                     switch (parser.getName()) {
@@ -106,6 +97,11 @@ class RostersDetailFragment extends ListFragment implements LoaderManager.Loader
                     }
                 }
             }
+            mAdapter.addAll(results);
+        } catch (IOException | XmlPullParserException e) {
+            Log.e(LOG_TAG, Log.getStackTraceString(e));
+        } finally {
+            sr.close();
         }
     }
 }

@@ -14,7 +14,7 @@ repositories {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.0"
+    buildToolsVersion '19.0.0'
 
     defaultConfig {
         minSdkVersion 15
@@ -24,7 +24,7 @@ android {
     signingConfigs {
         myConfig {
             storeFile file(project.signingStoreLocation)
-            storePassword project.signingStorePassword
+            storePassword project.signingKeyPassword
             keyAlias project.signingKeyAlias
             keyPassword project.signingKeyPassword
         }
@@ -44,21 +44,25 @@ android {
 
     productFlavors {
         nolesfootball {
-            packageName "com.itnoles.nolesfootball"
+            packageName "com.inoles.nolesfootball"
             buildConfig "public static final String NEWS_URL = \"http://www.seminoles.com/headline-rss.xml\";", \
                         "public static final String ROSTER_URL = \"http://grfx.cstv.com/schools/fsu/data/xml/roster/m-footbl-2012.xml\";", \
-                        "public static final String SCHEDULE_URL = \"http://cbs-amp2.silverchalice.co/cbs/api/events?schoolCode=fsu&sportCode=m-footbl\";"
+                        "public static final String SCHEDULE_URL = \"http://cbs-amp2.silverchalice.co/cbs/api/events?schoolCode=fsu&sportCode=m-footbl\";", \
+                        "public static final String GALLERY_URL = \"http://grfx.cstv.com/photos/galleries/indexes/fsu/m-footbl-2013.xml\";"
         }
 
         knightsfootball {
-            packageName "com.itnoles.knightsfootball"
+            packageName "com.inoles.knightsfootball"
             buildConfig "public static final String NEWS_URL = \"http://www.ucfathletics.com/headline-rss.xml\";", \
                         "public static final String ROSTER_URL = \"http://grfx.cstv.com/schools/ucf/data/xml/roster/m-footbl-2012.xml\";", \
-                        "public static final String SCHEDULE_URL = \"http://cbs-amp2.silverchalice.co/cbs/api/events?schoolCode=ucf&sportCode=m-footbl\";"
+                        "public static final String SCHEDULE_URL = \"http://cbs-amp2.silverchalice.co/cbs/api/events?schoolCode=ucf&sportCode=m-footbl\";", \
+                        "public static final String GALLERY_URL = \"http://grfx.cstv.com/photos/galleries/indexes/ucf/m-footbl-2013.xml\";"
         }
     }
 }
 
 dependencies {
     compile 'com.android.support:support-v4:+'
+    compile 'com.koushikdutta.ion:ion:1.2.0'
+    compile 'com.intellij:annotations:+'
 }

@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:baselineAligned="false">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="?android:attr/listPreferredItemHeight">
+    
+    <!-- <ImageView
+        android:id="@id/thumbnail"
+        android:layout_width="64dp"
+        android:layout_height="6dp" /> -->
 
     <TextView
         android:id="@id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceListItem" />
+        <!--android:layout_toRightOf="@id/thumbnail" -->
 
     <TextView
         android:id="@id/date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_alignStart="@id/title"
         android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <TextView
-        android:id="@id/desc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-</LinearLayout>
+        <!-- android:layout_toRightOf="@id/thumbnail"-->
+</RelativeLayout>
