@@ -65,6 +65,9 @@ public class MainActivity extends Activity
             case 2:
                 fragment = new RostersFragment();
                 break;
+            case 3:
+                fragment = new GalleryFragment();
+                break;
             default:
         }
 

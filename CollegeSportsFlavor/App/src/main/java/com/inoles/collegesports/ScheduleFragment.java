@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
+import org.jetbrains.annotations.Nullable;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -69,6 +70,7 @@ public class ScheduleFragment extends Fragment {
      * Views.
      */
     private ScheduleListAdapter mAdapter;
+    private AbsListView mListView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,15 +79,16 @@ public class ScheduleFragment extends Fragment {
         mAdapter = new ScheduleListAdapter(getActivity());
     }
 
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
+        View view = inflater.inflate(R.layout.fragment_schedule, container, true);
 
         // Set the adapter if view is not null
         if (view != null) {
-            AbsListView listView = (AbsListView) view.findViewById(android.R.id.list);
-            listView.setAdapter(mAdapter);
+            mListView = (AbsListView) view.findViewById(android.R.id.list);
+            mListView.setAdapter(mAdapter);
         }
 
         return view;
@@ -155,13 +158,12 @@ public class ScheduleFragment extends Fragment {
      * the list is empty. If you would like to change the text, call this method
      * to supply the text it should use.
      */
-    /*public void setEmptyText(CharSequence emptyText) {
+    public void setEmptyText(CharSequence emptyText) {
         View emptyView = mListView.getEmptyView();
-
-        if (emptyText instanceof TextView) {
+        if (emptyView instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
         }
-    }*/
+    }
 
     class ScheduleListAdapter extends ArrayAdapter<Event> {
         private LayoutInflater mInflater;

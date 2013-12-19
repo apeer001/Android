@@ -3,7 +3,6 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="?android:attr/listPreferredItemHeight"
                 tools:context="com.inoles.collegesports.ui.ScheduleFragment">
     <TextView
         android:layout_width="wrap_content"
@@ -21,6 +20,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:id="@id/away_score"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="12dip"
         android:layout_alignRight="@id/away_team"
@@ -52,6 +52,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:id="@id/date"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
         android:layout_below="@id/home_team"
         android:layout_alignStart="@id/home_team"
         tools:text="TBA" />

@@ -19,7 +19,6 @@ package com.inoles.collegesports;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -42,7 +41,7 @@ public class RostersTextView extends TextView {
     }
 
     public RostersTextView(Context context, AttributeSet attrs) {
-        super(context, attrs, android.R.attr.textAppearanceListItem);
+        super(context, attrs);
 
         if (isInEditMode()) {
             mFirstText = "John Doe";
@@ -54,8 +53,8 @@ public class RostersTextView extends TextView {
         mFirstPaint.setTextSize(getTextSize());
         mLastPaint.setTextSize(getTextSize());
 
-        mFirstPaint.setColor(Color.BLACK);
-        mLastPaint.setColor(Color.BLACK);
+        mFirstPaint.setColor(getCurrentTextColor());
+        mLastPaint.setColor(getCurrentTextColor());
     }
 
     public void setText(String first, String last) {

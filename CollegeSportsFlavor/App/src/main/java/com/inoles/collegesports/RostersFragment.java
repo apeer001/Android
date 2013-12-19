@@ -181,7 +181,7 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Rosters item = mAdapter.getItem(position);
-        String url = item.details + '/' + item.bioId + ".xml";
+        String url = item.details + '/' + item.bioId + ".json";
         if (mDualPane) {
             // We can display everything in-place with fragments, so update
             // the list to highlight the selected item and show the data.

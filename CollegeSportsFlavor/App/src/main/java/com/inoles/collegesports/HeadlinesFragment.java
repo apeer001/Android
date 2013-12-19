@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -45,22 +46,22 @@ public class HeadlinesFragment extends ListFragment {
         String Title;
         String Link;
         String PubDate;
-        //String ImageURL;
+        String ImageURL;
 
-        void setValue(String key, String value) {
+        void setValue(String key, XmlPullParser parser) throws XmlPullParserException, IOException {
             switch (key) {
                 case "title":
-                    Title = value;
+                    Title = parser.nextText();
                     break;
                 case "pubDate":
-                    PubDate = value;
+                    PubDate = parser.nextText();
                     break;
                 case "link":
-                    Link = value;
+                    Link = parser.nextText();
                     break;
-                /*case "enclosure":
-                    ImageURL = value;
-                    break;*/
+                case "enclosure":
+                    ImageURL = parser.getAttributeValue(null, "url");
+                    break;
                 default:
             }
         }
@@ -119,7 +120,7 @@ public class HeadlinesFragment extends ListFragment {
                     if ("item".equals(name)) {
                         currentNews = new News();
                     } else if (currentNews != null) {
-                        currentNews.setValue(name, parser.nextText());
+                        currentNews.setValue(name, parser);
                     }
                 } else if (parser.getEventType() == XmlPullParser.END_TAG && "item".equals(name)) {
                     results.add(currentNews);
@@ -178,7 +179,7 @@ public class HeadlinesFragment extends ListFragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.headlines_item, parent, false);
+                convertView = mInflater.inflate(R.layout.simple_list_item_3, parent, false);
 
                 holder = new ViewHolder();
                 holder.date = (TextView) convertView.findViewById(R.id.date);
@@ -189,6 +190,10 @@ public class HeadlinesFragment extends ListFragment {
             }
 
             News item = getItem(position);
+
+            ImageView iv = (ImageView) convertView.findViewById(R.id.thumbnail);
+            Ion.with(iv).load(item.ImageURL);
+
             holder.date.setText(item.PubDate);
             holder.title.setText(item.Title);
 

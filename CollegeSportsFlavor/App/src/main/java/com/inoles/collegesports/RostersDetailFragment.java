@@ -24,18 +24,41 @@ import android.widget.ArrayAdapter;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-
 public class RostersDetailFragment extends ListFragment {
-    private static final String LOG_TAG = "RostersDetailFragment";
+    static class RosterDetail {
+        String experience;
+        String eligibility;
+        String height;
+        String weight;
+        String position_event;
+        String hometown;
 
-    private ArrayAdapter<String> mAdapter;
+        public String getExperience() {
+            return "Experience: " + experience;
+        }
+
+        public String getEligibility() {
+            return "Class: " + eligibility;
+        }
+
+        public String getHeight() {
+            return "Height: " + height;
+        }
+
+        public String getWeight() {
+            return "Weight: " + weight;
+        }
+
+        public String getHometown() {
+            return "Hometown: " + hometown;
+        }
+
+        public String getPosition() {
+            return position_event.replace("=>", ": ");
+        }
+    }
+
+    private static final String LOG_TAG = "RostersDetailFragment";
 
     public static RostersDetailFragment newInstance(String urlString) {
         RostersDetailFragment f = new RostersDetailFragment();
@@ -51,57 +74,32 @@ public class RostersDetailFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (getActivity() != null) {
-            mAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
-            setListAdapter(mAdapter);
+        if (getActivity() == null) {
+            return;
         }
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);
+        setListAdapter(adapter);
 
         if (getArguments() != null) {
-            Ion.with(getActivity(), getArguments().getString("url")).asString()
-                    .setCallback(new FutureCallback<String>() {
-                        @Override
-                        public void onCompleted(Exception e, String s) {
-                            load(s);
-                        }
-                    });
-        }
-    }
-
-    private void load(String xmlString) {
-        StringReader sr = new StringReader(xmlString);
-        try {
-            XmlPullParser parser = ParserUtils.newPullParser(sr);
-            List<String> results = new ArrayList<>();
-            while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                if (parser.getEventType() == XmlPullParser.START_TAG) {
-                    switch (parser.getName()) {
-                        case "experience":
-                            results.add("Experience: " + parser.nextText());
-                            break;
-                        case "eligibility":
-                            results.add("Class: " + parser.nextText());
-                            break;
-                        case "height":
-                            results.add("Height: " + parser.nextText());
-                            break;
-                        case "weight":
-                            results.add("Weight: " +  parser.nextText());
-                            break;
-                        case "hometown":
-                            results.add("Hometown: " + parser.nextText());
-                            break;
-                        case "position_event":
-                            results.add(parser.nextText().replace("=>", ": "));
-                            break;
-                        default:
-                    }
-                }
-            }
-            mAdapter.addAll(results);
-        } catch (IOException | XmlPullParserException e) {
-            Log.e(LOG_TAG, Log.getStackTraceString(e));
-        } finally {
-            sr.close();
+            Ion.with(getActivity(), getArguments().getString("url"))
+               .as(RosterDetail.class)
+               .setCallback(new FutureCallback<RosterDetail>() {
+                   @Override
+                   public void onCompleted(Exception e, RosterDetail result) {
+                       // this is called back onto the ui thread, no Activity.runOnUiThread or Handler.post necessary.
+                       if (e != null) {
+                           Log.e(LOG_TAG, Log.getStackTraceString(e));
+                           return;
+                       }
+                       adapter.add(result.getExperience());
+                       adapter.add(result.getEligibility());
+                       adapter.add(result.getHeight());
+                       adapter.add(result.getWeight());
+                       adapter.add(result.getHometown());
+                       adapter.add(result.getPosition());
+                   }
+               });
         }
     }
 }
