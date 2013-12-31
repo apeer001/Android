@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="share">Share</string>
+    <string name="search">Search</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="teamPhotos">Team Photos</string>
+    <string name="twitterProfileImage">Twitter Profile Image</string>
+
+    <string-array name="section">
+        <item>News</item>
+        <item>Schedule</item>
+        <item>Rosters</item>
+        <item>Twitter</item>
+        <item>Facebook</item>
+    </string-array>
+</resources>
