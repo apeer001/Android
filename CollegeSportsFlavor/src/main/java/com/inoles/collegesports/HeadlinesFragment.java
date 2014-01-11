@@ -21,7 +21,6 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +33,6 @@ import android.widget.TextView;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -72,16 +70,9 @@ public class HeadlinesFragment extends ListFragment {
 
     private static final String LOG_TAG = "HeadlinesFragment";
 
-    private boolean mDualPane;
-    private int mShownCheckPosition = -1;
-    private NewsListAdapter mAdapter;
-
-    @Nullable
-    @Override
-    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list_with_empty_container, container, true);
-    }
+    boolean mDualPane;
+    int mShownCheckPosition = -1;
+    NewsListAdapter mAdapter;
 
     @Override
     public void onActivityCreated(Bundle savedState) {
@@ -117,7 +108,7 @@ public class HeadlinesFragment extends ListFragment {
         });
     }
 
-    private void load(String xmlString) {
+    void load(String xmlString) {
         StringReader sr = new StringReader(xmlString);
         try {
             XmlPullParser parser = ParserUtils.newPullParser(sr);
@@ -177,7 +168,7 @@ public class HeadlinesFragment extends ListFragment {
     }
 
     class NewsListAdapter extends ArrayAdapter<News> {
-        private LayoutInflater mInflater;
+        private final LayoutInflater mInflater;
 
         public NewsListAdapter(Context context) {
             super(context, 0);
@@ -189,7 +180,7 @@ public class HeadlinesFragment extends ListFragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.simple_list_item_3, parent, false);
+                convertView = mInflater.inflate(R.layout.simple_item_list_3, parent, false);
 
                 holder = new ViewHolder();
                 holder.icon = (ImageView) convertView.findViewById(R.id.thumbnail);
@@ -202,13 +193,7 @@ public class HeadlinesFragment extends ListFragment {
 
             News item = getItem(position);
 
-            String imageUrl = item.ImageURL;
-            if (!TextUtils.isEmpty(imageUrl)) {
-                Ion.with(holder.icon).load(imageUrl);
-                holder.icon.setVisibility(View.VISIBLE);
-            } else {
-                holder.icon.setVisibility(View.GONE);
-            }
+            Ion.with(holder.icon).load(item.ImageURL);
 
             holder.date.setText(item.PubDate);
             holder.title.setText(item.Title);

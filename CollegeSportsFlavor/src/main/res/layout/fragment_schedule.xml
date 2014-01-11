@@ -5,22 +5,16 @@
              android:layout_height="match_parent"
              tools:context="com.inoles.collegesports.ui.ScheduleFragment">
 
-    <GridView
+    <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="2"
-        android:paddingEnd="4dp"
         android:paddingRight="4dp"
-        android:listSelector="@android:color/transparent"
-        android:divider="@android:color/transparent"
         tools:listitem="@layout/schedule_item" />
 
-    <!-- <TextView
+   <!--<TextView
         android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:textIsSelectable="false" /> -->
-
+        android:gravity="center" /> -->
 </FrameLayout>

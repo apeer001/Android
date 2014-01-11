@@ -32,30 +32,6 @@ public class RostersDetailFragment extends ListFragment {
         String weight;
         String position_event;
         String hometown;
-
-        public String getExperience() {
-            return "Experience: " + experience;
-        }
-
-        public String getEligibility() {
-            return "Class: " + eligibility;
-        }
-
-        public String getHeight() {
-            return "Height: " + height;
-        }
-
-        public String getWeight() {
-            return "Weight: " + weight;
-        }
-
-        public String getHometown() {
-            return "Hometown: " + hometown;
-        }
-
-        public String getPosition() {
-            return position_event.replace("=>", ": ");
-        }
     }
 
     private static final String LOG_TAG = "RostersDetailFragment";
@@ -97,12 +73,12 @@ public class RostersDetailFragment extends ListFragment {
                        Log.e(LOG_TAG, Log.getStackTraceString(e));
                        return;
                    }
-                   adapter.add(result.getExperience());
-                   adapter.add(result.getEligibility());
-                   adapter.add(result.getHeight());
-                   adapter.add(result.getWeight());
-                   adapter.add(result.getHometown());
-                   adapter.add(result.getPosition());
+                   adapter.add("Experience: " + result.experience);
+                   adapter.add("Class: " + result.eligibility);
+                   adapter.add("Height: " + result.height);
+                   adapter.add("Weight: " + result.weight);
+                   adapter.add("Hometown: " + result.hometown);
+                   adapter.add(result.position_event.replace("=>", ": "));
                }
            });
     }

@@ -31,7 +31,6 @@ import android.widget.TextView;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -76,16 +75,9 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
 
     private static final String LOG_TAG = "RostersFragment";
 
-    private boolean mDualPane;
-    private int mShownCheckPosition = -1;
-    private RostersListAdapter mAdapter;
-
-    @Nullable
-    @Override
-    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list_with_empty_container, container, true);
-    }
+    boolean mDualPane;
+    int mShownCheckPosition = -1;
+    RostersListAdapter mAdapter;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -123,7 +115,7 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
         });
     }
 
-    private void load(String xmlString) {
+    void load(String xmlString) {
         StringReader sr = new StringReader(xmlString);
         try {
             XmlPullParser parser = ParserUtils.newPullParser(sr);
@@ -221,7 +213,7 @@ public class RostersFragment extends ListFragment implements SearchView.OnQueryT
     }
 
     class RostersListAdapter extends ArrayAdapter<Rosters> {
-        private LayoutInflater mInflater;
+        private final LayoutInflater mInflater;
 
         public RostersListAdapter(Context context) {
             super(context, 0);

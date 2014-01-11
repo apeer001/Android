@@ -2,20 +2,13 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
-    }
+    dependencies.classpath 'com.android.tools.build:gradle:0.7.+'
 }
 apply plugin: 'android'
 
 repositories {
+    mavenLocal()
     mavenCentral()
-}
-
-dependencies {
-    compile 'com.android.support:support-v4:+'
-    compile 'com.koushikdutta.ion:ion:+'
-    compile 'com.intellij:annotations:+'
 }
 
 def makeRosterUrl(url) {
@@ -26,9 +19,6 @@ def makeScheduleUrl(url) {
     return "http://cbs-amp2.silverchalice.co/cbs/api/events?schoolCode=" + url + "&sportCode=m-footbl"
 }
 
-def makeTwitterUrl(sn) {
-    return "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=" + sn + "&count=20"
-}
 
 android {
     compileSdkVersion 19
@@ -37,9 +27,6 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 19
-
-        buildConfigField "String", "TWITTER_KEY", project.twitterConsumerKey
-        buildConfigField "String", "TWITTER_SECRET", project.twitterConsumerSecret
     }
 
     signingConfigs {
@@ -69,7 +56,7 @@ android {
             buildConfigField "String", "NEWS_URL",     "\"http://www.seminoles.com/headline-rss.xml\""
             buildConfigField "String", "ROSTER_URL",   "\"" + makeRosterUrl("fsu") + "\""
             buildConfigField "String", "SCHEDULE_URL", "\"" + makeScheduleUrl("fsu") + "\""
-            buildConfigField "String", "TWITTER_URL",  "\"" + makeTwitterUrl("Seminoles_com") + "\""
+            buildConfigField "String", "TWITTER_URL",  "\"https://twitter.com/Seminoles_com\""
             buildConfigField "String", "FACEBOOK_URL", "\"https://www.facebook.com/FSUSeminoles\""
 
         }
@@ -79,7 +66,7 @@ android {
             buildConfigField "String", "NEWS_URL",     "\"http://www.ucfathletics.com/headline-rss.xml\""
             buildConfigField "String", "ROSTER_URL",   "\"" + makeRosterUrl("ucf") + "\""
             buildConfigField "String", "SCHEDULE_URL", "\"" + makeScheduleUrl("ucf") + "\""
-            buildConfigField "String", "TWITTER_URL",  "\"" + makeTwitterUrl("UCFKnights") + "\""
+            buildConfigField "String", "TWITTER_URL",  "\"https://twitter.com/UCFKnights\""
             buildConfigField "String", "FACEBOOK_URL", "\"https://www.facebook.com/ucfknights\""
         }
     }
@@ -102,4 +89,12 @@ android {
         // if true, generate an HTML report (with issue explanations, sourcecode, etc)
         htmlReport true
     }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:+'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.koushikdutta.async:async:1.2.1'
+    compile 'com.koushikdutta.ion:ion:1.2.1'
+    compile 'org.jetbrains:annotations:+'
 }

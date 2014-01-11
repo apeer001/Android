@@ -57,6 +57,7 @@ public class BrowserDetailFragment extends WebViewFragment {
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setBuiltInZoomControls(true);
+        settings.setUserAgentString("Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36");
         getWebView().setWebViewClient(new MyWebViewClient());
 
         if (getArguments() != null) {

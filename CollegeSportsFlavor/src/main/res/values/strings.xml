@@ -4,8 +4,7 @@
     <string name="search">Search</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="teamPhotos">Team Photos</string>
-    <string name="twitterProfileImage">Twitter Profile Image</string>
+    <string name="photos">Photos</string>
 
     <string-array name="section">
         <item>News</item>

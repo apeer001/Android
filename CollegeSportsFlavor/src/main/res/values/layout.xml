@@ -1,3 +1,0 @@
-<resources>
-    <item name="fragment_schedule" type="layout">@layout/fragment_list_with_empty_container</item>
-</resources>

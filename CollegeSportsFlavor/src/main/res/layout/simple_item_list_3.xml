@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="?android:attr/listPreferredItemPaddingLeft"
+                android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+                android:paddingEnd="?android:attr/listPreferredItemPaddingRight"
+                android:paddingRight="?android:attr/listPreferredItemPaddingRight">
+    
+    <ImageView
+        android:id="@id/thumbnail"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:contentDescription="@string/photos"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginEnd="6dp"
+        />
+
+    <TextView
+        android:id="@id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@id/thumbnail"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:textIsSelectable="false"
+        tools:text="Football. Best Team won the BCS Bowl"/>
+
+    <TextView
+        android:id="@id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_toRightOf="@id/thumbnail"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textIsSelectable="false"
+        tools:text="Today" />
+</RelativeLayout>

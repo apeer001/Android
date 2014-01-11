@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class RostersTextView extends TextView {
     private static final int PAD = 5;
-    private static final int THREE = 3;
 
     private String mFirstText;
     private String mLastText;
@@ -55,6 +54,9 @@ public class RostersTextView extends TextView {
 
         mFirstPaint.setColor(getCurrentTextColor());
         mLastPaint.setColor(getCurrentTextColor());
+
+        mFirstPaint.setFlags(getPaintFlags());
+        mLastPaint.setFlags(getPaintFlags());
     }
 
     public void setText(String first, String last) {
@@ -68,7 +70,7 @@ public class RostersTextView extends TextView {
     protected void onDraw(@NotNull Canvas canvas) {
         super.onDraw(canvas);
 
-        int height = getMeasuredHeight() - THREE;
+        int height = getBaseline();
 
         if (!TextUtils.isEmpty(mFirstText)) {
             canvas.drawText(mFirstText, 0, height, mFirstPaint);

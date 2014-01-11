@@ -21,8 +21,8 @@ import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -49,10 +49,12 @@ public class MainActivity extends Activity {
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // set a custom shadow that overlays the main content when the drawer opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
 
         // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mSectionTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_activated_1, mSectionTitles
+        ));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -116,7 +118,7 @@ public class MainActivity extends Activity {
                 fragment = new RostersFragment();
                 break;
             case 3:
-                fragment = new TwitterFragment();
+                fragment = BrowserDetailFragment.newInstance(BuildConfig.TWITTER_URL);
                 break;
             case 4:
                 fragment = BrowserDetailFragment.newInstance(BuildConfig.FACEBOOK_URL);

@@ -23,8 +23,19 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.StringReader;
 
-public class ParserUtils {
-    private static XmlPullParserFactory sFactory;
+class ParserUtils {
+    private static final XmlPullParserFactory XPP_FACTORY;
+    static {
+        try {
+            XPP_FACTORY = XmlPullParserFactory.newInstance();
+        } catch (XmlPullParserException e) {
+            throw new RuntimeException(
+                    "An exception occurred while calling XmlPullParserFactory.newInstance()." +
+                    "A library providing the impl of the XML Pull Parser spec" +
+                    "must be available at runtime.",
+            e);
+        }
+    }
 
     private ParserUtils() {}
 
@@ -32,11 +43,8 @@ public class ParserUtils {
      * Build and return a new {@link XmlPullParser} with the given
      * {@link StringReader} assigned to it.
      */
-    public static XmlPullParser newPullParser(StringReader sr) throws XmlPullParserException {
-        if (sFactory == null) {
-            sFactory = XmlPullParserFactory.newInstance();
-        }
-        XmlPullParser parser = sFactory.newPullParser();
+    static XmlPullParser newPullParser(StringReader sr) throws XmlPullParserException {
+        XmlPullParser parser = XPP_FACTORY.newPullParser();
         parser.setInput(sr);
         return parser;
     }

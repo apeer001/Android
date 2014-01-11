@@ -67,11 +67,15 @@ public class ScheduleFragment extends Fragment {
     private static final String YEAR = "2013";
 
     /**
+     * The fragment's ListView/GridView.
+     */
+    private AbsListView mListView;
+
+    /**
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ScheduleListAdapter mAdapter;
-    private AbsListView mListView;
+    ScheduleListAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +88,7 @@ public class ScheduleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_schedule, container, true);
+        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
 
         // Set the adapter if view is not null
         if (view != null) {
@@ -117,7 +121,7 @@ public class ScheduleFragment extends Fragment {
         });
     }
 
-    private void load(String xmlString) {
+    void load(String xmlString) {
         StringReader sr = new StringReader(xmlString);
         try {
             XmlPullParser parser = ParserUtils.newPullParser(sr);
@@ -159,15 +163,25 @@ public class ScheduleFragment extends Fragment {
      * the list is empty. If you would like to change the text, call this method
      * to supply the text it should use.
      */
-    public void setEmptyText(CharSequence emptyText) {
+    /*public void setEmptyText(CharSequence emptyText) {
         View emptyView = mListView.getEmptyView();
+
         if (emptyView instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
         }
+    }*/
+
+    /**
+     * Detach from list view.
+     */
+    @Override
+    public void onDestroyView() {
+        mListView = null;
+        super.onDestroyView();
     }
 
     class ScheduleListAdapter extends ArrayAdapter<Event> {
-        private LayoutInflater mInflater;
+        private final LayoutInflater mInflater;
 
         public ScheduleListAdapter(Context context) {
             super(context, 0);
