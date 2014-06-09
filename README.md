@@ -1,9 +1,6 @@
 <h2>Improving App</h2>
 <p>I will improve any application in times go on</p>
 
-<h2>Mono Related Project</h2>
-<p>If you see any folder that contains Mono, it will not be released to the Play Store.</p>
-
 <h2>License</h2>
 <pre><code>Copyright (C) 2013 Jonathan Steele
 
@@ -18,3 +15,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses</a></code></pre>
+
+<h2>Help &amp; Donate</h2>
+<p>If you want to help improve this project you could fork Android and send pull request.</p>
+<p>If you want to donate this project, you can donate via pledgie</p>
+<p>a href="http://www.pledgie.com/campaigns/12558"><img alt="Click here to lend your support to: Android and make a donation at www.pledgie.com !" src="http://www.pledgie.com/campaigns/12558.png?skin_name=chrome"></p>

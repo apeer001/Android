@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation Drawer -->
+    <item type="id" name="fragment_detail" />
+    <item type="id" name="container" />
+    <item type="id" name="left_drawer" />
+    <item type="id" name="drawer_layout" />
+
+    <!-- Schedule -->
+    <item type="id" name="date" />
+    <item type="id" name="away_team" />
+    <item type="id" name="home_team" />
+
+    <!-- Menu -->
+    <item type="id" name="menu_search" />
+    <item type="id" name="menu_share" />
+</resources>
