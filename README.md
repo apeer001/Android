@@ -19,4 +19,4 @@ along with this program.  If not, see <a href="http://www.gnu.org/licenses/" tar
 <h2>Help &amp; Donate</h2>
 <p>If you want to help improve this project you could fork Android and send pull request.</p>
 <p>If you want to donate this project, you can donate via pledgie</p>
-<p>a href="http://www.pledgie.com/campaigns/12558"><img alt="Click here to lend your support to: Android and make a donation at www.pledgie.com !" src="http://www.pledgie.com/campaigns/12558.png?skin_name=chrome"></p>
+<p><a href="http://www.pledgie.com/campaigns/12558"><img alt="Click here to lend your support to: Android and make a donation at www.pledgie.com !" src="http://www.pledgie.com/campaigns/12558.png?skin_name=chrome"></p>
