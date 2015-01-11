@@ -1,0 +1,45 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "com.inoles.nolesfootball"
+        minSdkVersion 16
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled false
+
+        resConfig "en"
+
+        // Enable the experimental Jack build tools.
+        //useJack = true
+    }
+    /*splits {
+        density {
+            enable true
+            exclude "ldpi", "tvdpi"
+        }
+    }*/
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    provided 'com.android.support:support-annotations:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:support-v13:21.0.3'
+    compile 'com.android.support:recyclerview-v7:21.0.3'
+
+    compile 'com.squareup.okhttp:okhttp:2.2.0'
+
+    //compile 'io.reactivex:rxjava:1.0.4'
+    compile 'io.reactivex:rxandroid:0.24.0'
+}

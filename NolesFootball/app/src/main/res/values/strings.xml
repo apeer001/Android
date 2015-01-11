@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Noles Football</string>
+
+    <!-- Accessibility description saying that the app navigation drawer has been closed -->
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- Accessibility description saying that the app navigation drawer has been opened -->
+    <string name="drawer_open">Open navigation drawer</string>
+
+    <!-- Title of the navigation drawer, used by accessibility to announce state changes. -->
+    <string name="drawer_title">Navigation</string>
+
+    <string name="navdrawer_headlines">Headlines</string>
+    <string name="navdrawer_schedules">Schedules</string>
+    <string name="navdrawer_rosters">Rosters</string>
+    <!--<string name="navdrawer_standings">Standings</string>-->
+
+    <string name="share">Share</string>
+</resources>
