@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2015 Jonathan Steele
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.inoles.nolesfootball;
 
 import android.app.Fragment;
@@ -5,31 +21,17 @@ import android.app.FragmentManager;
 import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.inoles.nolesfootball.model.Rosters;
-import com.inoles.nolesfootball.parser.RostersXMLParser;
 import com.inoles.nolesfootball.widget.SlidingTabLayout;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.app.AppObservable;
-
 public class RostersActivity extends BaseActivity implements RostersFragment.Listener {
-    private static final String LOG_TAG = RostersActivity.class.getName();
-
-    private final List<Rosters> mPlayerList = new ArrayList<>();
-    private final List<Rosters> mStaffList = new ArrayList<>();
-
     private RostersListAdapter mAdapter;
 
     @Override
@@ -41,7 +43,8 @@ public class RostersActivity extends BaseActivity implements RostersFragment.Lis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ViewPager pager = (ViewPager) findViewById(R.id.rosters_pager);
+        // Set up ViewPager and adapter
+        final ViewPager pager = (ViewPager) findViewById(R.id.rosters_pager);
         RostersPagerAdapter pagerAdapter = new RostersPagerAdapter(getFragmentManager());
         pager.setAdapter(pagerAdapter);
 
@@ -50,10 +53,9 @@ public class RostersActivity extends BaseActivity implements RostersFragment.Lis
 
         mAdapter = new RostersListAdapter(this);
 
-        RostersXMLParser parser = new RostersXMLParser();
-        AppObservable.bindActivity(this, parser.pullDataFromNetwork())
-                .lift(new BindsAdapter())
-                .subscribe();
+        // TODO: Trying to run this in parallel
+        /*RostersXMLParser parser = new RostersXMLParser();
+        parser.pullDataFromNetwork()*/
     }
 
     /**
@@ -66,8 +68,8 @@ public class RostersActivity extends BaseActivity implements RostersFragment.Lis
 
     @Override
     public void onFragmentViewCreated(ListFragment fragment) {
-        int position = fragment.getArguments().getInt("position");
-        switch (position) {
+        /*int position = fragment.getArguments().getInt("position");
+        switch(position) {
             case 0:
                 Collections.sort(mPlayerList, Rosters.NAME);
                 mAdapter.add(mPlayerList);
@@ -80,34 +82,8 @@ public class RostersActivity extends BaseActivity implements RostersFragment.Lis
                 Collections.sort(mStaffList, Rosters.NAME);
                 mAdapter.add(mStaffList);
                 break;
-        }
+        }*/
         fragment.setListAdapter(mAdapter);
-    }
-
-    final class BindsAdapter implements Observable.Operator<List<Rosters>, List<Rosters>> {
-        @Override
-        public Subscriber<? super List<Rosters>> call(Subscriber<? super List<Rosters>> subscriber) {
-            return new Subscriber<List<Rosters>>() {
-                @Override
-                public void onCompleted() {}
-
-                @Override
-                public void onError(Throwable e) {
-                    Log.e(LOG_TAG, Log.getStackTraceString(e));
-                }
-
-                @Override
-                public void onNext(List<Rosters> rostersList) {
-                    for (Rosters rosters : rostersList) {
-                        if (rosters.mIsCoach == 1) {
-                            mStaffList.add(rosters);
-                        } else {
-                            mPlayerList.add(rosters);
-                        }
-                    }
-                }
-            };
-        }
     }
 
     static class RostersPagerAdapter extends FragmentPagerAdapter {
@@ -128,7 +104,7 @@ public class RostersActivity extends BaseActivity implements RostersFragment.Lis
 
         @Override
         public int getCount() {
-            return 3;
+            return TITLES.length;
         }
 
         @Override
@@ -143,7 +119,7 @@ public class RostersActivity extends BaseActivity implements RostersFragment.Lis
         }
 
         @Override
-        public View getView(int position, View view, ViewGroup viewGroup) {
+        public View getView(int position, View view, @NonNull ViewGroup viewGroup) {
             ViewHolder viewHolder;
             if (view == null) {
                 view = mInflater.inflate(R.layout.rosters_item, viewGroup, false);

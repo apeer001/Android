@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Jonathan Steele
+ * Copyright (C) 2015 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,15 @@
 package com.inoles.nolesfootball.model;
 
 public class News {
-    public String Title;
-    public String Link;
-    public String Descriptions;
+    public String title;
+    public String link;
+    public String descriptions;
+
+    public News copy() {
+        News copy = new News();
+        copy.title = title;
+        copy.link = link;
+        copy.descriptions = descriptions;
+        return copy;
+    }
 }

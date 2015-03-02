@@ -10,19 +10,18 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
-        multiDexEnabled false
 
         resConfig "en"
 
         // Enable the experimental Jack build tools.
         //useJack = true
     }
-    /*splits {
+    splits {
         density {
             enable true
             exclude "ldpi", "tvdpi"
         }
-    }*/
+    }
     buildTypes {
         release {
             minifyEnabled true
@@ -30,16 +29,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/rxandroid.properties'
+        exclude 'META-INF/rxjava.properties'
+    }
 }
 
 dependencies {
     provided 'com.android.support:support-annotations:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:support-v13:21.0.3'
-    compile 'com.android.support:recyclerview-v7:21.0.3'
 
     compile 'com.squareup.okhttp:okhttp:2.2.0'
 
-    //compile 'io.reactivex:rxjava:1.0.4'
+    compile 'io.reactivex:rxjava:1.0.7'
     compile 'io.reactivex:rxandroid:0.24.0'
 }

@@ -1,13 +1,31 @@
+/*
+ * Copyright (C) 2015 Jonathan Steele
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.inoles.nolesfootball.parser;
+
+import android.sax.Element;
+import android.sax.EndElementListener;
+import android.sax.EndTextElementListener;
+import android.sax.RootElement;
 
 import com.inoles.nolesfootball.model.Rosters;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
+import org.xml.sax.ContentHandler;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import rx.Subscriber;
 
 public class RostersXMLParser extends BaseXMLParser<Rosters> {
 
@@ -16,43 +34,40 @@ public class RostersXMLParser extends BaseXMLParser<Rosters> {
     }
 
     @Override
-    List<Rosters> parseXML(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<Rosters> result = new ArrayList<>();
-        Rosters currentRosters = null;
-        int eventType;
-        while ((eventType = parser.next()) != XmlPullParser.END_DOCUMENT) {
-            String name = parser.getName();
-            switch (eventType) {
-                case XmlPullParser.START_TAG:
-                    if ("rosterEntry".equals(name)) {
-                        currentRosters = new Rosters();
-                    } else if (currentRosters != null) {
-                        switch (name) {
-                            case "first_name":
-                                currentRosters.mFirstName = parser.nextText();
-                                break;
-                            case "last_name":
-                                currentRosters.mLastName = parser.nextText();
-                                break;
-                            case "position_name":
-                                currentRosters.mPosition = parser.nextText();
-                                break;
-                            case "is_coach":
-                                currentRosters.mIsCoach = Integer.parseInt(parser.nextText());
-                                break;
-                            case "shirt_number":
-                                currentRosters.mShirtNumber = parser.nextText();
-                                break;
-                        }
-                    }
-                    break;
-                case XmlPullParser.END_TAG:
-                    if ("rosterEntry".equals(name)) {
-                        result.add(currentRosters);
-                    }
-                    break;
+    ContentHandler getContentHandler(final Subscriber<? super Rosters> subscriber) {
+        final Rosters currentRosters = new Rosters();
+        RootElement root = new RootElement("rosters");
+        Element rosterEntry = root.getChild("rosterEntry");
+        rosterEntry.setEndElementListener(new EndElementListener() {
+            @Override
+            public void end() {
+                subscriber.onNext(currentRosters.copy());
             }
-        }
-        return result;
+        });
+        rosterEntry.getChild("first_name").setEndTextElementListener(new EndTextElementListener() {
+            @Override
+            public void end(String s) {
+                currentRosters.mFirstName = s;
+            }
+        });
+        rosterEntry.getChild("last_name").setEndTextElementListener(new EndTextElementListener() {
+            @Override
+            public void end(String s) {
+                currentRosters.mLastName = s;
+            }
+        });
+        rosterEntry.getChild("position_name").setEndTextElementListener(new EndTextElementListener() {
+            @Override
+            public void end(String s) {
+                currentRosters.mPosition = s;
+            }
+        });
+        rosterEntry.getChild("is_coach").setEndTextElementListener(new EndTextElementListener() {
+            @Override
+            public void end(String s) {
+                currentRosters.mIsCoach = Integer.parseInt(s);
+            }
+        });
+        return root.getContentHandler();
     }
 }

@@ -1,10 +1,26 @@
+/*
+ * Copyright (C) 2015 Jonathan Steele
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.inoles.nolesfootball;
 
 import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -13,10 +29,6 @@ import android.widget.TextView;
 import com.inoles.nolesfootball.model.News;
 import com.inoles.nolesfootball.parser.HeadlinesXMLParser;
 
-import java.util.List;
-
-import rx.Observable;
-import rx.Subscriber;
 import rx.android.app.AppObservable;
 
 public class HeadlinesActivity extends BaseActivity {
@@ -25,7 +37,7 @@ public class HeadlinesActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mActionBarToolbar.setTitle(R.string.navdrawer_headlines);
+       setTitle(R.string.navdrawer_headlines);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -35,7 +47,7 @@ public class HeadlinesActivity extends BaseActivity {
     }
 
     /**
-     * Returns the navigation drawer item that corresponds to this Activity.
+     * Returns the navigation drawer_item item that corresponds to this Activity.
      */
     @Override
     int getSelfNavDrawerItem() {
@@ -48,7 +60,7 @@ public class HeadlinesActivity extends BaseActivity {
         }
 
         @Override
-        public View getView(int position, View view, ViewGroup viewGroup) {
+        public View getView(int position, View view, @NonNull ViewGroup viewGroup) {
             ViewHolder holder;
 
             if (view == null) {
@@ -61,8 +73,8 @@ public class HeadlinesActivity extends BaseActivity {
 
             News news = getItem(position);
 
-            holder.mTitle.setText(news.Title);
-            holder.mDesc.setText(news.Descriptions);
+            holder.mTitle.setText(news.title);
+            holder.mDesc.setText(news.descriptions);
 
             return view;
         }
@@ -79,20 +91,16 @@ public class HeadlinesActivity extends BaseActivity {
     }
 
     public static class HeadlinesFragment extends ListFragment {
-        private static final String LOG_TAG = HeadlinesFragment.class.getName();
-
-        private NewsAdapter mAdapter;
-
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            mAdapter = new NewsAdapter(getActivity());
-            setListAdapter(mAdapter);
+            NewsAdapter adapter = new NewsAdapter(getActivity());
+            setListAdapter(adapter);
 
             HeadlinesXMLParser parser = new HeadlinesXMLParser();
             AppObservable.bindFragment(this, parser.pullDataFromNetwork())
-                    .lift(new BindsAdapter())
+                    .lift(new BindsAdapter<>(adapter))
                     .subscribe();
         }
 
@@ -100,30 +108,8 @@ public class HeadlinesActivity extends BaseActivity {
         public void onListItemClick(ListView parent, View view, int position, long id) {
             News news = (News) parent.getAdapter().getItem(position);
             Intent intent = new Intent(getActivity(), BrowserDetailActivity.class);
-            intent.putExtra("url", news.Link);
+            intent.putExtra("url", news.link);
             startActivity(intent);
-        }
-
-        final class BindsAdapter implements Observable.Operator<List<News>, List<News>> {
-            @Override
-            public Subscriber<? super List<News>> call(Subscriber<? super List<News>> subscriber) {
-                return new Subscriber<List<News>>() {
-                    @Override
-                    public void onCompleted() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(LOG_TAG, Log.getStackTraceString(e));
-                    }
-
-                    @Override
-                    public void onNext(List<News> newses) {
-                        mAdapter.add(newses);
-                    }
-                };
-            }
         }
     }
 }

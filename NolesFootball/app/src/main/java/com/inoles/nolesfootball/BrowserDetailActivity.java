@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Jonathan Steele
+ * Copyright (C) 2015 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,14 +37,6 @@ public class BrowserDetailActivity extends ActionBarActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(toolbar);
-
-        //toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-        /*toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });*/
 
         toolbar.inflateMenu(R.menu.share_detail);
         MenuItem shareItem = toolbar.getMenu().findItem(R.id.menu_share);

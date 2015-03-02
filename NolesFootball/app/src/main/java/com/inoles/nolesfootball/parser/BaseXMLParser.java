@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2015 Jonathan Steele
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.inoles.nolesfootball.parser;
 
 import android.util.Xml;
@@ -5,11 +21,8 @@ import android.util.Xml;
 import com.inoles.nolesfootball.HttpUtils;
 import com.squareup.okhttp.Response;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
+import org.xml.sax.ContentHandler;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.util.List;
 
 import rx.Observable;
@@ -25,23 +38,21 @@ abstract class BaseXMLParser<T> {
     }
 
     public Observable<List<T>> pullDataFromNetwork() {
-        return HttpUtils.getInstance()
+        return HttpUtils.getDefaultInstance()
                 .getResponse(mURL)
-                .flatMap(new Func1<Response, Observable<Reader>>() {
+                .flatMap(new Func1<Response, Observable<String>>() {
                     @Override
-                    public Observable<Reader> call(Response response) {
-                        return HttpUtils.mapResponseReader(response);
+                    public Observable<String> call(Response response) {
+                        return HttpUtils.mapResponseToString(response);
                     }
-                }).flatMap(new Func1<Reader, Observable<List<T>>>() {
+                }).flatMap(new Func1<String, Observable<T>>() {
                     @Override
-                    public Observable<List<T>> call(final Reader reader) {
-                        return Observable.create(new Observable.OnSubscribe<List<T>>() {
+                    public Observable<T> call(final String data) {
+                        return Observable.create(new Observable.OnSubscribe<T>() {
                             @Override
-                            public void call(Subscriber<? super List<T>> subscriber) {
+                            public void call(Subscriber<? super T> subscriber) {
                                 try {
-                                    XmlPullParser parser = Xml.newPullParser();
-                                    parser.setInput(reader);
-                                    subscriber.onNext(parseXML(parser));
+                                    Xml.parse(data, getContentHandler(subscriber));
                                     subscriber.onCompleted();
                                 } catch (Throwable throwable) {
                                     subscriber.onError(throwable);
@@ -49,8 +60,8 @@ abstract class BaseXMLParser<T> {
                             }
                         });
                     }
-                }).subscribeOn(Schedulers.io());
+                }).subscribeOn(Schedulers.io()).toList();
     }
 
-    abstract List<T> parseXML(XmlPullParser parser) throws XmlPullParserException, IOException;
+    abstract ContentHandler getContentHandler(Subscriber<? super T> subscriber);
 }

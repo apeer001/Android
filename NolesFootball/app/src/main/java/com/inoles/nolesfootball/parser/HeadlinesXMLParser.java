@@ -1,52 +1,66 @@
+/*
+ * Copyright (C) 2015 Jonathan Steele
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.inoles.nolesfootball.parser;
 
+import android.sax.Element;
+import android.sax.EndElementListener;
+import android.sax.EndTextElementListener;
+import android.sax.RootElement;
+
+import com.inoles.nolesfootball.XMLUtils;
 import com.inoles.nolesfootball.model.News;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
+import org.xml.sax.ContentHandler;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import rx.Subscriber;
 
 public class HeadlinesXMLParser extends BaseXMLParser<News> {
-
     public HeadlinesXMLParser() {
         super("http://www.seminoles.com/rss.dbml?db_oem_id=32900&RSS_SPORT_ID=157113&media=news");
     }
 
     @Override
-    List<News> parseXML(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<News> result = new ArrayList<>();
-        News currentNews = null;
-        int eventType;
-        while ((eventType = parser.next()) != XmlPullParser.END_DOCUMENT) {
-            String name = parser.getName();
-            switch (eventType) {
-                case XmlPullParser.START_TAG:
-                    if ("item".equals(name)) {
-                        currentNews = new News();
-                    } else if (currentNews != null) {
-                        switch (name) {
-                            case "title":
-                                currentNews.Title = parser.nextText();
-                                break;
-                            case "link":
-                                currentNews.Link = parser.nextText();
-                                break;
-                            case "description":
-                                currentNews.Descriptions = parser.nextText();
-                                break;
-                        }
-                    }
-                    break;
-                case XmlPullParser.END_TAG:
-                    if ("item".equals(name)) {
-                        result.add(currentNews);
-                    }
-                    break;
+    ContentHandler getContentHandler(final Subscriber<? super News> subscriber) {
+        final News currentNews = new News();
+        RootElement root = new RootElement("rss");
+        Element channel = root.getChild("channel");
+        Element item = channel.getChild("item");
+        item.setEndElementListener(new EndElementListener() {
+            public void end() {subscriber.onNext(currentNews.copy());
             }
-        }
-        return result;
+        });
+        item.getChild("title").setEndTextElementListener(new EndTextElementListener() {
+            @Override
+            public void end(String s) {
+                currentNews.title = s;
+            }
+        });
+        item.getChild("link").setEndTextElementListener(new EndTextElementListener() {
+            @Override
+            public void end(String s) {
+                currentNews.link = s;
+            }
+        });
+        item.getChild("description").setEndTextElementListener(new EndTextElementListener() {
+            @Override
+            public void end(String s) {
+                currentNews.descriptions =  XMLUtils.unescape(s);
+            }
+        });
+        return root.getContentHandler();
     }
 }

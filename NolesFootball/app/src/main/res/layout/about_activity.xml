@@ -4,13 +4,17 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BrowserDetailActivity">
+    tools:context=".AboutActivity">
 
     <include layout="@layout/toolbar_actionbar" />
-
-    <WebView
-        android:id="@+id/webview"
+    
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+        android:layout_height="wrap_content">
+        <fragment class="com.inoles.nolesfootball.AboutActivity$AboutFragment"
+            android:id="@+id/about"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+    
 </LinearLayout>

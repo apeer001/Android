@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Noles Football</string>
+    <!-- Name of the application, shown in the application's title bar. -->
+    <string name="app_name">NolesFootball</string>
 
-    <!-- Accessibility description saying that the app navigation drawer has been closed -->
+    <!-- Accessibility description saying that the app navigation drawer_item has been closed -->
     <string name="drawer_close">Close navigation drawer</string>
 
-    <!-- Accessibility description saying that the app navigation drawer has been opened -->
+    <!-- Accessibility description saying that the app navigation drawer_item has been opened -->
     <string name="drawer_open">Open navigation drawer</string>
 
-    <!-- Title of the navigation drawer, used by accessibility to announce state changes. -->
+    <!-- Title of the navigation drawer_item, used by accessibility to announce state changes. -->
     <string name="drawer_title">Navigation</string>
+
+    <!-- Shown as a link in the About screen of the app; user can click it to see the licenses. -->
+    <string name="license_title">Open source licenses</string>
+    <string name="license_summary">License details for open source software</string>
+
+    <!-- A single button shown on informative popups, like open source licenses and About -->
+    <string name="ok">OK</string>
 
     <string name="navdrawer_headlines">Headlines</string>
     <string name="navdrawer_schedules">Schedules</string>
     <string name="navdrawer_rosters">Rosters</string>
     <!--<string name="navdrawer_standings">Standings</string>-->
 
+    <string name="about_title">About NolesFootball</string>
+
     <string name="share">Share</string>
+
+    <string-array name="navdrawer_titles">
+        <item>@string/navdrawer_headlines</item>
+        <item>@string/navdrawer_schedules</item>
+        <item>@string/navdrawer_rosters</item>
+        <!--<item>@string/navdrawer_standings</item>-->
+        <item>Twitter</item>
+        <item>Tickets</item>
+        <item>About</item>
+    </string-array>
 </resources>

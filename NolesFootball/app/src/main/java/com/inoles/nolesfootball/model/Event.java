@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Jonathan Steele
+ * Copyright (C) 2015 Jonathan Steele
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,4 +24,15 @@ public class Event {
     public String mOpponentScore;
     public String home_away;
     public String mHomeScore;
+
+    public Event copy() {
+        Event copy = new Event();
+        copy.mEventDate = mEventDate;
+        copy.mOpponentName = mOpponentName;
+        copy.mOpponentScore = mOpponentScore;
+        copy.mHomeScore = mHomeScore;
+        copy.home_away = home_away;
+        copy.mHomeScore = mHomeScore;
+        return copy;
+    }
 }

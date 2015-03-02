@@ -1,17 +1,17 @@
 /*
- * Copyright 2014 Google Inc. All rights reserved.
+ * Copyright (C) 2015 Jonathan Steele
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.inoles.nolesfootball;
@@ -20,38 +20,33 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
-
-import com.inoles.nolesfootball.model.DrawerPrimaryAction;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 /**
  * A base activity that handles common functionality in the app. This includes the
  * navigation drawer
  */
 abstract class BaseActivity extends ActionBarActivity
-        implements SideDrawerAdapter.OnItemClickListener {
-
-    // Navigation drawer
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
-
-    // symbols for nav drawer items (indices must correspond to array below).
+{
+    // symbols for nav drawer_item items
     static final int NAVDRAWER_ITEM_HEADLINES = 0;
     static final int NAVDRAWER_ITEM_SCHEDULES = 1;
     static final int NAVDRAWER_ITEM_ROSTERS = 2;
-    private static final int NAVDRAWER_ITEM_STANDINGS = 3;
+    //static final int NAVDRAWER_ITEM_STANDINGS = 3;
 
-    // Primary toolbar and drawer toggle
-    Toolbar mActionBarToolbar;
+    // Navigation Drawer Toggle
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    // Primary toolbar
+    private Toolbar mActionBarToolbar;
 
     /**
      * Returns the navigation drawer item that corresponds to this Activity.
@@ -64,18 +59,6 @@ abstract class BaseActivity extends ActionBarActivity
      * Returns the default layout resource or subclass override it
      */
     int getLayoutResource() { return R.layout.base_activity; }
-
-    private void createPrimaryActions(List<DrawerPrimaryAction> actions) {
-        actions.add(new DrawerPrimaryAction("Headlines", 0));
-        actions.add(new DrawerPrimaryAction("Schedules", 0));
-        actions.add(new DrawerPrimaryAction("Rosters", 0));
-        //actions.add(new DrawerPrimaryAction("Standings", 0));
-    }
-
-    private void createSecondaryActions(List<String> actions) {
-        actions.add("Twitter");
-        actions.add("Tickets");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,38 +78,42 @@ abstract class BaseActivity extends ActionBarActivity
      * Sets up the navigation drawer as appropriate.
      */
     private void setupNavDrawer() {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (mDrawerLayout == null) {
+        final DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawerLayout == null) {
             return;
         }
 
         // The drawer title must be set in order to announce state changes when
-        // accessibility is turned on. This is typically a simple description,
-        // e.g. "Navigation".
-        mDrawerLayout.setDrawerTitle(Gravity.START, getString(R.string.drawer_title));
+        // accessibility is turned on.
+        drawerLayout.setDrawerTitle(Gravity.START, getString(R.string.drawer_title));
 
-        List<DrawerPrimaryAction> primary = new ArrayList<>();
-        createPrimaryActions(primary);
+        String[] titles = getResources().getStringArray(R.array.navdrawer_titles);
 
-        List<String> secondary = new ArrayList<>();
-        createSecondaryActions(secondary);
+        final int selectedItem = getSelfNavDrawerItem();
 
-        RecyclerView drawerList = (RecyclerView) findViewById(R.id.sports_drawer_list);
-
-        // improve performance by indicating the list if fixed size.
-        drawerList.setHasFixedSize(true);
-        drawerList.setLayoutManager(new LinearLayoutManager(this));
-
+        ListView drawerList = (ListView) findViewById(R.id.sports_drawer_list);
         // set up the drawer's list view with items and click listener
-        drawerList.setAdapter(new SideDrawerAdapter(getSelfNavDrawerItem(), primary, secondary,
-                this));
+        drawerList.setAdapter(new SideDrawerAdapter(this, selectedItem, titles));
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(@NonNull AdapterView<?> adapterView, @NonNull View view, int position, long l) {
+                if (position == selectedItem) {
+                    drawerLayout.closeDrawer(Gravity.START);
+                    return;
+                }
+
+                goToNavDrawerItem(position);
+
+                drawerLayout.closeDrawer(Gravity.START);
+            }
+        });
 
         // ActionBarDrawerToggle provides convenient helpers for tying together the
-        // prescribed interactions between a top-level sliding drawer and the action bar.
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+        // prescribed interactions between a top-level sliding drawer and the toolbar.
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 mActionBarToolbar, R.string.drawer_open, R.string.drawer_close);
         mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        drawerLayout.setDrawerListener(mDrawerToggle);
     }
 
     @Override
@@ -155,35 +142,24 @@ abstract class BaseActivity extends ActionBarActivity
                 startActivity(intent);
                 finish();
                 break;
-            case NAVDRAWER_ITEM_STANDINGS:
-                /*intent = new Intent(this, StandingActivity.class);
+            /*case NAVDRAWER_ITEM_STANDINGS:
+                intent = new Intent(this, StandingActivity.class);
                 startActivity(intent);
-                finish();*/
+                finish();
+                break;*/
+            case 3:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/Seminoles_com"));
+                startActivity(intent);
                 break;
             case 4:
-                gotoURL("https://twitter.com/Seminoles_com");
+                intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("http://www.seminoles.com/ViewArticle.dbml?ATCLID=209576083&DB_OEM_ID=32900&DB_OEM_ID=32900"));
+                startActivity(intent);
                 break;
             case 5:
-                gotoURL("http://www.seminoles.com/ViewArticle.dbml?ATCLID=209576083&DB_OEM_ID=32900&DB_OEM_ID=32900");
+                intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
                 break;
         }
-    }
-
-    private void gotoURL(String url) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        startActivity(intent);
-    }
-
-    /* The click listener for RecyclerView in the navigation drawer */
-    @Override
-    public void onClick(int position) {
-        if (position == getSelfNavDrawerItem()) {
-            mDrawerLayout.closeDrawer(Gravity.START);
-            return;
-        }
-
-        goToNavDrawerItem(position);
-
-        mDrawerLayout.closeDrawer(Gravity.START);
     }
 }

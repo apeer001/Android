@@ -20,20 +20,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.inoles.nolesfootball.BrowserDetailActivity"
+        <activity android:name=".BrowserDetailActivity"
             android:parentActivityName=".HeadlinesActivity" />
-        <activity
-            android:name="com.inoles.nolesfootball.ScheduleActivity"
-            android:label="@string/navdrawer_schedules" />
-        <activity
-            android:name="com.inoles.nolesfootball.RostersActivity"
-            android:label="@string/navdrawer_rosters" />
-        <!--
-            <activity
-            android:name="com.inoles.nolesfootball.StandingActivity"
-            android:label="@string/navdrawer_standings" />
-        -->
+        <activity android:name=".ScheduleActivity" android:label="@string/navdrawer_schedules" />
+        <activity android:name=".RostersActivity" android:label="@string/navdrawer_rosters" />
+        <activity android:name=".AboutActivity" android:label="@string/about_title"/>
+        <!-- <activity android:name=".StandingActivity" android:label="@string/navdrawer_standings" /> -->
     </application>
 
 </manifest>

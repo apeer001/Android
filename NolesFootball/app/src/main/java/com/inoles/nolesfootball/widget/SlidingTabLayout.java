@@ -20,6 +20,7 @@ package com.inoles.nolesfootball.widget;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -123,10 +124,6 @@ public class SlidingTabLayout extends HorizontalScrollView {
         for (int i = 0; i < adapter.getCount(); i++) {
             final TextView textView = new TextView(getContext());
 
-            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) textView.getLayoutParams();
-            lp.width = 0;
-            lp.weight = 1;
-
             textView.setText(adapter.getPageTitle(i));
             textView.setGravity(Gravity.CENTER);
             textView.setOnClickListener(tabClickListener);
@@ -146,7 +143,8 @@ public class SlidingTabLayout extends HorizontalScrollView {
             int padding = (int) (TAB_VIEW_PADDING_DIPS * getResources().getDisplayMetrics().density);
             textView.setPadding(padding, padding, padding, padding);
 
-            mTabStrip.addView(textView);
+            mTabStrip.addView(textView, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+                    LayoutParams.MATCH_PARENT, 1));
             if (i == mViewPager.getCurrentItem()) {
                 textView.setSelected(true);
             }
@@ -232,7 +230,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
     private class TabClickListener implements OnClickListener {
         @Override
-        public void onClick(View v) {
+        public void onClick(@NonNull View v) {
             for (int i = 0; i < mTabStrip.getChildCount(); i++) {
                 if (v == mTabStrip.getChildAt(i)) {
                     mViewPager.setCurrentItem(i);

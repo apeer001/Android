@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -41,10 +42,11 @@ class SlidingTabStrip extends LinearLayout {
     private float mSelectionOffset;
 
     SlidingTabStrip(Context context) {
-        this(context, null);
+     this(context, null);
     }
 
-    SlidingTabStrip(Context context, AttributeSet attrs) {
+    @SuppressWarnings("SameParameterValue")
+    private SlidingTabStrip(Context context, AttributeSet attrs) {
         super(context, attrs);
         setWillNotDraw(false);
 
@@ -72,7 +74,7 @@ class SlidingTabStrip extends LinearLayout {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         final int height = getHeight();
         final int childCount = getChildCount();
 

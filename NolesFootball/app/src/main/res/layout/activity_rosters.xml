@@ -33,7 +33,7 @@
                 android:layout_weight="1" />
         </LinearLayout>
 
-        <!-- Nav drawer -->
+        <!-- Nav drawer_item -->
         <include layout="@layout/navdrawer" />
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>
