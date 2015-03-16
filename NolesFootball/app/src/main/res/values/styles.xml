@@ -9,16 +9,13 @@
         <item name="windowActionBar">false</item>
     </style>
 
-    <style name="ActionBar.TitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+    <!--<style name="ActionBar.TitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">#fff</item>
-        <item name="android:textSize">18sp</item>
-    </style>
+    </style>-->
 
     <style name="HeaderBar">
         <item name="android:background">?colorPrimary</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textAllCaps">true</item>
+        <!--<item name="android:textColor">@android:color/white</item>-->
     </style>
 
     <style name="SportsDrawerList">

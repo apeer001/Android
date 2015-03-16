@@ -62,10 +62,10 @@ public class RostersXMLParser extends BaseXMLParser<Rosters> {
                 currentRosters.mPosition = s;
             }
         });
-        rosterEntry.getChild("is_coach").setEndTextElementListener(new EndTextElementListener() {
+        rosterEntry.getChild("shirt_number").setEndTextElementListener(new EndTextElementListener() {
             @Override
             public void end(String s) {
-                currentRosters.mIsCoach = Integer.parseInt(s);
+                currentRosters.mShirtNumber = s;
             }
         });
         return root.getContentHandler();

@@ -84,8 +84,9 @@ class SideDrawerAdapter extends BaseAdapter {
     /**
      * Custom view holder for our navigation drawers views.
      */
-    public static class ViewHolder {
+    static class ViewHolder {
         public final TextView mTextView;
+
         ViewHolder(View view) {
             mTextView = (TextView) view;
         }

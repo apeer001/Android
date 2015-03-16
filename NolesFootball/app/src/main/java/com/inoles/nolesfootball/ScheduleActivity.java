@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2015 Jonathan Steele
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.inoles.nolesfootball;
 
 import android.app.Fragment;
@@ -17,8 +33,6 @@ import com.inoles.nolesfootball.parser.SchedulesXMLParser;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import rx.android.app.AppObservable;
-
 public class ScheduleActivity extends BaseActivity {
 
     @Override
@@ -33,7 +47,7 @@ public class ScheduleActivity extends BaseActivity {
     }
 
     /**
-     * Returns the navigation drawer_item item that corresponds to this Activity.
+     * Returns the navigation drawer item that corresponds to this Activity.
      */
     @Override
     int getSelfNavDrawerItem() {
@@ -46,7 +60,7 @@ public class ScheduleActivity extends BaseActivity {
         private final SimpleDateFormat mDateFormat =
                 new SimpleDateFormat("MMM dd 'at' hh:mma", Locale.US);
 
-        ScheduleAdapter(Context context) {
+        public ScheduleAdapter(Context context) {
             super(context);
         }
 
@@ -76,12 +90,12 @@ public class ScheduleActivity extends BaseActivity {
         }
     }
 
-    public static class ViewHolder {
+    static class ViewHolder {
         public final TextView mDate;
         public final ScheduleTextView mAwayTeam;
         public final ScheduleTextView mHomeTeam;
 
-        public ViewHolder(View v) {
+        ViewHolder(View v) {
             mDate = (TextView) v.findViewById(R.id.date);
             mAwayTeam = (ScheduleTextView) v.findViewById(R.id.away_team);
             mHomeTeam = (ScheduleTextView) v.findViewById(R.id.home_team);
@@ -113,7 +127,8 @@ public class ScheduleActivity extends BaseActivity {
             mListView.setAdapter(adapter);
 
             SchedulesXMLParser parser = new SchedulesXMLParser();
-            AppObservable.bindFragment(this, parser.pullDataFromNetwork())
+            parser.pullDataFromNetwork()
+                    .compose(RxUtils.<Event>applyFragmentSchedulers(this))
                     .lift(new BindsAdapter<>(adapter))
                     .subscribe();
         }

@@ -2,34 +2,47 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:padding="6dp">
 
     <TextView
-        android:id="@+id/first_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
+        android:layout_height="match_parent"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/shirtNumber"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginRight="6dp"
+        tools:text="0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/firstName"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/shirtNumber"
+        android:layout_toEndOf="@+id/shirtNumber"
+        android:layout_alignWithParentIfMissing="true"
         android:layout_marginRight="3dp"
-        android:textAppearance="?android:attr/textAppearanceListItem"
         tools:text="Jimbo" />
 
     <TextView
-        android:id="@+id/position"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/first_name"
-        android:layout_marginLeft="10dp"
-        android:layout_alignParentLeft="true"
-        tools:text="Head Coach" />
+        android:id="@+id/lastName"
+        android:layout_alignTop="@+id/firstName"
+        android:layout_toRightOf="@+id/firstName"
+        android:layout_toEndOf="@+id/firstName"
+        tools:text="Fisher" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/last_name"
-        android:layout_above="@id/position"
-        android:layout_toRightOf="@id/first_name"
-        android:textAppearance="?android:attr/textAppearanceListItem"
-        tools:text="Fisher" />
+        android:id="@+id/position"
+        android:layout_below="@+id/firstName"
+        android:layout_alignLeft="@+id/firstName"
+        android:layout_alignStart="@+id/firstName"
+        android:layout_alignWithParentIfMissing="true"
+        tools:text="Head Coach" />
 </RelativeLayout>

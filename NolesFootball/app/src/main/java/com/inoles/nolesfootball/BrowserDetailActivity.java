@@ -26,8 +26,8 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 
 public class BrowserDetailActivity extends ActionBarActivity {
-    // Called when the activity is first created.
 
+    // Called when the activity is first created.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

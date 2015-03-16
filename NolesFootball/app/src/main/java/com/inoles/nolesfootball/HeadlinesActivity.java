@@ -29,8 +29,6 @@ import android.widget.TextView;
 import com.inoles.nolesfootball.model.News;
 import com.inoles.nolesfootball.parser.HeadlinesXMLParser;
 
-import rx.android.app.AppObservable;
-
 public class HeadlinesActivity extends BaseActivity {
 
     @Override
@@ -47,7 +45,7 @@ public class HeadlinesActivity extends BaseActivity {
     }
 
     /**
-     * Returns the navigation drawer_item item that corresponds to this Activity.
+     * Returns the navigation drawer item that corresponds to this Activity.
      */
     @Override
     int getSelfNavDrawerItem() {
@@ -80,11 +78,11 @@ public class HeadlinesActivity extends BaseActivity {
         }
     }
 
-    public static class ViewHolder {
+    static class ViewHolder {
         public final TextView mTitle;
         public final TextView mDesc;
 
-        public ViewHolder(View v) {
+        ViewHolder(View v) {
             mTitle = (TextView) v.findViewById(android.R.id.text1);
             mDesc = (TextView) v.findViewById(android.R.id.text2);
         }
@@ -99,7 +97,8 @@ public class HeadlinesActivity extends BaseActivity {
             setListAdapter(adapter);
 
             HeadlinesXMLParser parser = new HeadlinesXMLParser();
-            AppObservable.bindFragment(this, parser.pullDataFromNetwork())
+            parser.pullDataFromNetwork()
+                    .compose(RxUtils.<News>applyFragmentSchedulers(this))
                     .lift(new BindsAdapter<>(adapter))
                     .subscribe();
         }

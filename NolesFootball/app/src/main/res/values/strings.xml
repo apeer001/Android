@@ -3,10 +3,10 @@
     <!-- Name of the application, shown in the application's title bar. -->
     <string name="app_name">NolesFootball</string>
 
-    <!-- Accessibility description saying that the app navigation drawer_item has been closed -->
+    <!-- Accessibility description saying that the app navigation drawer has been closed -->
     <string name="drawer_close">Close navigation drawer</string>
 
-    <!-- Accessibility description saying that the app navigation drawer_item has been opened -->
+    <!-- Accessibility description saying that the app navigation drawer has been opened -->
     <string name="drawer_open">Open navigation drawer</string>
 
     <!-- Title of the navigation drawer_item, used by accessibility to announce state changes. -->
@@ -18,6 +18,10 @@
 
     <!-- A single button shown on informative popups, like open source licenses and About -->
     <string name="ok">OK</string>
+
+    <!-- Menu item that allows the user to start a search for a session by name. After clicking,
+   they type in their search query. -->
+    <string name="description_search">Search</string>
 
     <string name="navdrawer_headlines">Headlines</string>
     <string name="navdrawer_schedules">Schedules</string>

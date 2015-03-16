@@ -16,46 +16,30 @@
 
 package com.inoles.nolesfootball;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.ListFragment;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 import com.inoles.nolesfootball.model.Rosters;
-import com.inoles.nolesfootball.widget.SlidingTabLayout;
+import com.inoles.nolesfootball.parser.RostersXMLParser;
 
-public class RostersActivity extends BaseActivity implements RostersFragment.Listener {
-    private RostersListAdapter mAdapter;
+import rx.functions.Action0;
 
-    @Override
-    int getLayoutResource() {
-        return R.layout.activity_rosters;
-    }
-
+public class RostersActivity extends BaseActivity
+{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Set up ViewPager and adapter
-        final ViewPager pager = (ViewPager) findViewById(R.id.rosters_pager);
-        RostersPagerAdapter pagerAdapter = new RostersPagerAdapter(getFragmentManager());
-        pager.setAdapter(pagerAdapter);
-
-        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.rosters_sliding_tabs);
-        slidingTabLayout.setViewPager(pager);
-
-        mAdapter = new RostersListAdapter(this);
-
-        // TODO: Trying to run this in parallel
-        /*RostersXMLParser parser = new RostersXMLParser();
-        parser.pullDataFromNetwork()*/
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, new RostersFragment())
+                    .commit();
+        }
     }
 
     /**
@@ -66,88 +50,58 @@ public class RostersActivity extends BaseActivity implements RostersFragment.Lis
         return NAVDRAWER_ITEM_ROSTERS;
     }
 
-    @Override
-    public void onFragmentViewCreated(ListFragment fragment) {
-        /*int position = fragment.getArguments().getInt("position");
-        switch(position) {
-            case 0:
-                Collections.sort(mPlayerList, Rosters.NAME);
-                mAdapter.add(mPlayerList);
-                break;
-            case 1:
-                Collections.sort(mPlayerList, Rosters.NUMBER);
-                mAdapter.add(mPlayerList);
-                break;
-            case 2:
-                Collections.sort(mStaffList, Rosters.NAME);
-                mAdapter.add(mStaffList);
-                break;
-        }*/
-        fragment.setListAdapter(mAdapter);
-    }
+    public static class RostersFragment extends ListFragment
+            implements SearchView.OnQueryTextListener {
+        RostersListAdapter mAdapter;
 
-    static class RostersPagerAdapter extends FragmentPagerAdapter {
-        private static final String[] TITLES = {"Name", "Number", "Staff"};
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
 
-        RostersPagerAdapter(FragmentManager fm) {
-            super(fm);
+            // We have a menu item to show in toolbar.
+            setHasOptionsMenu(true);
+
+            // Create an empty adapter we will use to display the loaded data.
+            mAdapter = new RostersListAdapter(getActivity());
+            setListAdapter(mAdapter);
+
+            // Start out with a progress indicator.
+            setListShown(false);
+
+            RostersXMLParser parser = new RostersXMLParser();
+            parser.pullDataFromNetwork()
+                    .compose(RxUtils.<Rosters>applyFragmentSchedulers(this))
+                    .lift(new BindsAdapter<>(mAdapter))
+                    .doOnCompleted(new Action0() {
+                        @Override
+                        public void call() {
+                            setListShown(true);
+                        }
+                    })
+                    .subscribe();
         }
 
         @Override
-        public Fragment getItem(int position) {
-            RostersFragment fragment = new RostersFragment();
-            Bundle args = new Bundle();
-            args.putInt("position", position);
-            fragment.setArguments(args);
-            return fragment;
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            super.onCreateOptionsMenu(menu, inflater);
+            inflater.inflate(R.menu.search, menu);
+            final SearchView searchView = (SearchView) MenuItemCompat
+                    .getActionView(menu.findItem(R.id.menu_search));
+            searchView.setOnQueryTextListener(this);
         }
 
         @Override
-        public int getCount() {
-            return TITLES.length;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return TITLES[position];
-        }
-    }
-
-    static class RostersListAdapter extends AbstractBaseAdapter<Rosters> {
-        RostersListAdapter(Context context) {
-            super(context);
-        }
-
-        @Override
-        public View getView(int position, View view, @NonNull ViewGroup viewGroup) {
-            ViewHolder viewHolder;
-            if (view == null) {
-                view = mInflater.inflate(R.layout.rosters_item, viewGroup, false);
-                viewHolder = new ViewHolder(view);
-                view.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) view.getTag();
+        public boolean onQueryTextChange(String s) {
+            String newText = !TextUtils.isEmpty(s) ? s : null;
+            if (newText != null) {
+                mAdapter.getFilter().filter(newText);
             }
-
-            Rosters rosters = getItem(position);
-
-            viewHolder.mLastName.setText(rosters.mLastName);
-            viewHolder.mFirstName.setText(rosters.mFirstName);
-            viewHolder.mPosition.setText(rosters.mPosition);
-
-            return view;
+            return true;
         }
-    }
 
-    static class ViewHolder {
-        public final TextView mFirstName;
-        public final TextView mLastName;
-        public final TextView mPosition;
-
-        ViewHolder(View v) {
-            mFirstName = (TextView) v.findViewById(R.id.first_name);
-            mLastName = (TextView) v.findViewById(R.id.last_name);
-            mPosition = (TextView) v.findViewById(R.id.position);
+        @Override
+        public boolean onQueryTextSubmit(String s) {
+            return false;
         }
     }
 }

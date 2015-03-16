@@ -16,38 +16,31 @@
 
 package com.inoles.nolesfootball;
 
-import android.util.Log;
+import android.app.Fragment;
 
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.Observable.Transformer;
+import rx.android.app.AppObservable;
 
-class BindsAdapter<T> implements Observable.Operator<List<T>, List<T>> {
-    private static final String LOG_TAG = BindsAdapter.class.getName();
+class RxUtils {
+    private RxUtils() {}
 
-    private final AbstractBaseAdapter<T> mAdapter;
-
-    BindsAdapter(AbstractBaseAdapter<T> adapter) {
-        mAdapter = adapter;
-    }
-
-    @Override
-    public Subscriber<? super List<T>> call(Subscriber<? super List<T>> subscriber) {
-        return new Subscriber<List<T>>() {
+    /*public static <T> Transformer<?, ?> applyActivitySchedulers(final Activity activity) {
+        return new Transformer<?, ?>() {
             @Override
-            public void onCompleted() {
-               mAdapter.notifyDataSetChanged();
+            public Observable<List<T>> call(Observable<List<T>> listObservable) {
+                return AppObservable.bindActivity(activity, listObservable);
             }
+        };
+    }*/
 
+    public static <T> Transformer<List<T>, List<T>> applyFragmentSchedulers(final Fragment fragment) {
+        return new Transformer<List<T>, List<T>>() {
             @Override
-            public void onError(Throwable e) {
-                Log.e(LOG_TAG, Log.getStackTraceString(e));
-            }
-
-            @Override
-            public void onNext(List<T> list) {
-                mAdapter.add(list);
+            public Observable<List<T>> call(Observable<List<T>> listObservable) {
+                return AppObservable.bindFragment(fragment, listObservable);
             }
         };
     }

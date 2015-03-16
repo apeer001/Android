@@ -55,18 +55,13 @@ abstract class BaseActivity extends ActionBarActivity
         return -1;
     }
 
-    /**
-     * Returns the default layout resource or subclass override it
-     */
-    int getLayoutResource() { return R.layout.base_activity; }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	if (BuildConfig.DEBUG) {
     		StrictMode.enableDefaults();
     	}
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutResource());
+        setContentView(R.layout.base_activity);
 
         mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(mActionBarToolbar);

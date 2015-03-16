@@ -9,6 +9,8 @@ public class XMLUtils {
             {"apos" , "39"}, // XML apostrophe
     };
 
+    private XMLUtils() {}
+
     public static String unescape(String str) {
         int entityValue;
 

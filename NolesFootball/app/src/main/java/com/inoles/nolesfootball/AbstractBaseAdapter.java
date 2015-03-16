@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 abstract class AbstractBaseAdapter<T> extends BaseAdapter {
-    private List<T> mResult = Collections.emptyList();
+    List<T> mResult = Collections.emptyList();
 
     final LayoutInflater mInflater;
 
