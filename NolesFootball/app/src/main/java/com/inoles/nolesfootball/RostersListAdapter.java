@@ -103,8 +103,8 @@ class RostersListAdapter extends AbstractBaseAdapter<Rosters> implements Filtera
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence charSequence, FilterResults results) {
-            //noinspection unchecked
             mResult = (List<Rosters>) results.values;
             if (results.count > 0) {
                 notifyDataSetChanged();

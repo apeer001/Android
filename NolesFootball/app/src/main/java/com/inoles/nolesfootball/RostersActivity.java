@@ -21,13 +21,17 @@ import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 
 import com.inoles.nolesfootball.model.Rosters;
 import com.inoles.nolesfootball.parser.RostersXMLParser;
 
-import rx.functions.Action0;
+import java.util.List;
+
+import rx.Subscriber;
+import rx.Subscription;
 
 public class RostersActivity extends BaseActivity
 {
@@ -52,7 +56,10 @@ public class RostersActivity extends BaseActivity
 
     public static class RostersFragment extends ListFragment
             implements SearchView.OnQueryTextListener {
+        private static final String LOG_TAG = RostersFragment.class.getName();
+
         RostersListAdapter mAdapter;
+        Subscription subscription;
 
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
@@ -63,22 +70,26 @@ public class RostersActivity extends BaseActivity
 
             // Create an empty adapter we will use to display the loaded data.
             mAdapter = new RostersListAdapter(getActivity());
-            setListAdapter(mAdapter);
-
-            // Start out with a progress indicator.
-            setListShown(false);
 
             RostersXMLParser parser = new RostersXMLParser();
-            parser.pullDataFromNetwork()
+            subscription = parser.pullDataFromNetwork()
                     .compose(RxUtils.<Rosters>applyFragmentSchedulers(this))
-                    .lift(new BindsAdapter<>(mAdapter))
-                    .doOnCompleted(new Action0() {
+                    .subscribe(new Subscriber<List<Rosters>>() {
                         @Override
-                        public void call() {
-                            setListShown(true);
+                        public void onCompleted() {
+                            setListAdapter(mAdapter);
                         }
-                    })
-                    .subscribe();
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(LOG_TAG, Log.getStackTraceString(e));
+                        }
+
+                        @Override
+                        public void onNext(List<Rosters> rostersList) {
+                            mAdapter.add(rostersList);
+                        }
+                    });
         }
 
         @Override
@@ -102,6 +113,14 @@ public class RostersActivity extends BaseActivity
         @Override
         public boolean onQueryTextSubmit(String s) {
             return false;
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            if (subscription != null) {
+                subscription.unsubscribe();
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.inoles.nolesfootball;
 
+import android.support.annotation.NonNull;
+
 public class XMLUtils {
     private static final String[][] BASIC_ARRAY = {
             {"quot" , "34"}, // " - double-quote
@@ -11,6 +13,7 @@ public class XMLUtils {
 
     private XMLUtils() {}
 
+    @NonNull
     public static String unescape(String str) {
         int entityValue;
 

@@ -23,7 +23,7 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 
-class BindsAdapter<T> implements Observable.Operator<List<T>, List<T>> {
+final class BindsAdapter<T> implements Observable.Operator<List<T>, List<T>> {
     private static final String LOG_TAG = BindsAdapter.class.getName();
 
     private final AbstractBaseAdapter<T> mAdapter;

@@ -16,6 +16,8 @@
 
 package com.inoles.nolesfootball;
 
+import android.support.annotation.NonNull;
+
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -58,6 +60,7 @@ public class HttpUtils {
         });
     }
 
+    @NonNull
     public static Observable<String> mapResponseToString(final Response response) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
